@@ -295,7 +295,7 @@ cam.position.x+=(Math.random()-.5)*shake*1.2;cam.position.y+=(Math.random()-.5)*
 cam.fov+=(tf-cam.fov)*.1;cam.updateProjectionMatrix();if(camT>0&&(camT-=dt)<=0)$('cam').style.opacity=0}
 function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
 let wA=0;
-function drawWheel(p,dt){const cv=$('wh'),on=cm==2||cm==3;cv.style.display=on?'block':'none';$('tir').style.visibility=on?'hidden':'';if(!on)return;
+function drawWheel(p,dt){const cv=$('wh'),on=cm==2||cm==3;cv.style.display=on?'block':'none';cv.style.transformOrigin='50% 45.6%';cv.style.transform=cm==2?'translateX(-50%) scale(1.5)':'translateX(-50%)';$('tir').style.visibility=on?'hidden':'';if(!on)return;
 const g=cv.getContext('2d'),W=900,H=1000;g.clearRect(0,0,W,H);wA+=((p.st||0)*1.6-wA)*Math.min(1,(dt||.016)*14);
 const gr=Math.min(8,1+Math.floor(p.s/11)),fr=Math.min(1,Math.max(0,(p.s-(gr-1)*11)/11)),lit=Math.round(fr*15),flash=fr>.96&&(performance.now()%240)<120;
 const cy=456,tc='#'+p.mesh.userData.m.color.getHexString(),ca=Math.cos(wA),sa=Math.sin(wA);
