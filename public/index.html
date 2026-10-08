@@ -32,7 +32,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 <div id="pos" class="h">P1<small>posición</small></div><div id="lap" class="h">Vuelta 1/3<small>--</small></div>
 <div id="spd" class="h">0<span>km/h</span></div><div id="pad" class="h">Sin mando: conectalo y tocá un botón</div><div id="msg"></div><div id="cam" class="h"></div><div id="tir" class="h"></div><canvas id="mm" class="h" width="440" height="320" aria-label="Mapa de la pista"></canvas><canvas id="wh" width="900" height="1000" aria-hidden="true"></canvas><button id="mnb" aria-label="Abrir menú">Menú</button>
 <div id="ov"><div><h1>Apex 25</h1><p id="ovt">Elegí la duración y cuántos rivales corren. Autos y pilotos ficticios.</p>
-<p><b>Teclado:</b> flechas o WASD · <b>R</b> reinicia · <b>C</b> o <b>1-7</b> cámara · <b>Esc</b> o <b>M</b> menú · <b>P</b> pedir parada · <b>T</b> próximo neumático · <b>N</b> mapa<br><b>Mando:</b> stick izq. dirige · RT acelera · LT frena · Y reinicia · X cámara · Start menú o empezar · LB parada · RB neumático<br>(A acelera y B frena si tu mando no tiene gatillos)</p>
+<p><b>Teclado:</b> flechas o WASD · <b>R</b> reinicia · <b>C</b> o <b>1-7</b> cámara · <b>Esc</b> o <b>M</b> menú · <b>P</b> pedir parada · <b>T</b> próximo neumático · <b>N</b> mapa · <b>B</b> (mantener) mirar atrás<br><b>Mando:</b> stick izq. dirige · RT acelera · LT frena · Y reinicia · X cámara · Start menú o empezar · LB parada · RB neumático · R3 (stick derecho) mirar atrás<br>(A acelera y B frena si tu mando no tiene gatillos)</p>
 <div class="cfg"><div><span class="lb">Pista</span><div class="rv"><select id="trsel" aria-label="Pista"></select><canvas id="tprev" width="150" height="100" aria-hidden="true"></canvas></div><p id="tinfo" style="margin:4px 0 0;font-size:15px"></p></div>
 <div><span class="lb">Neumáticos de salida</span><div id="tires" class="seg"><button data-k="S"><i class="dot" style="background:#ff2b2b"></i>Blando</button><button data-k="M"><i class="dot" style="background:#ffd21a"></i>Medio</button><button data-k="H"><i class="dot" style="background:#f2f2f2"></i>Duro</button><button data-k="I"><i class="dot" style="background:#2ecc40"></i>Intermedio</button><button data-k="W"><i class="dot" style="background:#2f7bff"></i>Lluvia</button></div><p id="tdesc" style="margin:4px 0 0;font-size:15px"></p></div>
 <div><span class="lb">Neumáticos para la parada (distintos a los de salida)</span><div id="ptires" class="seg"><button data-k="S"><i class="dot" style="background:#ff2b2b"></i>Blando</button><button data-k="M"><i class="dot" style="background:#ffd21a"></i>Medio</button><button data-k="H"><i class="dot" style="background:#f2f2f2"></i>Duro</button><button data-k="I"><i class="dot" style="background:#2ecc40"></i>Intermedio</button><button data-k="W"><i class="dot" style="background:#2f7bff"></i>Lluvia</button></div><p id="mand" style="margin:4px 0 0;font-size:15px;color:#ffb020"></p></div>
@@ -43,7 +43,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 <div class="seg" style="margin-top:12px"><button id="pcb">Configurar mando</button></div>
 <button id="rsm" style="display:none;margin-right:10px">Continuar</button><button id="go">Correr</button></div></div>
 <div id="pcfg"><div class="pbox"><h2>Configurar mando</h2><p id="pst"></p><select id="psel" aria-label="Dispositivo"></select>
-<div class="seg" id="pbtns"><button data-k="st">Dirección</button><button data-k="th">Acelerar</button><button data-k="br">Frenar</button><button data-k="cam">Cámara</button><button data-k="rs">Reiniciar</button><button data-k="mn">Menú</button><button data-k="pt">Pedir parada</button><button data-k="nt">Próximo neumático</button></div>
+<div class="seg" id="pbtns"><button data-k="st">Dirección</button><button data-k="th">Acelerar</button><button data-k="br">Frenar</button><button data-k="cam">Cámara</button><button data-k="rs">Reiniciar</button><button data-k="mn">Menú</button><button data-k="pt">Pedir parada</button><button data-k="nt">Próximo neumático</button><button data-k="bk">Mirar atrás</button></div>
 <p id="phint">Elegí una acción y mové ese control en tu mando.</p><pre id="pdbg"></pre><div class="seg"><button id="prs">Restablecer</button><button id="pcl">Cerrar</button></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -222,9 +222,9 @@ function applyCfg(){buildTrack(cfg.trk,cfg.riv+1);applyWx(cfg.wx);cars=all.slice
 function reset(){cars.forEach((c,i)=>{const nn=cars.length,ps=Math.min(3,nn-1),slot=c.slot!==undefined?c.slot:i?(i-1<ps?i-1:i):ps,k=N-6-slot*(nn>12?5:7),n=Nm[k],lane=slot%2?-3.2:3.2;c.idx=k;c.lane=i?(Math.random()*8-4):0;c.x=P[k].x+n.x*lane;c.z=P[k].z+n.z*lane;c.h=Math.atan2(T[k].x,T[k].z);c.vx=c.vz=c.s=0;c.d=lane;c.lap=-1;c.ls=0;c.best=0;c.last=0;c.fin=0;c.w=0;c.hit=0;c.st=0;c.rv=c.pv=c.rl=c.pt=c.dmg=c.scr=0;c.pitT=0;c.pitReq=0;c.nxt=i?null:(cfg.ptire!==cfg.tire?cfg.ptire:diffTire(cfg.tire));c.pl=0;c.svc=0;c.pits=0;c.pen=0;c.pitLap=3+(Math.random()*5|0);c.box=slot;if(!c.remote)c.tire=newTire(i?aiTire():cfg.tire);setTireColor(c)});placeBoxMk()}
 applyCfg();
 // Entrada
-const K={};addEventListener('keydown',e=>{K[e.code]=1;audio();const typ=/INPUT|SELECT|TEXTAREA/.test(e.target.tagName);if(!typ){if(e.code=='KeyR')start();if(e.code=='KeyC')setCam(cm+1);if(/^Digit[1-7]$/.test(e.code))setCam(+e.code[5]-1);if(e.code=='KeyM'&&!e.repeat)toggleMenu();if(e.code=='KeyP'&&!e.repeat)togglePit();if(e.code=='KeyT'&&!e.repeat)nextTire();if(e.code=='KeyN'&&!e.repeat){const m=$('mm');m.style.display=m.style.display=='none'?'':'none'}}if(e.code=='Escape'&&!e.repeat)toggleMenu();if(e.code=='Enter'&&state=='ready'&&e.target==document.body)start();if((e.code.startsWith('Arrow')||e.code=='Space')&&e.target==document.body)e.preventDefault()});addEventListener('keyup',e=>K[e.code]=0);
+const K={};addEventListener('keydown',e=>{K[e.code]=1;audio();const typ=/INPUT|SELECT|TEXTAREA/.test(e.target.tagName);if(!typ){if(e.code=='KeyR')start();if(e.code=='KeyC')setCam(cm+1);if(/^Digit[1-7]$/.test(e.code))setCam(+e.code[5]-1);if(e.code=='KeyM'&&!e.repeat)toggleMenu();if(e.code=='KeyP'&&!e.repeat)togglePit();if(e.code=='KeyT'&&!e.repeat)nextTire();if(e.code=='KeyB')kbB=true;if(e.code=='KeyN'&&!e.repeat){const m=$('mm');m.style.display=m.style.display=='none'?'':'none'}}if(e.code=='Escape'&&!e.repeat)toggleMenu();if(e.code=='Enter'&&state=='ready'&&e.target==document.body)start();if((e.code.startsWith('Arrow')||e.code=='Space')&&e.target==document.body)e.preventDefault()});addEventListener('keyup',e=>{K[e.code]=0;if(e.code=='KeyB')kbB=false});addEventListener('blur',()=>{kbB=false});
 let ks=0,pY=0,pX=0,pS=0,pPt=0,pNt=0,padName='';
-const DEF=()=>({dev:'',st:[{t:'a',i:0,c:0,v:1}],th:[{t:'b',i:7},{t:'b',i:0}],br:[{t:'b',i:6},{t:'b',i:1}],cam:[{t:'b',i:2}],rs:[{t:'b',i:3}],mn:[{t:'b',i:9}],pt:[{t:'b',i:4}],nt:[{t:'b',i:5}]});
+const DEF=()=>({dev:'',st:[{t:'a',i:0,c:0,v:1}],th:[{t:'b',i:7},{t:'b',i:0}],br:[{t:'b',i:6},{t:'b',i:1}],cam:[{t:'b',i:2}],rs:[{t:'b',i:3}],mn:[{t:'b',i:9}],pt:[{t:'b',i:4}],nt:[{t:'b',i:5}],bk:[{t:'b',i:11}]});
 let MAP=DEF();try{const j=JSON.parse(localStorage.getItem('apexpad')||'null');if(j&&j.st&&j.th)MAP=Object.assign(DEF(),j)}catch(e){}
 const saveMap=()=>{try{localStorage.setItem('apexpad',JSON.stringify(MAP))}catch(e){}};
 const pads=()=>[...(navigator.getGamepads?navigator.getGamepads():[])].filter(x=>x&&x.connected);
@@ -235,14 +235,14 @@ const mx=(g,l)=>Math.max(0,...l.map(b=>bv(g,b)));
 function steerOf(g){const b=MAP.st[0];let a=b&&b.t=='a'?((g.axes[b.i]||0)-(b.c||0))*(b.v||1):0;
 a=Math.abs(a)<.08?0:Math.sign(a)*Math.pow((Math.min(1,Math.abs(a))-.08)/.92,1.4);
 if(!a&&g.buttons[14]&&g.buttons[15])a=(g.buttons[15].pressed?1:0)-(g.buttons[14].pressed?1:0);return a}
-function input(dt){const g=pad();let st=0,th=0,br=0;
+function input(dt){const g=pad();gpB=false;let st=0,th=0,br=0;
 const kt=(K.ArrowRight||K.KeyD?1:0)-(K.ArrowLeft||K.KeyA?1:0);ks+=(kt-ks)*Math.min(1,dt*8);
 if(g){st=steerOf(g);th=mx(g,MAP.th);br=mx(g,MAP.br);
-const co=$('pcfg').style.display=='flex',x=mx(g,MAP.cam)>.5?1:0;if(x&&!pX&&!co)setCam(cm+1);pX=x;const y=mx(g,MAP.rs)>.5?1:0;if(y&&!pY&&!co)start();pY=y;const a1=mx(g,MAP.pt)>.5?1:0;if(a1&&!pPt&&!co)togglePit();pPt=a1;const a2=mx(g,MAP.nt)>.5?1:0;if(a2&&!pNt&&!co)nextTire();pNt=a2;
+const co=$('pcfg').style.display=='flex',x=mx(g,MAP.cam)>.5?1:0;if(x&&!pX&&!co)setCam(cm+1);pX=x;const y=mx(g,MAP.rs)>.5?1:0;if(y&&!pY&&!co)start();pY=y;const a1=mx(g,MAP.pt)>.5?1:0;if(a1&&!pPt&&!co)togglePit();pPt=a1;const a2=mx(g,MAP.nt)>.5?1:0;if(a2&&!pNt&&!co)nextTire();pNt=a2;gpB=!co&&mx(g,MAP.bk)>.5;
 const s9=mx(g,MAP.mn)>.5?1:0;if(s9&&!pS&&!co){if(state=='ready'||state=='done')start();else toggleMenu()}pS=s9;
 if(g.id!==padName){padName=g.id;$('pad').textContent='Mando: '+g.id.slice(0,40)}}
 else if(padName){padName='';$('pad').textContent='Mando desconectado'}
-return{st:Math.abs(st)>0?st:ks,th:Math.max(th,K.ArrowUp||K.KeyW?1:0),br:Math.max(br,K.ArrowDown||K.KeyS?1:0)}}
+LB=kbB||gpB;return{st:Math.abs(st)>0?st:ks,th:Math.max(th,K.ArrowUp||K.KeyW?1:0),br:Math.max(br,K.ArrowDown||K.KeyS?1:0)}}
 // Física
 function step(c,dt,u){if(c.pitT>0){c.pitT-=dt;u={st:0,th:0,br:1.6};if(c.pitT<=0&&c.svc){c.svc=0;c.pitReq=0;c.pits=(c.pits||0)+1;c.tire=newTire(c.nxt&&c.nxt!==c.tire.k?c.nxt:diffTire(c.tire.k));setTireColor(c)}}else if(c.ai&&!c.pitReq&&c.lap>=0&&c.lap<LAPS-1&&(c.tire.w>.72||(mand()&&!c.pits&&c.lap>=c.pitLap))){c.pitReq=1;c.nxt=pickNext(c)}const G=c.G=tireG(c);const fx=Math.sin(c.h),fz=Math.cos(c.h);let s=c.vx*fx+c.vz*fz,lx=c.vx-fx*s,lz=c.vz-fz*s;const off=Math.abs(c.d)>9.5&&!(PIT&&roadPit(c));
 s=Math.max(0,s+(u.th*30*(1-c.dmg)*(.85+.15*G)-u.br*55*(.7+.3*G)-(off?.02:.0035)*s*s-.5)*dt);
@@ -286,7 +286,13 @@ crash(v*.8);spark(x,z,Math.min(40,Math.round(j*4)),6+j);[a,b].forEach(c=>{if(c){
 if(me){shake=Math.max(shake,Math.min(1.6,j/6));rumble(v)}}
 const CN=['Persecución','Cercana','Capó','Cockpit','Alerón','TV','Aérea'];let cm=0,tv=0,camT=0;
 function setCam(i){cm=(i+7)%7;$('cam').textContent=CN[cm]+' · '+(cm+1)+'/7';$('cam').style.opacity=1;camT=2}
-function updateCam(p,dt,fx,fz){let tf=66+p.s*.35;cam.near=cm>1&&cm<5?.12:.5;const fp=cm==2||cm==3;p.mesh.userData.helm.visible=!fp;p.mesh.userData.cp.forEach(m=>m.visible=!fp);
+let LB=false,kbB=false,gpB=false;
+function updateCam(p,dt,fx,fz){if(!LB)return updateCam0(p,dt,fx,fz);
+cam.near=.5;p.mesh.userData.helm.visible=true;p.mesh.userData.cp.forEach(m=>m.visible=true);
+cam.position.set(p.x-fx*3.6,1.7,p.z-fz*3.6);cam.lookAt(p.x-fx*40,1.1,p.z-fz*40);
+cam.position.x+=(Math.random()-.5)*shake*1.2;cam.position.y+=(Math.random()-.5)*shake*.7;shake*=.88;
+cam.fov+=(78-cam.fov)*.15;cam.updateProjectionMatrix();$('cam').textContent='◀ Mirando atrás';$('cam').style.opacity=1;camT=.4}
+function updateCam0(p,dt,fx,fz){let tf=66+p.s*.35;cam.near=cm>1&&cm<5?.12:.5;const fp=cm==2||cm==3;p.mesh.userData.helm.visible=!fp;p.mesh.userData.cp.forEach(m=>m.visible=!fp);
 if(cm<2){const b=cm?6.5:10,h=cm?2.2:4.2;cam.position.lerp(new THREE.Vector3(p.x-fx*b,h,p.z-fz*b),1-Math.exp(-7*dt));cam.lookAt(p.x+fx*9,1.2,p.z+fz*9)}
 else if(cm<5){const o=[[.45,1.0],[-.35,1.3],[3.9,.55]][cm-2];cam.position.set(p.x+fx*o[0],o[1],p.z+fz*o[0]);cam.lookAt(p.x+fx*30,o[1]-.2,p.z+fz*30);cam.rotateZ(-p.rl*2);tf=[80,85,95][cm-2]+p.s*.15}
 else if(cm==5){const d=(tv-p.idx+N)%N;if(d>95||d<8)tv=(p.idx+60)%N;const q=P[tv],n=Nm[tv],cx=q.x+n.x*24,cz=q.z+n.z*24;cam.position.set(cx,7,cz);cam.lookAt(p.x,1,p.z);tf=Math.max(20,Math.min(60,2400/Math.hypot(cx-p.x,cz-p.z)))}
@@ -295,7 +301,7 @@ cam.position.x+=(Math.random()-.5)*shake*1.2;cam.position.y+=(Math.random()-.5)*
 cam.fov+=(tf-cam.fov)*.1;cam.updateProjectionMatrix();if(camT>0&&(camT-=dt)<=0)$('cam').style.opacity=0}
 function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
 let wA=0;
-function drawWheel(p,dt){const cv=$('wh'),on=cm==2||cm==3;cv.style.display=on?'block':'none';cv.style.transformOrigin='50% 45.6%';cv.style.transform=cm==2?'translateX(-50%) scale(1.5)':'translateX(-50%)';$('tir').style.visibility=on?'hidden':'';if(!on)return;
+function drawWheel(p,dt){const cv=$('wh'),on=(cm==2||cm==3)&&!LB;cv.style.display=on?'block':'none';cv.style.transformOrigin='50% 45.6%';cv.style.transform=cm==2?'translateX(-50%) scale(1.5)':'translateX(-50%)';$('tir').style.visibility=on?'hidden':'';if(!on)return;
 const g=cv.getContext('2d'),W=900,H=1000;g.clearRect(0,0,W,H);wA+=((p.st||0)*1.6-wA)*Math.min(1,(dt||.016)*14);
 const gr=Math.min(8,1+Math.floor(p.s/11)),fr=Math.min(1,Math.max(0,(p.s-(gr-1)*11)/11)),lit=Math.round(fr*15),flash=fr>.96&&(performance.now()%240)<120;
 const cy=456,tc='#'+p.mesh.userData.m.color.getHexString(),ca=Math.cos(wA),sa=Math.sin(wA);
@@ -315,7 +321,7 @@ menu=true;paused=!rm;$('ovt').textContent=rm?'Menú. La carrera online sigue en 
 function closeMenu(){menu=false;paused=false;$('ov').style.display='none';renderLobby()}
 $('rsm').onclick=closeMenu;$('mnb').onclick=function(){toggleMenu();this.blur()};
 // Configuración del mando
-const NM={st:'Dirección',th:'Acelerar',br:'Frenar',cam:'Cámara',rs:'Reiniciar',mn:'Menú',pt:'Pedir parada',nt:'Próximo neumático'},lb=l=>l.map(b=>(b.t=='a'?'Eje ':'Botón ')+b.i).join(' / ')||'sin asignar';
+const NM={st:'Dirección',th:'Acelerar',br:'Frenar',cam:'Cámara',rs:'Reiniciar',mn:'Menú',pt:'Pedir parada',nt:'Próximo neumático',bk:'Mirar atrás'},lb=l=>l.map(b=>(b.t=='a'?'Eje ':'Botón ')+b.i).join(' / ')||'sin asignar';
 let bind=null,snap=null,pTimer=0,pKey='',pTxt='';
 function pBtns(){document.querySelectorAll('#pbtns button').forEach(b=>{const t=NM[b.dataset.k]+': '+lb(MAP[b.dataset.k]),on=bind==b.dataset.k;b.textContent=on?NM[b.dataset.k]+': esperando…':t;b.classList.toggle('on',on)})}
 function pTick(){const g=pad(),l=pads(),key=l.map(x=>x.id).join('|')+'#'+MAP.dev;
