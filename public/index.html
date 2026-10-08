@@ -22,6 +22,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .seg button{margin:0 8px 0 0;font-size:22px;padding:6px 18px;background:#1d2630;color:var(--ink)}.seg button.on{background:var(--acc);color:#fff}
 .rv{display:flex;align-items:center;gap:14px}.rv input{flex:1;accent-color:var(--acc)}.rv output{font-size:22px;font-weight:800;min-width:120px}
 #onl{margin-top:18px;display:none}#onl input{background:#1d2630;color:var(--ink);border:1px solid #33414f;padding:8px 10px;font:700 18px 'Saira Condensed',sans-serif;min-width:0;flex:1}#onl .seg{margin-top:10px}button:disabled{opacity:.4;cursor:default}
+#pcfg{position:fixed;inset:0;background:rgba(8,11,15,.95);display:none;align-items:center;justify-content:center;padding:20px;overflow:auto;z-index:5}.pbox{max-width:560px;width:100%}.pbox h2{margin:0 0 6px;font-size:40px;font-weight:800}#psel{width:100%;background:#1d2630;color:var(--ink);border:1px solid #33414f;padding:8px;font:700 17px 'Saira Condensed',sans-serif;margin:6px 0 12px}#pbtns button{margin-bottom:8px}#pdbg{font:13px monospace;color:var(--dim);white-space:pre-wrap;min-height:4.5em;margin:6px 0}
 </style></head><body>
 <div id="pos" class="h">P1<small>posición</small></div><div id="lap" class="h">Vuelta 1/3<small>--</small></div>
 <div id="spd" class="h">0<span>km/h</span></div><div id="pad" class="h">Sin mando: conectalo y tocá un botón</div><div id="msg"></div><div id="cam" class="h"></div>
@@ -31,7 +32,11 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 <div id="rivbox"><span class="lb">Pilotos rivales (0 a 20)</span><div class="rv"><input id="riv" type="range" min="0" max="20" step="1" value="5" aria-label="Pilotos rivales"><output id="rivo">5</output></div></div></div>
 <div id="onl"><span class="lb">Online con amigos</span><div class="rv"><input id="nick" maxlength="12" placeholder="Tu apodo" aria-label="Apodo"><input id="code" maxlength="12" placeholder="Código de sala" aria-label="Código de sala"></div>
 <div class="seg"><button id="mk">Crear sala</button><button id="jn">Unirse</button><button id="lv" style="display:none">Salir de la sala</button></div><p id="rinfo"></p></div>
+<div class="seg" style="margin-top:12px"><button id="pcb">Configurar mando</button></div>
 <button id="go">Correr</button></div></div>
+<div id="pcfg"><div class="pbox"><h2>Configurar mando</h2><p id="pst"></p><select id="psel" aria-label="Dispositivo"></select>
+<div class="seg" id="pbtns"><button data-k="st">Dirección</button><button data-k="th">Acelerar</button><button data-k="br">Frenar</button><button data-k="cam">Cámara</button><button data-k="rs">Reiniciar</button></div>
+<p id="phint">Elegí una acción y mové ese control en tu mando.</p><pre id="pdbg"></pre><div class="seg"><button id="prs">Restablecer</button><button id="pcl">Cerrar</button></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 const $=id=>document.getElementById(id);let LAPS=3;
@@ -76,12 +81,21 @@ applyCfg();
 // Entrada
 const K={};addEventListener('keydown',e=>{K[e.code]=1;audio();if(e.code=='KeyR')start();if(e.code=='KeyC')setCam(cm+1);if(/^Digit[1-7]$/.test(e.code))setCam(+e.code[5]-1);if(e.code=='Enter'&&state=='ready'&&e.target==document.body)start();if((e.code.startsWith('Arrow')||e.code=='Space')&&e.target==document.body)e.preventDefault()});addEventListener('keyup',e=>K[e.code]=0);
 let ks=0,pY=0,pX=0,pS=0,padName='';
-function pad(){return [...(navigator.getGamepads?navigator.getGamepads():[])].find(x=>x&&x.connected)}
+const DEF=()=>({dev:'',st:[{t:'a',i:0,c:0,v:1}],th:[{t:'b',i:7},{t:'b',i:0}],br:[{t:'b',i:6},{t:'b',i:1}],cam:[{t:'b',i:2}],rs:[{t:'b',i:3}]});
+let MAP=DEF();try{const j=JSON.parse(localStorage.getItem('apexpad')||'null');if(j&&j.st&&j.th)MAP=Object.assign(DEF(),j)}catch(e){}
+const saveMap=()=>{try{localStorage.setItem('apexpad',JSON.stringify(MAP))}catch(e){}};
+const pads=()=>[...(navigator.getGamepads?navigator.getGamepads():[])].filter(x=>x&&x.connected);
+function pad(){const l=pads();return l.find(x=>x.id==MAP.dev)||l[0]}
+const c01=v=>Math.max(0,Math.min(1,v));
+function bv(g,b){if(b.t=='b'){const x=g.buttons[b.i];return x?(x.value||(x.pressed?1:0)):0}const v=g.axes[b.i];return v==null?0:c01((v-b.r)/((b.f-b.r)||1))}
+const mx=(g,l)=>Math.max(0,...l.map(b=>bv(g,b)));
+function steerOf(g){const b=MAP.st[0];let a=b&&b.t=='a'?((g.axes[b.i]||0)-(b.c||0))*(b.v||1):0;
+a=Math.abs(a)<.08?0:Math.sign(a)*Math.pow((Math.min(1,Math.abs(a))-.08)/.92,1.4);
+if(!a&&g.buttons[14]&&g.buttons[15])a=(g.buttons[15].pressed?1:0)-(g.buttons[14].pressed?1:0);return a}
 function input(dt){const g=pad();let st=0,th=0,br=0;
 const kt=(K.ArrowRight||K.KeyD?1:0)-(K.ArrowLeft||K.KeyA?1:0);ks+=(kt-ks)*Math.min(1,dt*8);
-if(g){let a=g.axes[0]||0;a=Math.abs(a)<.08?0:Math.sign(a)*Math.pow((Math.abs(a)-.08)/.92,1.4);st=a;
-th=Math.max(g.buttons[7]?.value||0,g.buttons[0]?.pressed?1:0);br=Math.max(g.buttons[6]?.value||0,g.buttons[1]?.pressed?1:0);
-const x=g.buttons[2]?.pressed?1:0;if(x&&!pX)setCam(cm+1);pX=x;const y=g.buttons[3]?.pressed?1:0;if(y&&!pY)start();pY=y;
+if(g){st=steerOf(g);th=mx(g,MAP.th);br=mx(g,MAP.br);
+const x=mx(g,MAP.cam)>.5?1:0;if(x&&!pX)setCam(cm+1);pX=x;const y=mx(g,MAP.rs)>.5?1:0;if(y&&!pY)start();pY=y;
 const s9=g.buttons[9]?.pressed?1:0;if(s9&&!pS&&(state=='ready'||state=='done'))start();pS=s9;
 if(g.id!==padName){padName=g.id;$('pad').textContent='Mando: '+g.id.slice(0,40)}}
 else if(padName){padName='';$('pad').textContent='Mando desconectado'}
@@ -135,6 +149,26 @@ else if(cm==5){const d=(tv-p.idx+N)%N;if(d>95||d<8)tv=(p.idx+60)%N;const q=P[tv]
 else{cam.position.set(p.x-fx*12,48,p.z-fz*12);cam.lookAt(p.x+fx*6,0,p.z+fz*6);tf=55}
 cam.position.x+=(Math.random()-.5)*shake*1.2;cam.position.y+=(Math.random()-.5)*shake*.7;shake*=.88;
 cam.fov+=(tf-cam.fov)*.1;cam.updateProjectionMatrix();if(camT>0&&(camT-=dt)<=0)$('cam').style.opacity=0}
+// Configuración del mando
+const NM={st:'Dirección',th:'Acelerar',br:'Frenar',cam:'Cámara',rs:'Reiniciar'},lb=l=>l.map(b=>(b.t=='a'?'Eje ':'Botón ')+b.i).join(' / ')||'sin asignar';
+let bind=null,snap=null,pTimer=0,pKey='',pTxt='';
+function pBtns(){document.querySelectorAll('#pbtns button').forEach(b=>{const t=NM[b.dataset.k]+': '+lb(MAP[b.dataset.k]),on=bind==b.dataset.k;b.textContent=on?NM[b.dataset.k]+': esperando…':t;b.classList.toggle('on',on)})}
+function pTick(){const g=pad(),l=pads(),key=l.map(x=>x.id).join('|')+'#'+MAP.dev;
+if(key!==pKey){pKey=key;$('psel').replaceChildren(...l.map(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.id.slice(0,60);o.selected=g&&x.id==g.id;return o}))}
+$('pst').textContent=g?'Detectado: '+g.id.slice(0,70):'No detecto ningún mando. Conectalo y apretá un botón con esta ventana en foco.';
+$('pdbg').textContent=g?'Ejes: '+g.axes.map((v,i)=>i+':'+v.toFixed(2)).join('  ')+'\nBotones: '+(g.buttons.map((b,i)=>b.pressed||b.value>.1?i:'').filter(x=>x!=='').join(', ')||'ninguno'):'';
+if(bind&&g&&snap){let f=null;const k=bind;
+if(k!='st')g.buttons.forEach((b,i)=>{if(!f&&(b.value||0)>.6&&snap.b[i]<.3)f={t:'b',i}});
+if(!f&&(k=='st'||k=='th'||k=='br'))g.axes.forEach((v,i)=>{if(!f&&Math.abs(v-snap.a[i])>.6){const r=snap.a[i],d=v-r;f=k=='st'?{t:'a',i,c:r,v:d<0?-1:1}:{t:'a',i,r,f:Math.abs(r)>.5?-r:(d>0?1:-1)}}});
+if(f){MAP[k]=[f];saveMap();bind=null;$('phint').textContent='Listo. Elegí otra acción o cerrá.';pBtns()}}}
+document.querySelectorAll('#pbtns button').forEach(b=>b.onclick=()=>{const g=pad();if(!g){$('phint').textContent='Primero conectá el mando y apretá un botón.';return}
+bind=b.dataset.k;snap={a:[...g.axes],b:g.buttons.map(x=>x.value||0)};$('phint').textContent=bind=='st'?'Girá el volante o stick a fondo hacia la derecha.':bind=='th'||bind=='br'?'Pisá el pedal o gatillo a fondo.':'Apretá el botón que quieras usar.';pBtns()});
+$('psel').onchange=()=>{MAP.dev=$('psel').value;saveMap()};
+$('prs').onclick=()=>{const d=MAP.dev;MAP=DEF();MAP.dev=d;saveMap();bind=null;$('phint').textContent='Controles restablecidos.';pBtns()};
+$('pcb').onclick=()=>{$('pcfg').style.display='flex';pKey='';bind=null;pBtns();pTick();pTimer=setInterval(pTick,80)};
+$('pcl').onclick=()=>{$('pcfg').style.display='none';clearInterval(pTimer);bind=null};
+addEventListener('keydown',e=>{if(e.code=='Escape'&&$('pcfg').style.display=='flex')$('pcl').onclick()});
+addEventListener('gamepadconnected',e=>{$('pad').textContent='Mando: '+e.gamepad.id.slice(0,40)});
 // Carrera
 let shake=0,state='ready',t=0,cd=0,fo=[];
 function start(){if(rm){if(isHost()){rm.presence({go:Date.now(),lp:cfg.laps});startOnline(cfg.laps)}return}audio();document.activeElement&&document.activeElement.blur();LAPS=cfg.laps;applyCfg();fo=[];t=0;cd=3.99;state='count';$('ov').style.display='none'}
