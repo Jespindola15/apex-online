@@ -23,19 +23,20 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .rv{display:flex;align-items:center;gap:14px}.rv input{flex:1;accent-color:var(--acc)}.rv output{font-size:22px;font-weight:800;min-width:120px}
 #onl{margin-top:18px;display:none}#onl input{background:#1d2630;color:var(--ink);border:1px solid #33414f;padding:8px 10px;font:700 18px 'Saira Condensed',sans-serif;min-width:0;flex:1}#onl .seg{margin-top:10px}button:disabled{opacity:.4;cursor:default}
 #pcfg{position:fixed;inset:0;background:rgba(8,11,15,.95);display:none;align-items:center;justify-content:center;padding:20px;overflow:auto;z-index:5}.pbox{max-width:560px;width:100%}.pbox h2{margin:0 0 6px;font-size:40px;font-weight:800}#psel{width:100%;background:#1d2630;color:var(--ink);border:1px solid #33414f;padding:8px;font:700 17px 'Saira Condensed',sans-serif;margin:6px 0 12px}#pbtns button{margin-bottom:8px}#pdbg{font:13px monospace;color:var(--dim);white-space:pre-wrap;min-height:4.5em;margin:6px 0}
+#mnb{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);margin:0;padding:4px 16px;font-size:16px;background:var(--pan);color:var(--ink);border-left:4px solid var(--acc)}
 </style></head><body>
 <div id="pos" class="h">P1<small>posición</small></div><div id="lap" class="h">Vuelta 1/3<small>--</small></div>
-<div id="spd" class="h">0<span>km/h</span></div><div id="pad" class="h">Sin mando: conectalo y tocá un botón</div><div id="msg"></div><div id="cam" class="h"></div>
+<div id="spd" class="h">0<span>km/h</span></div><div id="pad" class="h">Sin mando: conectalo y tocá un botón</div><div id="msg"></div><div id="cam" class="h"></div><button id="mnb" aria-label="Abrir menú">Menú</button>
 <div id="ov"><div><h1>Apex 25</h1><p id="ovt">Elegí la duración y cuántos rivales corren. Autos y pilotos ficticios.</p>
-<p><b>Teclado:</b> flechas o WASD · <b>R</b> reinicia · <b>C</b> o <b>1-7</b> cambian la cámara<br><b>Mando:</b> stick izq. dirige · RT acelera · LT frena · Y reinicia · X cambia la cámara · Start empieza<br>(A acelera y B frena si tu mando no tiene gatillos)</p>
+<p><b>Teclado:</b> flechas o WASD · <b>R</b> reinicia · <b>C</b> o <b>1-7</b> cámara · <b>Esc</b> o <b>M</b> menú<br><b>Mando:</b> stick izq. dirige · RT acelera · LT frena · Y reinicia · X cámara · Start menú o empezar<br>(A acelera y B frena si tu mando no tiene gatillos)</p>
 <div class="cfg"><div><span class="lb">Vueltas</span><div id="laps" class="seg"><button data-v="3">3</button><button data-v="5">5</button><button data-v="10">10</button><button data-v="15">15</button></div></div>
 <div id="rivbox"><span class="lb">Pilotos rivales (0 a 20)</span><div class="rv"><input id="riv" type="range" min="0" max="20" step="1" value="5" aria-label="Pilotos rivales"><output id="rivo">5</output></div></div></div>
 <div id="onl"><span class="lb">Online con amigos</span><div class="rv"><input id="nick" maxlength="12" placeholder="Tu apodo" aria-label="Apodo"><input id="code" maxlength="12" placeholder="Código de sala" aria-label="Código de sala"></div>
 <div class="seg"><button id="mk">Crear sala</button><button id="jn">Unirse</button><button id="lv" style="display:none">Salir de la sala</button></div><p id="rinfo"></p></div>
 <div class="seg" style="margin-top:12px"><button id="pcb">Configurar mando</button></div>
-<button id="go">Correr</button></div></div>
+<button id="rsm" style="display:none;margin-right:10px">Continuar</button><button id="go">Correr</button></div></div>
 <div id="pcfg"><div class="pbox"><h2>Configurar mando</h2><p id="pst"></p><select id="psel" aria-label="Dispositivo"></select>
-<div class="seg" id="pbtns"><button data-k="st">Dirección</button><button data-k="th">Acelerar</button><button data-k="br">Frenar</button><button data-k="cam">Cámara</button><button data-k="rs">Reiniciar</button></div>
+<div class="seg" id="pbtns"><button data-k="st">Dirección</button><button data-k="th">Acelerar</button><button data-k="br">Frenar</button><button data-k="cam">Cámara</button><button data-k="rs">Reiniciar</button><button data-k="mn">Menú</button></div>
 <p id="phint">Elegí una acción y mové ese control en tu mando.</p><pre id="pdbg"></pre><div class="seg"><button id="prs">Restablecer</button><button id="pcl">Cerrar</button></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -79,9 +80,9 @@ function applyCfg(){cars=all.slice(0,cfg.riv+1);all.forEach((c,i)=>{c.mesh.visib
 function reset(){cars.forEach((c,i)=>{const nn=cars.length,ps=Math.min(3,nn-1),slot=c.slot!==undefined?c.slot:i?(i-1<ps?i-1:i):ps,k=N-6-slot*(nn>12?5:7),n=Nm[k],lane=slot%2?-3.2:3.2;c.idx=k;c.lane=i?(Math.random()*8-4):0;c.x=P[k].x+n.x*lane;c.z=P[k].z+n.z*lane;c.h=Math.atan2(T[k].x,T[k].z);c.vx=c.vz=c.s=0;c.d=lane;c.lap=-1;c.ls=0;c.best=0;c.last=0;c.fin=0;c.w=0;c.hit=0;c.st=0;c.rv=c.pv=c.rl=c.pt=c.dmg=c.scr=0})}
 applyCfg();
 // Entrada
-const K={};addEventListener('keydown',e=>{K[e.code]=1;audio();if(e.code=='KeyR')start();if(e.code=='KeyC')setCam(cm+1);if(/^Digit[1-7]$/.test(e.code))setCam(+e.code[5]-1);if(e.code=='Enter'&&state=='ready'&&e.target==document.body)start();if((e.code.startsWith('Arrow')||e.code=='Space')&&e.target==document.body)e.preventDefault()});addEventListener('keyup',e=>K[e.code]=0);
+const K={};addEventListener('keydown',e=>{K[e.code]=1;audio();const typ=/INPUT|SELECT|TEXTAREA/.test(e.target.tagName);if(!typ){if(e.code=='KeyR')start();if(e.code=='KeyC')setCam(cm+1);if(/^Digit[1-7]$/.test(e.code))setCam(+e.code[5]-1);if(e.code=='KeyM'&&!e.repeat)toggleMenu()}if(e.code=='Escape'&&!e.repeat)toggleMenu();if(e.code=='Enter'&&state=='ready'&&e.target==document.body)start();if((e.code.startsWith('Arrow')||e.code=='Space')&&e.target==document.body)e.preventDefault()});addEventListener('keyup',e=>K[e.code]=0);
 let ks=0,pY=0,pX=0,pS=0,padName='';
-const DEF=()=>({dev:'',st:[{t:'a',i:0,c:0,v:1}],th:[{t:'b',i:7},{t:'b',i:0}],br:[{t:'b',i:6},{t:'b',i:1}],cam:[{t:'b',i:2}],rs:[{t:'b',i:3}]});
+const DEF=()=>({dev:'',st:[{t:'a',i:0,c:0,v:1}],th:[{t:'b',i:7},{t:'b',i:0}],br:[{t:'b',i:6},{t:'b',i:1}],cam:[{t:'b',i:2}],rs:[{t:'b',i:3}],mn:[{t:'b',i:9}]});
 let MAP=DEF();try{const j=JSON.parse(localStorage.getItem('apexpad')||'null');if(j&&j.st&&j.th)MAP=Object.assign(DEF(),j)}catch(e){}
 const saveMap=()=>{try{localStorage.setItem('apexpad',JSON.stringify(MAP))}catch(e){}};
 const pads=()=>[...(navigator.getGamepads?navigator.getGamepads():[])].filter(x=>x&&x.connected);
@@ -95,8 +96,8 @@ if(!a&&g.buttons[14]&&g.buttons[15])a=(g.buttons[15].pressed?1:0)-(g.buttons[14]
 function input(dt){const g=pad();let st=0,th=0,br=0;
 const kt=(K.ArrowRight||K.KeyD?1:0)-(K.ArrowLeft||K.KeyA?1:0);ks+=(kt-ks)*Math.min(1,dt*8);
 if(g){st=steerOf(g);th=mx(g,MAP.th);br=mx(g,MAP.br);
-const x=mx(g,MAP.cam)>.5?1:0;if(x&&!pX)setCam(cm+1);pX=x;const y=mx(g,MAP.rs)>.5?1:0;if(y&&!pY)start();pY=y;
-const s9=g.buttons[9]?.pressed?1:0;if(s9&&!pS&&(state=='ready'||state=='done'))start();pS=s9;
+const co=$('pcfg').style.display=='flex',x=mx(g,MAP.cam)>.5?1:0;if(x&&!pX&&!co)setCam(cm+1);pX=x;const y=mx(g,MAP.rs)>.5?1:0;if(y&&!pY&&!co)start();pY=y;
+const s9=mx(g,MAP.mn)>.5?1:0;if(s9&&!pS&&!co){if(state=='ready'||state=='done')start();else toggleMenu()}pS=s9;
 if(g.id!==padName){padName=g.id;$('pad').textContent='Mando: '+g.id.slice(0,40)}}
 else if(padName){padName='';$('pad').textContent='Mando desconectado'}
 return{st:Math.abs(st)>0?st:ks,th:Math.max(th,K.ArrowUp||K.KeyW?1:0),br:Math.max(br,K.ArrowDown||K.KeyS?1:0)}}
@@ -149,8 +150,13 @@ else if(cm==5){const d=(tv-p.idx+N)%N;if(d>95||d<8)tv=(p.idx+60)%N;const q=P[tv]
 else{cam.position.set(p.x-fx*12,48,p.z-fz*12);cam.lookAt(p.x+fx*6,0,p.z+fz*6);tf=55}
 cam.position.x+=(Math.random()-.5)*shake*1.2;cam.position.y+=(Math.random()-.5)*shake*.7;shake*=.88;
 cam.fov+=(tf-cam.fov)*.1;cam.updateProjectionMatrix();if(camT>0&&(camT-=dt)<=0)$('cam').style.opacity=0}
+// Menú en carrera (Esc / M / Start / botón)
+function toggleMenu(){if($('pcfg').style.display=='flex'||state=='ready'||state=='done')return;if(menu){closeMenu();return}
+menu=true;paused=!rm;$('ovt').textContent=rm?'Menú. La carrera online sigue en marcha.':'Juego en pausa.';renderLobby();$('ov').style.display='flex'}
+function closeMenu(){menu=false;paused=false;$('ov').style.display='none';renderLobby()}
+$('rsm').onclick=closeMenu;$('mnb').onclick=function(){toggleMenu();this.blur()};
 // Configuración del mando
-const NM={st:'Dirección',th:'Acelerar',br:'Frenar',cam:'Cámara',rs:'Reiniciar'},lb=l=>l.map(b=>(b.t=='a'?'Eje ':'Botón ')+b.i).join(' / ')||'sin asignar';
+const NM={st:'Dirección',th:'Acelerar',br:'Frenar',cam:'Cámara',rs:'Reiniciar',mn:'Menú'},lb=l=>l.map(b=>(b.t=='a'?'Eje ':'Botón ')+b.i).join(' / ')||'sin asignar';
 let bind=null,snap=null,pTimer=0,pKey='',pTxt='';
 function pBtns(){document.querySelectorAll('#pbtns button').forEach(b=>{const t=NM[b.dataset.k]+': '+lb(MAP[b.dataset.k]),on=bind==b.dataset.k;b.textContent=on?NM[b.dataset.k]+': esperando…':t;b.classList.toggle('on',on)})}
 function pTick(){const g=pad(),l=pads(),key=l.map(x=>x.id).join('|')+'#'+MAP.dev;
@@ -170,8 +176,8 @@ $('pcl').onclick=()=>{$('pcfg').style.display='none';clearInterval(pTimer);bind=
 addEventListener('keydown',e=>{if(e.code=='Escape'&&$('pcfg').style.display=='flex')$('pcl').onclick()});
 addEventListener('gamepadconnected',e=>{$('pad').textContent='Mando: '+e.gamepad.id.slice(0,40)});
 // Carrera
-let shake=0,state='ready',t=0,cd=0,fo=[];
-function start(){if(rm){if(isHost()){rm.presence({go:Date.now(),lp:cfg.laps});startOnline(cfg.laps)}return}audio();document.activeElement&&document.activeElement.blur();LAPS=cfg.laps;applyCfg();fo=[];t=0;cd=3.99;state='count';$('ov').style.display='none'}
+let shake=0,paused=false,menu=false,state='ready',t=0,cd=0,fo=[];
+function start(){menu=false;paused=false;if(rm){if(isHost()){rm.presence({go:Date.now(),lp:cfg.laps});startOnline(cfg.laps)}return}audio();document.activeElement&&document.activeElement.blur();LAPS=cfg.laps;applyCfg();fo=[];t=0;cd=3.99;state='count';$('ov').style.display='none'}
 $('go').onclick=start;
 // Online: salas por código con la capacidad "room" (sin servidor propio)
 let RM=null,rm=null,rcode='',seen={},lastSend=0;const myHue=Math.random(),esc=x=>String(x==null?'':x).replace(/[^\p{L}\p{N} _.-]/gu,'').slice(0,12);
@@ -181,7 +187,7 @@ function isHost(){if(!rm)return false;const m=rm.peers().find(p=>p.sameTab);retu
 function label(c,t){const m=c.mesh,o=m.userData.lb;if(o){m.remove(o);o.material.map.dispose();m.userData.lb=null}if(!t)return;const cv=document.createElement('canvas');cv.width=256;cv.height=64;const x=cv.getContext('2d');x.font='700 40px sans-serif';x.textAlign='center';x.lineWidth=6;x.strokeStyle='#000';x.strokeText(t,128,46);x.fillStyle='#fff';x.fillText(t,128,46);
 const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false,transparent:true,fog:false}));sp.scale.set(6,1.5,1);sp.position.y=3;sp.renderOrder=9;m.add(sp);m.userData.lb=sp}
 function renderLobby(){const on=!!rm,h=isHost();$('rivbox').style.display=on?'none':'';$('lv').style.display=on?'':'none';$('mk').style.display=$('jn').style.display=on?'none':'';$('code').disabled=on;$('nick').disabled=on;
-document.querySelectorAll('#laps button').forEach(b=>b.disabled=on&&!h);$('go').style.display=on&&!h?'none':'';$('go').textContent=on?(state=='done'?'Otra carrera':'Empezar carrera'):(state=='done'?'Correr otra vez':'Correr');
+const mid=menu&&state!='done';document.querySelectorAll('#laps button').forEach(b=>b.disabled=on&&(!h||mid));$('rsm').style.display=mid?'':'none';$('go').style.display=on&&(!h||mid)?'none':'';$('go').textContent=mid?'Nueva carrera':on?(state=='done'?'Otra carrera':'Empezar carrera'):(state=='done'?'Correr otra vez':'Correr');
 if(on){const ps=vps(),hp=ps.find(p=>p.peer==hostId());if(!h&&hp&&hp.presence.lp){cfg.laps=+hp.presence.lp||3;syncUI()}
 $('rinfo').innerHTML='Sala <b>'+rcode.toUpperCase()+'</b> · '+ps.length+' en la sala: '+ps.map(p=>esc(p.presence.nm)||'Piloto').join(', ')+(h?'<br>Sos el anfitrión: elegí las vueltas y empezá.':'<br>Esperando al anfitrión…')}}
 function dropCar(c){cars=cars.filter(x=>x!==c);c.mesh.visible=false;c.remote=0;c.peer=null}
@@ -191,7 +197,7 @@ ch.left.forEach(p=>{const c=cars.find(c=>c.peer==p.peer);if(c)dropCar(c)});rende
 async function joinRoom(code){code=code.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12);if(!code||!RM){$('rinfo').textContent='Escribí un código de sala.';return}
 try{rm=await RM.join('apex-'+code)}catch(e){rm=null;$('rinfo').textContent='No se pudo entrar a la sala. Probá de nuevo.';return}
 rcode=code;seen={};$('code').value=code;rm.presence({nm:esc($('nick').value)||'Piloto',col:myHue,lp:cfg.laps,go:0});rm.onPeers(onP);renderLobby()}
-function startOnline(lp){audio();document.activeElement&&document.activeElement.blur();LAPS=lp;cfg.laps=lp;syncUI();
+function startOnline(lp){menu=false;paused=false;audio();document.activeElement&&document.activeElement.blur();LAPS=lp;cfg.laps=lp;syncUI();
 const ps=vps().slice(0,21).sort((a,b)=>a.peer<b.peer?-1:1),mine=ps.find(p=>p.sameTab);
 all.forEach(c=>{c.ai=false;c.remote=0;c.peer=null;c.tg=null;c.tgInit=0;c.slot=undefined;label(c,'')});
 cars=[all[0]];all[0].slot=ps.indexOf(mine);all[0].mesh.userData.m.color.setHSL(myHue,.75,.5);
@@ -216,7 +222,7 @@ RM=WSRM;$('onl').style.display='block';$('nick').value='Piloto'+(10+Math.floor(M
 const fmt=x=>x?(x/60|0)+':'+(x%60).toFixed(3).padStart(6,'0'):'--';
 function rank(){return [...cars].sort((a,b)=>a.fin&&b.fin?a.fin-b.fin:a.fin?-1:b.fin?1:(b.lap*N+b.idx)-(a.lap*N+a.idx))}
 let last=performance.now();
-function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;const inp=input(dt);
+function loop(now){requestAnimationFrame(loop);const dt=paused?0:Math.min(.05,(now-last)/1000);last=now;const inp=input(dt);
 if(state=='count'){cd-=dt;$('msg').textContent=cd>1?Math.floor(cd):cd>0?'¡Listos!':'¡YA!';if(cd<=0){state='race';t=0;setTimeout(()=>{if(state=='race')$('msg').textContent=''},800)}}
 if(state=='race'||state=='done'){t+=dt;cars.forEach(c=>{if(!c.remote)step(c,dt,c.ai||c.fin?ai(c):inp)})}
 if(rm){cars.forEach(c=>{if(c.remote&&c.tg){const g=c.tg;g.x+=g.vx*dt;g.z+=g.vz*dt;const k=1-Math.exp(-14*dt);c.x+=(g.x-c.x)*k;c.z+=(g.z-c.z)*k;c.h+=Math.atan2(Math.sin(g.h-c.h),Math.cos(g.h-c.h))*k;c.vx=g.vx;c.vz=g.vz;c.s=g.s;c.st=g.st}});
@@ -225,10 +231,10 @@ for(let i=0;i<cars.length;i++)for(let k=i+1;k<cars.length;k++){const q=collide(c
 cars.forEach(c=>{c.mesh.position.set(c.x,0,c.z);c.mesh.rotation.y=c.h;c.mesh.userData.w.forEach(w=>{w.sp.rotation.x+=c.s*dt/.38;if(w.f)w.pv.rotation.y=-c.st*.45})});cars.forEach(c=>{if(c.hit>1.5)impact(c,null,c.hit,c.x,c.z);if(c.scr>3&&Math.hypot(c.x-cars[0].x,c.z-cars[0].z)<60&&Math.random()<.6)spark(c.x,c.z,2,5);
 c.rv+=(-60*c.rl-5*c.rv)*dt;c.rl+=c.rv*dt;c.pv+=(-60*c.pt-5*c.pv)*dt;c.pt+=c.pv*dt;c.mesh.rotation.x=Math.max(-.3,Math.min(.3,c.pt));c.mesh.rotation.z=Math.max(-.3,Math.min(.3,c.rl))-c.st*c.s*.0012});sparkStep(dt);
 const p=cars[0],fx=Math.sin(p.h),fz=Math.cos(p.h);updateCam(p,dt,fx,fz);
-if(egain){const g=Math.min(8,1+Math.floor(p.s/11)),fr=Math.min(1,(p.s-(g-1)*11)/11);eng.frequency.value=80+fr*170+g*8;egain.gain.value=state=='ready'?0:.04+.05*inp.th;sgain.gain.value=p.scr>2?Math.min(.35,p.scr*.012):0}const rk=rank();$('pos').innerHTML='P'+(rk.indexOf(p)+1)+'/'+cars.length+'<small>posición</small>';
+if(egain){const g=Math.min(8,1+Math.floor(p.s/11)),fr=Math.min(1,(p.s-(g-1)*11)/11);eng.frequency.value=80+fr*170+g*8;egain.gain.value=state=='ready'||paused?0:.04+.05*inp.th;sgain.gain.value=!paused&&p.scr>2?Math.min(.35,p.scr*.012):0}const rk=rank();$('pos').innerHTML='P'+(rk.indexOf(p)+1)+'/'+cars.length+'<small>posición</small>';
 $('spd').innerHTML=Math.round(p.s*3.6)+'<span>km/h · M'+Math.min(8,1+Math.floor(p.s/11))+'</span>';
 $('lap').innerHTML='Vuelta '+Math.min(LAPS,Math.max(1,p.lap+1))+'/'+LAPS+'<small>última '+fmt(p.last)+' · mejor '+fmt(p.best)+'</small>';
-if(state=='race'&&p.fin){state='done';$('ovt').innerHTML='<b>Terminaste en P'+(rank().indexOf(p)+1)+'</b> de '+cars.length+'.<br>Mejor vuelta: '+fmt(p.best);$('go').textContent='Correr otra vez';$('ov').style.display='flex';renderLobby()}
+if(state=='race'&&p.fin){state='done';menu=false;paused=false;$('ovt').innerHTML='<b>Terminaste en P'+(rank().indexOf(p)+1)+'</b> de '+cars.length+'.<br>Mejor vuelta: '+fmt(p.best);$('go').textContent='Correr otra vez';$('ov').style.display='flex';renderLobby()}
 R.render(sc,cam)}
 requestAnimationFrame(loop);
 </script></body></html>
