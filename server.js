@@ -9,6 +9,14 @@ const srv = http.createServer((q, r) => {
   const u = q.url.split('?')[0];
   if (u === '/' || u === '/index.html') { r.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); r.end(html); }
   else if (u === '/health') { r.writeHead(200); r.end('ok'); }
+  else if (u === '/models/car.glb') { // modelo 3D opcional: public/models/car.glb
+    const f = path.join(__dirname, 'public', 'models', 'car.glb');
+    fs.stat(f, (e, st) => {
+      if (e) { r.writeHead(404); return r.end('No encontrado'); }
+      r.writeHead(200, { 'Content-Type': 'model/gltf-binary', 'Content-Length': st.size, 'Cache-Control': 'public, max-age=3600' });
+      q.method === 'HEAD' ? r.end() : fs.createReadStream(f).pipe(r);
+    });
+  }
   else { r.writeHead(404); r.end('No encontrado'); }
 });
 
