@@ -37,20 +37,109 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 #sea{top:calc(86px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);font-size:16px;padding:3px 12px;white-space:nowrap}#sea:empty{display:none}
 #dmg{bottom:calc(112px + env(safe-area-inset-bottom,0px));left:14px;font-size:16px;padding:4px 10px}.dm{display:inline-block;width:16px;height:8px;margin-right:3px;background:#2b333d}
 .wv #tir{left:auto;right:14px;bottom:56px;transform:none;white-space:normal;max-width:min(330px,42vw)}
+/* ===== MENÚ PRINCIPAL (rediseño visual) ===== */
+#ov{background:radial-gradient(120% 90% at 82% 55%,rgba(4,6,9,0) 0,rgba(4,6,9,.3) 62%,rgba(4,6,9,.78) 100%),linear-gradient(96deg,rgba(4,6,9,.96) 0,rgba(4,6,9,.9) 36%,rgba(4,6,9,.4) 70%,rgba(4,6,9,.12) 100%);padding:clamp(12px,3vw,40px)}
+#ov>div{max-width:780px;margin:auto auto auto clamp(0px,4vw,72px)}
+#mnu{animation:mIn .4s cubic-bezier(.2,.8,.2,1)}@keyframes mIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:none}}
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.bk{display:block;font:700 14px/1 'Saira Condensed',sans-serif;letter-spacing:.42em;color:var(--acc);text-transform:uppercase}
+#mnu h1{font-size:clamp(54px,10vw,104px);font-style:italic;line-height:.88;letter-spacing:.015em;text-transform:uppercase;margin:8px 0 0;text-shadow:0 6px 30px #000b}
+#mnu h1 em{color:var(--acc);font-style:italic}
+#mnu h1::after{content:"";display:block;height:6px;width:150px;margin-top:12px;background:linear-gradient(90deg,var(--acc) 0 62%,transparent 62% 70%,var(--acc) 70% 84%,transparent 84% 92%,var(--acc) 92%);transform:skewX(-30deg)}
+#ovt{font-size:18px;max-width:560px}
+#vol{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;background:rgba(10,13,18,.72);border:1px solid #ffffff1f;border-left:3px solid var(--acc);clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+#vol button{margin:0;padding:0;width:42px;height:42px;display:grid;place-items:center;background:#ffffff10;color:#fff;border:0;transition:background .15s,transform .1s}
+#vol button:hover{background:#ffffff26}#vol button:active{transform:scale(.92)}
+#vol svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}#vol svg .sp{fill:currentColor;stroke:none}
+#vol .w1,#vol .w2,#vol .x{display:none}#vol:not(.m) .w1{display:block}#vol:not(.m):not(.l) .w2{display:block}#vol.m .x{display:block;stroke:var(--acc)}
+#vol input{-webkit-appearance:none;appearance:none;width:140px;height:6px;margin:0;background:linear-gradient(90deg,var(--acc) var(--p,100%),#ffffff26 var(--p,100%));cursor:pointer;border-radius:3px;accent-color:var(--acc)}
+#vol input::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:22px;background:#fff;border:0;transform:skewX(-12deg);box-shadow:0 0 0 2px var(--acc)}
+#vol input::-moz-range-thumb{width:14px;height:22px;background:#fff;border:2px solid var(--acc);border-radius:0}
+#vol input:focus-visible{outline:2px solid #fff;outline-offset:6px}
+#vol output{font:800 20px 'Saira Condensed',sans-serif;min-width:48px;text-align:right}#vol.m output{color:var(--dim)}
+#mnu .hlp{margin-top:14px}#mnu .hlp summary{font-size:15px;letter-spacing:.14em;text-transform:uppercase}
+#mnu .tabs{gap:6px;border-bottom:1px solid #ffffff22;padding-bottom:0;margin:20px 0 18px}
+#mnu .tabs button{display:flex;align-items:center;gap:10px;margin:0;padding:11px 30px;font-size:21px;letter-spacing:.09em;text-transform:uppercase;background:linear-gradient(#ffffff0e,#ffffff04);color:#c4cfda;clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%);transition:background .18s,color .18s,filter .18s;position:relative}
+#mnu .tabs button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#mnu .tabs button:hover{background:linear-gradient(#ffffff22,#ffffff0a);color:#fff}
+#mnu .tabs button.on{background:linear-gradient(var(--acc),#b01309);color:#fff}
+#mnu .tabs button:focus-visible{outline:2px solid #fff;outline-offset:-4px}
+.pn.on{animation:pIn .28s cubic-bezier(.2,.8,.2,1)}@keyframes pIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+#mnu .cfg{gap:12px}
+#mnu .cfg>div{background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid #ffffff17;border-left:3px solid var(--acc);padding:14px 16px}
+#mnu .lb{font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:#aebbc8;margin-bottom:10px}
+#mnu .seg{display:flex;flex-wrap:wrap;gap:8px}
+#mnu .seg button{margin:0;padding:9px 20px;font-size:21px;letter-spacing:.04em;background:#ffffff0d;border:1px solid #ffffff22;color:#e3eaf1;transform:skewX(-8deg);transition:background .15s,border-color .15s,transform .12s,box-shadow .15s}
+#mnu .seg button:hover:not(:disabled){background:#ffffff1d;border-color:#fff7;transform:skewX(-8deg) translateY(-2px)}
+#mnu .seg button:active:not(:disabled){transform:skewX(-8deg) scale(.96)}
+#mnu .seg button.on{background:linear-gradient(var(--acc),#c4180d);border-color:#ff8f86;color:#fff;box-shadow:0 8px 22px -8px var(--acc)}
+#mnu .seg button svg{width:20px;height:20px;vertical-align:-4px;margin-right:8px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#mode button{flex:1;min-width:150px;padding:16px 12px;font-size:26px;text-transform:uppercase}
+#laps button{min-width:76px;font-size:26px}
+#wxs button{flex:1;min-width:120px}
+#mnu input[type=range]{accent-color:var(--acc)}
+#mnu .rv output{font-size:24px;color:#fff}
+#mnu select,#mnu input:not([type=range]){background:#0b0f14;color:#fff;border:1px solid #ffffff33;transition:border-color .15s,box-shadow .15s}
+#mnu select:focus,#mnu input:not([type=range]):focus{outline:0;border-color:var(--acc);box-shadow:0 0 0 3px #ff3b2f33}
+#tires,#ptires{display:grid!important;grid-template-columns:repeat(5,1fr);gap:10px}
+#mnu #tires button,#mnu #ptires button{transform:none;display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 6px 12px;font-size:18px;letter-spacing:.06em;text-transform:uppercase;position:relative;overflow:hidden}
+#mnu #tires button:hover:not(:disabled),#mnu #ptires button:hover:not(:disabled){transform:translateY(-3px)}
+#mnu #tires button:active:not(:disabled),#mnu #ptires button:active:not(:disabled){transform:scale(.97)}
+#tires .dot,#ptires .dot{width:58px;height:58px;margin:0;border:0;vertical-align:baseline;background:radial-gradient(circle,#cfd5db 0 11%,#1c2026 12% 27%,var(--c) 28% 47%,#0e1013 48% 100%);box-shadow:0 0 0 2px #ffffff1c,0 6px 16px -4px #000;transition:transform .25s,filter .25s}
+#tires button:hover .dot,#ptires button:hover .dot{transform:rotate(40deg)}
+#mnu #tires button.on,#mnu #ptires button.on{background:linear-gradient(#ffffff26,#ffffff0a);border-color:#fff;color:#fff;box-shadow:inset 0 -4px 0 var(--acc),0 10px 26px -12px #000}
+#tires button.on .dot,#ptires button.on .dot{filter:drop-shadow(0 0 9px var(--c));transform:scale(1.1)}
+#tires button.on::after,#ptires button.on::after{content:"Seleccionado";font-size:11px;letter-spacing:.16em;color:var(--acc);margin-top:-2px}
+#tdesc{margin:12px 0 0!important;padding:10px 12px;background:#00000066;border-left:3px solid #ffffff44;font-size:16px!important;color:#d6dee6}
+#mnu .bar{margin-top:22px;gap:12px;align-items:stretch}
+#mnu .bar #pcb,#mnu .bar #rsm{margin:0;padding:10px 22px;font-size:20px;text-transform:uppercase;letter-spacing:.08em;background:#ffffff10;border:1px solid #ffffff33;color:#e3eaf1;transition:background .15s}
+#mnu .bar #pcb{margin-right:auto}#mnu .bar #pcb:hover,#mnu .bar #rsm:hover{background:#ffffff24}
+#go{font-size:34px!important;padding:12px 60px 12px 52px!important;letter-spacing:.12em;text-transform:uppercase;background:linear-gradient(var(--acc),#b01309)!important;clip-path:polygon(20px 0,100% 0,calc(100% - 20px) 100%,0 100%);transition:filter .15s,transform .12s}
+#go::after{content:"  ▶";font-size:.7em}
+#go:hover:not(:disabled){filter:brightness(1.18);transform:translateX(3px)}#go:active:not(:disabled){transform:scale(.97)}
+#mnu button:disabled{opacity:.4;cursor:not-allowed}
+/* Online */
+#onl .olh h2{margin:0;font-size:34px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-style:italic}
+#onl .olh small{display:block;color:var(--dim);font-size:16px;margin-bottom:14px}
+#onl .acc{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+#onl .fld .lb{display:block;margin-bottom:6px}#onl .fld input{width:100%;padding:12px 14px;font-size:22px;text-transform:none}
+#onl #code{text-transform:uppercase;letter-spacing:.2em}
+#onl.in .acc{display:none}#onl:not(.in) .room,#onl:not(.in) #lobby{display:none}
+#onl .room{padding:14px 16px;background:linear-gradient(135deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid #ffffff1f;border-left:3px solid var(--acc);margin-bottom:12px}
+#onl .rc{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+#rcd{font:800 clamp(38px,8vw,58px)/1 'Saira Condensed',sans-serif;letter-spacing:.22em;color:#fff;text-shadow:0 0 24px #ff3b2f66;user-select:all}
+#cpy{margin:0!important;padding:8px 18px!important;font-size:18px!important;letter-spacing:.1em;text-transform:uppercase;background:#ffffff14!important;border:1px solid #ffffff44!important}#cpy:hover{background:#ffffff2a!important}
+.rm2{display:flex;align-items:center;gap:12px;margin-top:8px;flex-wrap:wrap}#pcnt{color:#d6dee6;font-size:17px;letter-spacing:.08em;text-transform:uppercase}
+#rstat{font-size:14px;letter-spacing:.16em;text-transform:uppercase;padding:3px 10px;background:#2ecc4026;color:#5be36b;border:1px solid #2ecc4066}#rstat.off{background:#ff3b2f26;color:#ff7d74;border-color:#ff3b2f77}
+#lobby{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-bottom:6px}
+.pc{display:flex;align-items:center;gap:12px;padding:12px 14px;background:linear-gradient(120deg,#ffffff12,#ffffff04);border:1px solid #ffffff1c;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%);animation:cIn .3s cubic-bezier(.2,.8,.2,1)}@keyframes cIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+.pc.host{border-color:#ffd21a99;background:linear-gradient(120deg,#ffd21a26,#ffffff05)}.pc.me{box-shadow:inset 3px 0 0 var(--acc)}
+.pc.ghost{border-style:dashed;background:none;color:var(--dim);justify-content:center;min-height:78px;font-size:17px;letter-spacing:.1em;text-transform:uppercase;animation:none}
+.av{flex:none;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:hsl(var(--h) 72% 46%);box-shadow:inset 0 -6px 12px #0006,0 0 0 2px #ffffff33}.av svg{width:30px;height:30px}
+.pt{min-width:0}.pt b{display:block;font-size:24px;line-height:1.05;text-transform:uppercase;letter-spacing:.03em;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pt small{display:block;white-space:nowrap;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:3px}.pt .bd{font-style:normal;font-weight:800;background:#ffd21a;color:#111;padding:1px 7px}
+.st{flex:none;margin-left:auto;width:10px;height:10px;border-radius:50%;background:#2ecc40;box-shadow:0 0 9px #2ecc40}
+#onl .seg{margin-top:14px}#mnu #tprev{position:static;flex:none;width:150px;height:100px}
+#mk{padding:14px 34px!important;font-size:26px!important;text-transform:uppercase;letter-spacing:.08em}
+#mnu #jn{padding:14px 34px;font-size:26px;text-transform:uppercase;letter-spacing:.08em;background:#ffffff10;border-color:#fff}
+#mnu #lv{background:#ff3b2f1f;border-color:var(--acc)}
+#mnu button.ld{position:relative;color:transparent;pointer-events:none}#mnu button.ld::after{content:"";position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px;border:3px solid #fff4;border-top-color:#fff;border-radius:50%;animation:spn .7s linear infinite}@keyframes spn{to{transform:rotate(360deg)}}
+#rinfo{font-size:18px;margin:12px 0 0}#rinfo:empty{display:none}#rinfo:not(:empty){padding:10px 14px;background:#00000066;border-left:3px solid #ffffff55;color:#e3eaf1}#rinfo.er{border-left-color:var(--acc);color:#ffb3ad}
+@media (max-width:720px){#ov>div{margin:auto}#tires,#ptires{grid-template-columns:repeat(3,1fr)}#onl .acc{grid-template-columns:1fr}#mnu .tabs{flex-wrap:nowrap;gap:3px}#mnu .tabs button{flex:1 1 0;justify-content:center;padding:10px 6px;font-size:14px;gap:5px;letter-spacing:.03em;text-align:center}#mnu .tabs button svg{width:16px;height:16px;flex:none}#go{width:100%}#mnu .bar #pcb{margin-right:0;flex:1}#vol input{width:110px}}
+@media (prefers-reduced-motion:reduce){#mnu,.pn.on,.pc{animation:none}#mnu *{transition:none!important}}
 </style></head><body>
 <div id="pos" class="h">P1<small>posición</small></div><div id="lap" class="h">Vuelta 1/3<small>--</small></div>
 <div id="spd" class="h">0<span>km/h</span></div><div id="pad" class="h">Sin mando: conectalo y tocá un botón</div><div id="msg"></div><div id="cam" class="h"></div><div id="tir" class="h"></div><div id="sea" class="h"></div><div id="dmg" class="h"></div><canvas id="mm" class="h" width="440" height="320" aria-label="Mapa de la pista"></canvas><canvas id="wh" width="900" height="1000" aria-hidden="true"></canvas><button id="mnb" aria-label="Abrir menú">Menú</button>
-<div id="ov"><div><div id="mnu"><h1>Apex 25</h1><p id="ovt">Elegí la duración y cuántos rivales corren. Autos y pilotos ficticios.</p>
+<div id="ov"><div><div id="mnu"><div class="top"><div class="brand"><span class="bk">Simulador de Fórmula 1</span><h1>Apex <em>25</em></h1></div><div id="vol" role="group" aria-label="Volumen del juego"><button id="vmu" type="button" aria-label="Silenciar" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="sp" d="M3 9v6h4l5 4V5L7 9z"/><path class="w1" d="M15.5 9a4.5 4.5 0 010 6"/><path class="w2" d="M18.5 6a8.5 8.5 0 010 12"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button><input id="vsl" type="range" min="0" max="100" step="1" value="100" aria-label="Volumen general"><output id="vpc" for="vsl">100%</output></div></div><p id="ovt">Elegí la duración y cuántos rivales corren. Autos y pilotos ficticios.</p>
 <details class="hlp"><summary>Controles</summary><p><b>Teclado:</b> flechas o WASD · <b>R</b> reinicia · <b>C</b> o <b>1-7</b> cámara · <b>Esc</b> o <b>M</b> menú · <b>P</b> pedir parada · <b>T</b> próximo neumático · <b>N</b> mapa · <b>B</b> (mantener) mirar atrás<br><b>Mando:</b> stick izq. dirige · RT acelera · LT frena · Y reinicia · X cámara · Start menú o empezar · LB parada · RB neumático · R3 (stick derecho) mirar atrás<br>(A acelera y B frena si tu mando no tiene gatillos)</p></details>
-<div class="tabs" role="tablist"><button data-t="race" class="on">Carrera</button><button data-t="tire">Neumáticos y boxes</button><button data-t="onl" id="tabO" style="display:none">Online</button></div>
-<section class="pn on" id="p-race"><div class="cfg"><div><span class="lb">Modo de carrera</span><div id="mode" class="seg"><button data-m="q">Carrera rápida</button><button data-m="s">Temporada</button></div><p id="minfo" class="mn" style="color:var(--dim)"></p></div><div id="sTrk"><span class="lb">Pistas de la temporada (en el orden en que las elijas)</span><div id="seas" class="seg"></div><p id="sinfo" class="mn" style="color:var(--dim)"></p></div><div id="qTrk"><span class="lb">Pista</span><div class="rv"><select id="trsel" aria-label="Pista"></select><canvas id="tprev" width="150" height="100" aria-hidden="true"></canvas></div><p id="tinfo" style="margin:4px 0 0;font-size:15px"></p></div>
+<div class="tabs" role="tablist"><button data-t="race" class="on" role="tab" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3v18M5 4h13l-2.5 4.5L18 13H5"/></svg>Carrera</button><button data-t="tire" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></svg>Neumáticos y boxes</button><button data-t="onl" id="tabO" style="display:none" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.5 3.2 3.5 14.8 0 18M12 3c-3.5 3.2-3.5 14.8 0 18"/></svg>Online</button></div>
+<section class="pn on" id="p-race"><div class="cfg"><div><span class="lb">Modo de carrera</span><div id="mode" class="seg"><button data-m="q"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3v18M5 4h13l-2.5 4.5L18 13H5"/></svg>Carrera rápida</button><button data-m="s"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 01-8 0zM8 6H4v1a3 3 0 003 3M16 6h4v1a3 3 0 01-3 3M12 13v4M8 20h8"/></svg>Temporada</button></div><p id="minfo" class="mn" style="color:var(--dim)"></p></div><div id="sTrk"><span class="lb">Pistas de la temporada (en el orden en que las elijas)</span><div id="seas" class="seg"></div><p id="sinfo" class="mn" style="color:var(--dim)"></p></div><div id="qTrk"><span class="lb">Pista</span><div class="rv"><select id="trsel" aria-label="Pista"></select><canvas id="tprev" width="150" height="100" aria-hidden="true"></canvas></div><p id="tinfo" style="margin:4px 0 0;font-size:15px"></p></div>
 <div><span class="lb">Vueltas</span><div id="laps" class="seg"><button data-v="3">3</button><button data-v="5">5</button><button data-v="10">10</button><button data-v="15">15</button></div></div><p id="mand2" class="mn" style="margin-top:-8px"></p><p class="mn" style="color:var(--dim);margin-top:-6px">Antes de cada carrera hay una <b>clasificación de 3 vueltas</b>: todos en pista a la vez y con choques. Tu mejor vuelta define el lugar en la parrilla, que se arma sola (sin rivales, salís directo).</p>
 <div id="rivbox"><span class="lb">Pilotos rivales (0 a 20)</span><div class="rv"><input id="riv" type="range" min="0" max="20" step="1" value="5" aria-label="Pilotos rivales"><output id="rivo">5</output></div><span class="lb" style="margin-top:10px">Dificultad de la IA</span><div id="diff" class="seg"><button data-d="0">Fácil</button><button data-d="1">Normal</button><button data-d="2">Difícil</button><button data-d="3">Experto</button></div></div>
-<div><span class="lb">Clima</span><div id="wxs" class="seg"><button data-v="0">Seco</button><button data-v="1">Húmedo</button><button data-v="2">Lluvia fuerte</button></div></div></div></section>
-<section class="pn" id="p-tire"><div class="cfg"><div><span class="lb">Neumáticos de salida</span><div id="tires" class="seg"><button data-k="S"><i class="dot" style="background:#ff2b2b"></i>Blando</button><button data-k="M"><i class="dot" style="background:#ffd21a"></i>Medio</button><button data-k="H"><i class="dot" style="background:#f2f2f2"></i>Duro</button><button data-k="I"><i class="dot" style="background:#2ecc40"></i>Intermedio</button><button data-k="W"><i class="dot" style="background:#2f7bff"></i>Lluvia</button></div><p id="tdesc" style="margin:4px 0 0;font-size:15px"></p></div>
-<div><span class="lb">Neumáticos para la parada (distintos a los de salida)</span><div id="ptires" class="seg"><button data-k="S"><i class="dot" style="background:#ff2b2b"></i>Blando</button><button data-k="M"><i class="dot" style="background:#ffd21a"></i>Medio</button><button data-k="H"><i class="dot" style="background:#f2f2f2"></i>Duro</button><button data-k="I"><i class="dot" style="background:#2ecc40"></i>Intermedio</button><button data-k="W"><i class="dot" style="background:#2f7bff"></i>Lluvia</button></div><p id="mand" class="mn"></p></div><div><span class="lb">Daño</span><p class="mn" style="color:var(--dim)">Cada choque fuerte suma al contador de daño y te quita velocidad máxima. Con 5 choques el auto se rompe y abandonás (DNF). Entrar a boxes repara el auto además de cambiar los neumáticos.</p></div></div></section>
-<section class="pn" id="onl"><span class="lb">Online con amigos</span><div class="rv"><input id="nick" maxlength="12" placeholder="Tu apodo" aria-label="Apodo"><input id="code" maxlength="12" placeholder="Código de sala" aria-label="Código de sala"></div>
-<div class="seg"><button id="mk">Crear sala</button><button id="jn">Unirse</button><button id="lv" style="display:none">Salir de la sala</button></div><p id="rinfo"></p></section>
+<div><span class="lb">Clima</span><div id="wxs" class="seg"><button data-v="0"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>Seco</button><button data-v="1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4 4 0 010-8 5 5 0 019.5-1A4.5 4.5 0 0117 18z"/></svg>Húmedo</button><button data-v="2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14a4 4 0 010-7 5 5 0 019.5-1A4.5 4.5 0 0117 14zM8 17l-1 3M12 17l-1 3M16 17l-1 3"/></svg>Lluvia fuerte</button></div></div></div></section>
+<section class="pn" id="p-tire"><div class="cfg"><div><span class="lb">Neumáticos de salida</span><div id="tires" class="seg"><button data-k="S"><i class="dot" style="--c:#ff2b2b"></i>Blando</button><button data-k="M"><i class="dot" style="--c:#ffd21a"></i>Medio</button><button data-k="H"><i class="dot" style="--c:#f2f2f2"></i>Duro</button><button data-k="I"><i class="dot" style="--c:#2ecc40"></i>Intermedio</button><button data-k="W"><i class="dot" style="--c:#2f7bff"></i>Lluvia</button></div><p id="tdesc" style="margin:4px 0 0;font-size:15px"></p></div>
+<div><span class="lb">Neumáticos para la parada (distintos a los de salida)</span><div id="ptires" class="seg"><button data-k="S"><i class="dot" style="--c:#ff2b2b"></i>Blando</button><button data-k="M"><i class="dot" style="--c:#ffd21a"></i>Medio</button><button data-k="H"><i class="dot" style="--c:#f2f2f2"></i>Duro</button><button data-k="I"><i class="dot" style="--c:#2ecc40"></i>Intermedio</button><button data-k="W"><i class="dot" style="--c:#2f7bff"></i>Lluvia</button></div><p id="mand" class="mn"></p></div><div><span class="lb">Daño</span><p class="mn" style="color:var(--dim)">Cada choque fuerte suma al contador de daño y te quita velocidad máxima. Con 5 choques el auto se rompe y abandonás (DNF). Entrar a boxes repara el auto además de cambiar los neumáticos.</p></div></div></section>
+<section class="pn" id="onl"><div class="olh"><h2>Sala online</h2><small>Corré contra tus amigos en tiempo real</small></div><div class="acc"><div class="fld"><label class="lb" for="nick">Tu apodo</label><input id="nick" maxlength="12" placeholder="Tu apodo" aria-label="Apodo" autocomplete="off"></div><div class="fld"><label class="lb" for="code">Código de sala</label><input id="code" maxlength="12" placeholder="Ej: ab12c" aria-label="Código de sala" autocomplete="off" spellcheck="false"></div></div><div class="room"><span class="lb">Código de la sala · compartilo con tus amigos</span><div class="rc"><b id="rcd" aria-live="polite"></b><button id="cpy" type="button">Copiar código</button></div><div class="rm2"><span id="rstat">Conectado</span><span id="pcnt"></span></div></div><div id="lobby" aria-live="polite"></div><div class="seg"><button id="mk">Crear sala</button><button id="jn">Unirse</button><button id="lv" style="display:none">Salir de la sala</button></div><p id="rinfo" role="status"></p></section>
 <div class="bar"><button id="pcb">Configurar mando</button><button id="rsm" style="display:none">Continuar</button><button id="go">Correr</button></div></div><div id="resv" style="display:none"></div></div></div>
 
 <div id="pcfg"><div class="pbox"><h2>Configurar mando</h2><p id="pst"></p><select id="psel" aria-label="Dispositivo"></select>
@@ -511,12 +600,13 @@ const sat=Math.abs(df)*2.6-.85;if(sat>0&&c.s>14)tg=Math.min(tg,c.s*(1-.3*Math.mi
 let ff=0;if(c.s>8){const q0=T[c.idx],q1=T[(c.idx+4)%N],dth=Math.atan2(q0.x*q1.z-q0.z*q1.x,q0.x*q1.x+q0.z*q1.z),cap=2.2*(.55+.45*G)/(1+c.s/80);ff=-dth/(4*ds)*c.s/cap*FFK}
 return{st:-Math.max(-1,Math.min(1,df*GK-ff)),th:Math.max(0,Math.min(1,(tg-c.s)/4)),br:c.s>tg+2?Math.min(1,.3+(c.s-tg)*.12):0}}
 // Sonido, chispas, vibración y cámaras
-let AC,NB,eng,egain,sgain;
-function audio(){if(AC){AC.state=='suspended'&&AC.resume();return}try{AC=new(window.AudioContext||window.webkitAudioContext)();eng=AC.createOscillator();eng.type='sawtooth';egain=AC.createGain();egain.gain.value=0;const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=900;eng.connect(f);f.connect(egain);egain.connect(AC.destination);eng.start();
+let AC,NB,eng,egain,sgain,MG,VOL=1,MUTE=false;try{const v=JSON.parse(localStorage.getItem("apex.vol")||"null");if(v){VOL=Math.min(1,Math.max(0,+v.v));if(!(VOL>=0))VOL=1;MUTE=!!v.m}}catch(e){}
+const volG=()=>MUTE?0:VOL*VOL;
+function audio(){if(AC){AC.state=='suspended'&&AC.resume();return}try{AC=new(window.AudioContext||window.webkitAudioContext)();MG=AC.createGain();MG.gain.value=volG();MG.connect(AC.destination);eng=AC.createOscillator();eng.type='sawtooth';egain=AC.createGain();egain.gain.value=0;const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=900;eng.connect(f);f.connect(egain);egain.connect(MG);eng.start();
 NB=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
-const sr=AC.createBufferSource();sr.buffer=NB;sr.loop=true;const bp=AC.createBiquadFilter();bp.type='bandpass';bp.frequency.value=2500;sgain=AC.createGain();sgain.gain.value=0;sr.connect(bp);bp.connect(sgain);sgain.connect(AC.destination);sr.start()}catch(e){}}
-function crash(v){if(!AC)return;const t=AC.currentTime,n=AC.createBufferSource();n.buffer=NB;const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(3500,t);f.frequency.exponentialRampToValueAtTime(150,t+.35);const g=AC.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+.4);n.connect(f);f.connect(g);g.connect(AC.destination);n.start(t);n.stop(t+.45);
-const o=AC.createOscillator();o.frequency.setValueAtTime(120,t);o.frequency.exponentialRampToValueAtTime(40,t+.25);const g2=AC.createGain();g2.gain.setValueAtTime(v*.9,t);g2.gain.exponentialRampToValueAtTime(.001,t+.3);o.connect(g2);g2.connect(AC.destination);o.start(t);o.stop(t+.35)}
+const sr=AC.createBufferSource();sr.buffer=NB;sr.loop=true;const bp=AC.createBiquadFilter();bp.type='bandpass';bp.frequency.value=2500;sgain=AC.createGain();sgain.gain.value=0;sr.connect(bp);bp.connect(sgain);sgain.connect(MG);sr.start()}catch(e){}}
+function crash(v){if(!AC)return;const t=AC.currentTime,n=AC.createBufferSource();n.buffer=NB;const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(3500,t);f.frequency.exponentialRampToValueAtTime(150,t+.35);const g=AC.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+.4);n.connect(f);f.connect(g);g.connect(MG);n.start(t);n.stop(t+.45);
+const o=AC.createOscillator();o.frequency.setValueAtTime(120,t);o.frequency.exponentialRampToValueAtTime(40,t+.25);const g2=AC.createGain();g2.gain.setValueAtTime(v*.9,t);g2.gain.exponentialRampToValueAtTime(.001,t+.3);o.connect(g2);g2.connect(MG);o.start(t);o.stop(t+.35)}
 const SN=300,spP=new Float32Array(SN*3).fill(-999),spV=new Float32Array(SN*3),spL=new Float32Array(SN);let si=0;
 const spG=new THREE.BufferGeometry();spG.setAttribute('position',new THREE.BufferAttribute(spP,3));
 const spM=new THREE.Points(spG,new THREE.PointsMaterial({color:0xffc24a,size:.5,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));spM.frustumCulled=false;sc.add(spM);
@@ -557,8 +647,15 @@ g.fillStyle='#'+TC[p.tire.k].toString(16).padStart(6,'0');g.beginPath();g.arc(-1
 [[-240,-120,'#ff3030'],[-240,-70,'#ffd21a'],[-205,-20,'#2fe05a'],[240,-120,'#3aa0ff'],[240,-70,'#ffd21a'],[205,-20,'#ff3030']].forEach(b=>{g.fillStyle=b[2];g.beginPath();g.arc(b[0],b[1],14,0,7);g.fill()});
 g.fillStyle='#2a3038';g.strokeStyle='#59626f';g.lineWidth=4;[[-200,-110],[200,-110]].forEach(b=>{g.beginPath();g.arc(b[0],b[1],26,0,7);g.fill();g.stroke();g.beginPath();g.moveTo(b[0],b[1]);g.lineTo(b[0]+14,b[1]-14);g.stroke()});
 g.restore()}
-function showTab(t){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==t));document.querySelectorAll('.pn').forEach(p=>p.classList.toggle('on',p.id==({race:'p-race',tire:'p-tire',onl:'onl'})[t]))}
+function showTab(t){document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t==t));document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==t));document.querySelectorAll('.pn').forEach(p=>p.classList.toggle('on',p.id==({race:'p-race',tire:'p-tire',onl:'onl'})[t]))}
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
+// Volumen general: nodo maestro de ganancia (MG) por el que pasa todo el audio del juego
+function volUI(){const p=Math.round(VOL*100),v=$('vol');$('vsl').value=p;$('vsl').style.setProperty('--p',(MUTE?0:p)+'%');$('vpc').textContent=MUTE?'0%':p+'%';v.classList.toggle('m',MUTE||p==0);v.classList.toggle('l',p<50);$('vmu').setAttribute('aria-pressed',MUTE);$('vmu').setAttribute('aria-label',MUTE?'Restaurar volumen':'Silenciar')}
+function volSet(blip){if(MG){try{MG.gain.setTargetAtTime(volG(),AC.currentTime,.015)}catch(e){MG.gain.value=volG()}}volUI();try{localStorage.setItem("apex.vol",JSON.stringify({v:VOL,m:MUTE}))}catch(e){}
+if(blip){audio();if(AC&&MG&&!MUTE){try{const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=660;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.18,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.14);o.connect(g);g.connect(MG);o.start(t);o.stop(t+.16)}catch(e){}}}}
+$('vsl').oninput=()=>{VOL=+$('vsl').value/100;if(VOL>0)MUTE=false;volSet(false)};$('vsl').onchange=()=>volSet(true);
+$('vmu').onclick=()=>{if(MUTE||VOL==0){MUTE=false;if(VOL==0)VOL=.5}else MUTE=true;volSet(!MUTE);$('vmu').blur()};volUI();
+
 // Menú en carrera (Esc / M / Start / botón)
 function toggleMenu(){if($('pcfg').style.display=='flex'||state=='ready'||state=='done'||qov)return;if(menu){closeMenu();return}
 menu=true;paused=!rm;$('ovt').textContent=rm?'Menú. La carrera online sigue en marcha.':'Juego en pausa.';renderLobby();$('ov').style.display='flex'}
@@ -640,16 +737,16 @@ let h='<h1 style=\"font-size:44px\">'+(GRAPP?'Parrilla de salida':'Clasificació
 h+='<p class=\"mn\">'+(GRAPP?'La carrera arranca en '+Math.max(0,Math.ceil(gridT))+' s':'Esperando a que terminen los demás… ('+done+'/'+cars.length+')')+'</p>';
 if(h===QH)return;QH=h;$('resv').innerHTML=h}
 // Online: salas por código con la capacidad "room" (sin servidor propio)
-let RM=null,rm=null,rcode='',seen={},lastSend=0;const myHue=Math.random(),esc=x=>String(x==null?'':x).replace(/[^\p{L}\p{N} _.-]/gu,'').slice(0,12);
+let RM=null,rm=null,rcode='',seen={},lastSend=0,LBH='';const HELM='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 3C6.5 3 3 7.5 3 13v3a2 2 0 002 2h14a2 2 0 002-2v-1c0-6-4-12-9-12z"/><path fill="#0b0f14" d="M12.5 9.5H21v4h-8.5a2 2 0 010-4z"/></svg>';const myHue=Math.random(),esc=x=>String(x==null?'':x).replace(/[^\p{L}\p{N} _.-]/gu,'').slice(0,12);
 const vps=()=>rm.peers().filter(p=>p.kind=='viewer'&&(!p.isMe||p.sameTab));
 const hostId=()=>vps().map(p=>p.peer).sort()[0];
 function isHost(){if(!rm)return false;const m=rm.peers().find(p=>p.sameTab);return !!m&&m.peer==hostId()}
 function label(c,t){const m=c.mesh,o=m.userData.lb;if(o){m.remove(o);o.material.map.dispose();m.userData.lb=null}if(!t)return;const cv=document.createElement('canvas');cv.width=256;cv.height=64;const x=cv.getContext('2d');x.font='700 40px sans-serif';x.textAlign='center';x.lineWidth=6;x.strokeStyle='#000';x.strokeText(t,128,46);x.fillStyle='#fff';x.fillText(t,128,46);
 const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false,transparent:true,fog:false}));sp.scale.set(6,1.5,1);sp.position.y=3;sp.renderOrder=9;m.add(sp);m.userData.lb=sp}
-function renderLobby(){const on=!!rm,h=isHost();$('rivbox').style.display=on?'none':'';$('lv').style.display=on?'':'none';$('mk').style.display=$('jn').style.display=on?'none':'';$('code').disabled=on;$('nick').disabled=on;
+function renderLobby(){const on=!!rm,h=isHost();$('onl').classList.toggle('in',on);$('rivbox').style.display=on?'none':'';$('lv').style.display=on?'':'none';$('mk').style.display=$('jn').style.display=on?'none':'';$('code').disabled=on;$('nick').disabled=on;
 const mid=menu&&state!='done';$('trsel').disabled=on&&(!h||mid);document.querySelectorAll('#mode button,#seas button').forEach(b=>b.disabled=on&&(!h||mid));document.querySelectorAll('#wxs button').forEach(b=>b.disabled=on&&(!h||mid));document.querySelectorAll('#tires button,#ptires button').forEach(b=>b.disabled=on&&mid);document.querySelectorAll('#laps button').forEach(b=>b.disabled=on&&(!h||mid));$('rsm').style.display=mid?'':'none';$('go').style.display=on&&(!h||mid)?'none':'';$('go').textContent=mid?'Nueva carrera':on?(state=='done'?'Otra carrera':cfg.mode=='s'?'Empezar temporada':'Empezar carrera'):(state=='done'?'Correr otra vez':cfg.mode=='s'?'Empezar temporada':'Correr');
 if(on){const ps=vps(),hp=ps.find(p=>p.peer==hostId());if(!h&&hp&&hp.presence.lp){cfg.laps=+hp.presence.lp||3;syncUI()}if(!h&&hp&&hp.presence.md){cfg.mode=hp.presence.md=='s'?'s':'q';syncUI()}if(!h&&hp&&hp.presence.tl){const l=String(hp.presence.tl).split('-').map(Number).filter(i=>TRACKS[i]);if(l.length){cfg.seas=l;syncUI()}}if(!h&&hp&&hp.presence.wx!=null){cfg.wx=+hp.presence.wx||0;syncUI()}if(!h&&hp&&hp.presence.tk!=null){cfg.trk=Math.min(TRACKS.length-1,+hp.presence.tk||0);syncUI()}
-$('rinfo').innerHTML='Sala <b>'+rcode.toUpperCase()+'</b> · '+ps.length+' en la sala: '+ps.map(p=>esc(p.presence.nm)||'Piloto').join(', ')+(h?'<br>Sos el anfitrión: elegí las vueltas y empezá.':'<br>Esperando al anfitrión…')}}
+{const hh=hostId(),cards=ps.map(p=>{const nm=esc(p.presence.nm)||'Piloto',ho=p.peer==hh;return '<div class="pc'+(ho?' host':'')+(p.isMe?' me':'')+'"><div class="av" style="--h:'+Math.round((+p.presence.col||0)*360)+'">'+HELM+'</div><div class="pt"><b>'+nm+'</b><small>'+(ho?'<em class="bd">Anfitrión</em>':'Piloto')+(p.isMe?' · Tú':'')+'</small></div><i class="st" title="Conectado"></i></div>'}).join('')+(ps.length<2?'<div class="pc ghost">Esperando pilotos…</div>':'');if(cards!==LBH){LBH=cards;$('lobby').innerHTML=cards}$('rcd').textContent=rcode.toUpperCase();$('pcnt').textContent=ps.length+(ps.length==1?' piloto conectado':' pilotos conectados');$('rstat').textContent='Conectado';$('rstat').className='';$('rinfo').className='';$('rinfo').textContent=h?'Sos el anfitrión: elegí las vueltas y empezá.':'Esperando al anfitrión…'}}}
 function dropCar(c){cars=cars.filter(x=>x!==c);c.mesh.visible=false;c.remote=0;c.peer=null}
 function onP(ch){ch.peers.forEach(p=>{if(p.isMe||p.kind!='viewer')return;const g=p.presence.go||0;if(seen[p.peer]===undefined)seen[p.peer]=g;else if(g!==seen[p.peer]){seen[p.peer]=g;if(g&&hostId()==p.peer)startOnline(+p.presence.lp||3,Math.min(TRACKS.length-1,+p.presence.tk||0),+p.presence.wx||0,{md:p.presence.md,tl:p.presence.tl||'',sn:+p.presence.sn||0},g)}
 const c=cars.find(c=>c.peer==p.peer),r=p.presence;if(c&&r.x!=null&&r.ph===PH){c.tg={x:r.x,z:r.z,h:r.h,vx:r.vx,vz:r.vz,s:r.s,st:r.st};c.lap=r.lap;c.idx=r.idx;c.fin=r.fin||0;c.best=r.best||0;c.dnf=!!r.dn;if(r.tr&&r.tr!==c.tire.k){c.tire=newTire(r.tr);setTireColor(c)}if(!c.tgInit){c.x=r.x;c.z=r.z;c.h=r.h;c.tgInit=1}}});
@@ -657,8 +754,9 @@ ch.left.forEach(p=>{const c=cars.find(c=>c.peer==p.peer);if(c)dropCar(c)});
 // La parrilla la publica el anfitrión: todos arman la misma
 if(QUAL&&!GRAPP&&rm){const hp=ch.peers.find(p=>p.peer==hostId());if(hp&&!hp.isMe&&hp.presence.gq===QSID&&hp.presence.gr)gridFrom(String(hp.presence.gr))}
 renderLobby()}
-async function joinRoom(code){code=code.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12);if(!code||!RM){$('rinfo').textContent='Escribí un código de sala.';return}
-try{rm=await RM.join('apex-'+code)}catch(e){rm=null;$('rinfo').textContent='No se pudo entrar a la sala. Probá de nuevo.';return}
+async function joinRoom(code){code=code.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12);if(!code||!RM){$('rinfo').className='er';$('rinfo').textContent='Escribí un código de sala.';return}
+const bz=on=>{[$('mk'),$('jn')].forEach(b=>{b.disabled=on;b.classList.toggle('ld',on)})};$('rinfo').className='';$('rinfo').textContent='Conectando a la sala…';bz(1);
+try{rm=await RM.join('apex-'+code)}catch(e){rm=null;bz(0);$('rinfo').className='er';$('rinfo').textContent='No se pudo entrar a la sala. Probá de nuevo.';return}bz(0);
 rcode=code;seen={};$('code').value=code;rm.presence({nm:esc($('nick').value)||'Piloto',col:myHue,lp:cfg.laps,tk:cfg.trk,wx:cfg.wx,tr:cfg.tire,md:cfg.mode,tl:cfg.seas.join('-'),go:0});rm.onPeers(onP);renderLobby()}
 function startOnline(lp,tki,wxx,sea,sid){menu=false;paused=false;showMenu();audio();document.activeElement&&document.activeElement.blur();LAPS=lp;cfg.laps=lp;cfg.trk=tki||0;cfg.wx=wxx||0;if(sea&&sea.md=='s'){const tl=String(sea.tl).split('-').map(Number);if(!SEA||SEA.tracks.join('-')!=tl.join('-')||(sea.sn==0&&(SEA.i!=0||SEA.over)))SEA={tracks:tl,i:0,pts:{},names:{},wins:{},res:[],scored:false,over:false,pod:false,w:0};SEA.i=sea.sn;SEA.scored=false;SEA.over=false;SEA.pod=false;SEA.w=0;SEA.dnf=0;cfg.mode='s'}else{SEA=null;cfg.mode='q'}syncUI();
 const ps=vps().slice(0,21).sort((a,b)=>a.peer<b.peer?-1:1),mine=ps.find(p=>p.sameTab);
@@ -667,7 +765,9 @@ cars=[all[0]];all[0].slot=ps.indexOf(mine);all[0].mesh.userData.m.color.setHSL(m
 ps.forEach((p,i)=>{if(p===mine)return;const c=all[cars.length];cars.push(c);c.remote=1;c.peer=p.peer;c.slot=i;c.tire=newTire(p.presence.tr||'M');c.nm=esc(p.presence.nm)||'Piloto';c.mesh.userData.m.color.setHSL(p.presence.col==null?.5:p.presence.col,.75,.5);label(c,esc(p.presence.nm)||'Piloto')});
 all.forEach((c,i)=>c.mesh.visible=i<cars.length);buildTrack(cfg.trk,cars.length);applyWx(cfg.wx);QUAL=cars.length>1;QDONE=QEND=QSENT=GRAPP=qov=false;QFT=0;QSID=sid||0;PH=QUAL?1:2;gridT=-1;QORD=null;reset();fo=[];t=0;cd=3.99;state='count';$('ov').style.display='none';lastSend=0;if(QUAL)qBanner()}
 $('mk').onclick=()=>{$('code').value=Math.random().toString(36).slice(2,7);joinRoom($('code').value)};$('jn').onclick=()=>joinRoom($('code').value);
-$('lv').onclick=async()=>{try{await rm.leave()}catch(e){}rm=null;seen={};QUAL=QDONE=QEND=qov=GRAPP=false;applyCfg();$('rinfo').textContent='';$('code').value='';renderLobby()};
+$('lv').onclick=async()=>{try{await rm.leave()}catch(e){}rm=null;seen={};QUAL=QDONE=QEND=qov=GRAPP=false;applyCfg();$('rinfo').className='';$('rinfo').textContent='';$('code').value='';renderLobby()};
+$('code').onkeydown=e=>{if(e.key=='Enter'){e.preventDefault();$('jn').click()}};
+$('cpy').onclick=async()=>{const t=rcode.toUpperCase(),b=$('cpy');let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){try{const r=document.createRange();r.selectNodeContents($('rcd'));const sl=getSelection();sl.removeAllRanges();sl.addRange(r);ok=document.execCommand('copy')}catch(_){}}b.textContent=ok?'¡Copiado!':'Seleccioná y copiá';setTimeout(()=>{b.textContent='Copiar código'},1600)};
 // Cliente WebSocket que imita la interfaz de sala usada por el juego
 const WSRM={join(name){return new Promise((res,rej)=>{
 const ws=new WebSocket((location.protocol=='https:'?'wss://':'ws://')+location.host+'/ws'),M=new Map();let me=null,snap=[],hs=[],ok=false;
@@ -676,7 +776,7 @@ const fire=(up,left)=>{rebuild();const u=snap.filter(x=>up.includes(x.peer));hs.
 const api={name,peers:()=>snap,presence(d){const p=M.get(me);if(p){Object.assign(p,d);ws.readyState==1&&ws.send(JSON.stringify({t:'p',d}))}return Promise.resolve()},
 onPeers(h){hs.push(h);setTimeout(()=>h({peers:snap,joined:snap,left:[],updated:[]}));return()=>{hs=hs.filter(x=>x!==h)}},leave(){hs=[];ws.close();return Promise.resolve()}};
 ws.onopen=()=>ws.send(JSON.stringify({t:'j',r:name}));ws.onerror=()=>{if(!ok)rej(new Error('ws'))};
-ws.onclose=()=>{if(!ok)rej(new Error('ws'));else if(rm===api){$('ov').style.display='flex';$('rinfo').textContent='Se perdió la conexión con el servidor.'}};
+ws.onclose=()=>{if(!ok)rej(new Error('ws'));else if(rm===api){$('ov').style.display='flex';$('rinfo').className='er';$('rstat').textContent='Desconectado';$('rstat').className='off';$('rinfo').textContent='Se perdió la conexión con el servidor.'}};
 ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(_){return}
 if(m.t=='s'){me=m.me;M.clear();m.ps.forEach(x=>M.set(x.id,x.p));M.set(me,{});ok=true;rebuild();res(api)}
 else if(m.t=='u'){const p=M.get(m.id);if(p)Object.assign(p,m.d);else M.set(m.id,Object.assign({},m.d));fire([m.id],[])}
