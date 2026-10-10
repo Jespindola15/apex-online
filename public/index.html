@@ -92,7 +92,8 @@ if(W.length!=4){console.warn('Auto 3D: no se encontraron las 4 ruedas en el mode
 const h=U.helm;if(h){h.parent&&h.parent.remove(h);h.position.set(0,1,.1);w.add(h)}
 (U.cp||[]).forEach(p=>p.parent&&p.parent.remove(p));U.cp=[];
 [...c.mesh.children].forEach(o=>{if(o!==U.lb)o.visible=false});
-U.w=W;c.mesh.add(w)}catch(e){console.warn('Auto 3D:',e)}});console.log('Auto 3D: modelo cargado')},undefined,e=>console.warn('Auto 3D: no se pudo leer el modelo',e))}).catch(e=>console.warn('Auto 3D:',e));
+U.w=W;c.mesh.add(w)}catch(e){console.warn('Auto 3D:',e)}});if(all.every(c=>c.mesh.userData.w[0].r))CAMO=[[1.25,1.02],[.6,1.12],[3.6,.5]]; // cámaras ajustadas al cockpit del modelo 3D
+console.log('Auto 3D: modelo cargado')},undefined,e=>console.warn('Auto 3D: no se pudo leer el modelo',e))}).catch(e=>console.warn('Auto 3D:',e));
 // Pistas: para sumar una, agregá {n:'Nombre',pts:[[x,z],...]} (metros, cerrada; el primer punto es la meta)
 const TRACKS=[
 {n:'Circuito Apex',env:'campo',pts:[[0,0],[100,-10],[190,20],[240,90],[220,170],[150,210],[90,170],[40,200],[-40,240],[-130,220],[-170,150],[-140,80],[-70,40]]},
@@ -403,7 +404,7 @@ function crashHit(c,j){if(QUAL||!c||c.remote||c.dnf||c.gone||j<2.5||t-(c.hitT||-
 function impact(a,b,j,x,z){crashHit(a,j);crashHit(b,j);const me=a===cars[0]||b===cars[0],dd=Math.hypot(x-cars[0].x,z-cars[0].z);if(dd>60||j<1.5)return;const v=Math.min(1,j/10)*(me?1:Math.max(0,1-dd/60)*.6);
 crash(v*.8);spark(x,z,Math.min(40,Math.round(j*4)),6+j);[a,b].forEach(c=>{if(c){c.rv+=(Math.random()<.5?-1:1)*j*.05;c.pv+=j*.03;c.dmg=Math.min(.5,c.dmg+j*.004)}});
 if(me){shake=Math.max(shake,Math.min(1.6,j/6));rumble(v)}}
-const CN=['Persecución','Cercana','Capó','Cockpit','Alerón','TV','Aérea'];let cm=0,tv=0,camT=0;
+const CN=['Persecución','Cercana','Capó','Cockpit','Alerón','TV','Aérea'];let cm=0,tv=0,camT=0,CAMO=[[.45,1.0],[-.35,1.3],[3.9,.55]]; // posiciones (z,y) de las cámaras Capó / Cockpit / Alerón respecto del auto
 function setCam(i){cm=(i+7)%7;$('cam').textContent=CN[cm]+' · '+(cm+1)+'/7';$('cam').style.opacity=1;camT=2}
 let LB=false,kbB=false,gpB=false;
 function updateCam(p,dt,fx,fz){if(!LB)return updateCam0(p,dt,fx,fz);
@@ -413,7 +414,7 @@ cam.position.x+=(Math.random()-.5)*shake*1.2;cam.position.y+=(Math.random()-.5)*
 cam.fov+=(78-cam.fov)*.15;cam.updateProjectionMatrix();$('cam').textContent='◀ Mirando atrás';$('cam').style.opacity=1;camT=.4}
 function updateCam0(p,dt,fx,fz){let tf=66+p.s*.35;cam.near=cm>1&&cm<5?.12:.5;const fp=cm==2||cm==3;p.mesh.userData.helm.visible=!fp;p.mesh.userData.cp.forEach(m=>m.visible=!fp);
 if(cm<2){const b=cm?6.5:10,h=cm?2.2:4.2;cam.position.lerp(new THREE.Vector3(p.x-fx*b,h,p.z-fz*b),1-Math.exp(-7*dt));cam.lookAt(p.x+fx*9,1.2,p.z+fz*9)}
-else if(cm<5){const o=[[.45,1.0],[-.35,1.3],[3.9,.55]][cm-2];cam.position.set(p.x+fx*o[0],o[1],p.z+fz*o[0]);cam.lookAt(p.x+fx*30,o[1]-.2,p.z+fz*30);cam.rotateZ(-p.rl*2);tf=[80,85,95][cm-2]+p.s*.15}
+else if(cm<5){const o=CAMO[cm-2];cam.position.set(p.x+fx*o[0],o[1],p.z+fz*o[0]);cam.lookAt(p.x+fx*30,o[1]-.2,p.z+fz*30);cam.rotateZ(-p.rl*2);tf=[80,85,95][cm-2]+p.s*.15}
 else if(cm==5){const d=(tv-p.idx+N)%N;if(d>95||d<8)tv=(p.idx+60)%N;const q=P[tv],n=Nm[tv],cx=q.x+n.x*24,cz=q.z+n.z*24;cam.position.set(cx,7,cz);cam.lookAt(p.x,1,p.z);tf=Math.max(20,Math.min(60,2400/Math.hypot(cx-p.x,cz-p.z)))}
 else{cam.position.set(p.x-fx*12,48,p.z-fz*12);cam.lookAt(p.x+fx*6,0,p.z+fz*6);tf=55}
 cam.position.x+=(Math.random()-.5)*shake*1.2;cam.position.y+=(Math.random()-.5)*shake*.7;shake*=.88;
