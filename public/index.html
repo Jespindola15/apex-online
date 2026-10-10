@@ -57,7 +57,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 <div class="seg" id="pbtns"><button data-k="st">Dirección</button><button data-k="th">Acelerar</button><button data-k="br">Frenar</button><button data-k="cam">Cámara</button><button data-k="rs">Reiniciar</button><button data-k="mn">Menú</button><button data-k="pt">Pedir parada</button><button data-k="nt">Próximo neumático</button><button data-k="bk">Mirar atrás</button></div>
 <p id="phint">Elegí una acción y mové ese control en tu mando.</p><pre id="pdbg"></pre><div class="seg"><button id="prs">Restablecer</button><button id="pcl">Cerrar</button></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
 const $=id=>document.getElementById(id);let LAPS=3;
 const R=new THREE.WebGLRenderer({antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;document.body.prepend(R.domElement);
@@ -78,7 +78,7 @@ const GLB_URL='models/car.glb',GLB_FLIP=false;
 // Modelo 3D opcional (public/models/car.glb). Si falta o falla, se usa el auto procedural.
 // Convenciones del GLB: material 'paint' = carrocería (se repinta por piloto), 'light' = luz trasera (sigue al freno),
 // nodos 'wheel_*' (dirección) > 'spin_*' (giro) con extras {r, hw, rim, side, front}.
-fetch(GLB_URL,{method:'HEAD'}).then(r=>{if(!r.ok||!THREE.GLTFLoader)return;new THREE.GLTFLoader().load(GLB_URL,gl=>{
+fetch(GLB_URL,{method:'HEAD'}).then(r=>{if(!r.ok){console.warn('Auto 3D: no se encontró '+GLB_URL+' (estado '+r.status+'); uso el auto base');return}if(!THREE.GLTFLoader){console.warn('Auto 3D: no cargó GLTFLoader; uso el auto base');return}new THREE.GLTFLoader().load(GLB_URL,gl=>{
 const b=new THREE.Box3().setFromObject(gl.scene),z=b.getSize(new THREE.Vector3()),k=6.4/Math.max(z.x,z.z),ct=b.getCenter(new THREE.Vector3()),seen=new Set();
 all.forEach(c=>{try{
 const U=c.mesh.userData,m=gl.scene.clone(true),w=new THREE.Group(),W=[],wn=[];
@@ -87,12 +87,12 @@ m.traverse(o=>{if(o.name&&o.name.indexOf('wheel_')==0&&o.children[0])wn.push(o);
 if(/body|paint|livery|carros/i.test(n))o.material=U.m;else if(n=='light')o.material=U.rl;else if(o.material&&!seen.has(o.material)){seen.add(o.material);CARM.push(o.material);o.material.envMapIntensity=CARM[0].envMapIntensity}});
 // ruedas: dirección (pv) y giro (sp), más un aro del color del compuesto de neumático en el flanco exterior
 wn.forEach(pv=>{const e=pv.userData,sp=pv.children[0],rg=new THREE.Mesh(new THREE.RingGeometry(e.rim+(e.r-e.rim)*.35,e.rim+(e.r-e.rim)*.6,32),U.tm);rg.rotation.y=e.side*Math.PI/2;rg.position.x=e.side*(e.hw+.002);sp.add(rg);W.push({pv,sp,f:!!e.front,r:e.r*k})});
-if(W.length!=4)return;
+if(W.length!=4){console.warn('Auto 3D: no se encontraron las 4 ruedas en el modelo');return}
 // el casco del auto procedural pasa al nuevo (la cámara lo muestra/oculta); las piezas del cockpit procedural se descartan
 const h=U.helm;if(h){h.parent&&h.parent.remove(h);h.position.set(0,1,.1);w.add(h)}
 (U.cp||[]).forEach(p=>p.parent&&p.parent.remove(p));U.cp=[];
 [...c.mesh.children].forEach(o=>{if(o!==U.lb)o.visible=false});
-U.w=W;c.mesh.add(w)}catch(e){}})},undefined,()=>{})}).catch(()=>{});
+U.w=W;c.mesh.add(w)}catch(e){console.warn('Auto 3D:',e)}});console.log('Auto 3D: modelo cargado')},undefined,e=>console.warn('Auto 3D: no se pudo leer el modelo',e))}).catch(e=>console.warn('Auto 3D:',e));
 // Pistas: para sumar una, agregá {n:'Nombre',pts:[[x,z],...]} (metros, cerrada; el primer punto es la meta)
 const TRACKS=[
 {n:'Circuito Apex',env:'campo',pts:[[0,0],[100,-10],[190,20],[240,90],[220,170],[150,210],[90,170],[40,200],[-40,240],[-130,220],[-170,150],[-140,80],[-70,40]]},
