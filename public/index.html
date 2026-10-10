@@ -75,7 +75,24 @@ x.fillStyle='rgba(255,255,255,.5)';x.fillRect(120,170,300,16);x.fillRect(700,150
 const t=new THREE.CanvasTexture(c);t.mapping=THREE.EquirectangularReflectionMapping;const p=new THREE.PMREMGenerator(R),e=p.fromEquirectangular(t).texture;p.dispose();return e})();
 function fit(){R.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}addEventListener('resize',fit);fit();
 const GLB_URL='models/car.glb',GLB_FLIP=false;
-fetch(GLB_URL,{method:'HEAD'}).then(r=>{if(!r.ok||!THREE.GLTFLoader)return;new THREE.GLTFLoader().load(GLB_URL,gl=>{const b=new THREE.Box3().setFromObject(gl.scene),z=b.getSize(new THREE.Vector3()),k=6.4/Math.max(z.x,z.z),ct=b.getCenter(new THREE.Vector3());all.forEach(c=>{const m=gl.scene.clone(true),w=new THREE.Group();m.scale.setScalar(k);m.position.set(-ct.x*k,-b.min.y*k,-ct.z*k);w.add(m);w.rotation.y=(z.x>z.z?Math.PI/2:0)+(GLB_FLIP?Math.PI:0);m.traverse(o=>{if(!o.isMesh)return;o.castShadow=o.receiveShadow=true;if(/body|paint|livery|carros/i.test(o.material.name))o.material=c.mesh.userData.m});c.mesh.children.forEach(o=>o.visible=false);c.mesh.add(w)})})}).catch(()=>{});
+// Modelo 3D opcional (public/models/car.glb). Si falta o falla, se usa el auto procedural.
+// Convenciones del GLB: material 'paint' = carrocería (se repinta por piloto), 'light' = luz trasera (sigue al freno),
+// nodos 'wheel_*' (dirección) > 'spin_*' (giro) con extras {r, hw, rim, side, front}.
+fetch(GLB_URL,{method:'HEAD'}).then(r=>{if(!r.ok||!THREE.GLTFLoader)return;new THREE.GLTFLoader().load(GLB_URL,gl=>{
+const b=new THREE.Box3().setFromObject(gl.scene),z=b.getSize(new THREE.Vector3()),k=6.4/Math.max(z.x,z.z),ct=b.getCenter(new THREE.Vector3()),seen=new Set();
+all.forEach(c=>{try{
+const U=c.mesh.userData,m=gl.scene.clone(true),w=new THREE.Group(),W=[],wn=[];
+m.scale.setScalar(k);m.position.set(-ct.x*k,-b.min.y*k,-ct.z*k);w.add(m);w.rotation.y=(z.x>z.z?Math.PI/2:0)+(GLB_FLIP?Math.PI:0);
+m.traverse(o=>{if(o.name&&o.name.indexOf('wheel_')==0&&o.children[0])wn.push(o);if(!o.isMesh)return;o.castShadow=o.receiveShadow=true;const n=o.material&&o.material.name;
+if(/body|paint|livery|carros/i.test(n))o.material=U.m;else if(n=='light')o.material=U.rl;else if(o.material&&!seen.has(o.material)){seen.add(o.material);CARM.push(o.material);o.material.envMapIntensity=CARM[0].envMapIntensity}});
+// ruedas: dirección (pv) y giro (sp), más un aro del color del compuesto de neumático en el flanco exterior
+wn.forEach(pv=>{const e=pv.userData,sp=pv.children[0],rg=new THREE.Mesh(new THREE.RingGeometry(e.rim+(e.r-e.rim)*.35,e.rim+(e.r-e.rim)*.6,32),U.tm);rg.rotation.y=e.side*Math.PI/2;rg.position.x=e.side*(e.hw+.002);sp.add(rg);W.push({pv,sp,f:!!e.front,r:e.r*k})});
+if(W.length!=4)return;
+// el casco del auto procedural pasa al nuevo (la cámara lo muestra/oculta); las piezas del cockpit procedural se descartan
+const h=U.helm;if(h){h.parent&&h.parent.remove(h);h.position.set(0,1,.1);w.add(h)}
+(U.cp||[]).forEach(p=>p.parent&&p.parent.remove(p));U.cp=[];
+[...c.mesh.children].forEach(o=>{if(o!==U.lb)o.visible=false});
+U.w=W;c.mesh.add(w)}catch(e){}})},undefined,()=>{})}).catch(()=>{});
 // Pistas: para sumar una, agregá {n:'Nombre',pts:[[x,z],...]} (metros, cerrada; el primer punto es la meta)
 const TRACKS=[
 {n:'Circuito Apex',env:'campo',pts:[[0,0],[100,-10],[190,20],[240,90],[220,170],[150,210],[90,170],[40,200],[-40,240],[-130,220],[-170,150],[-140,80],[-70,40]]},
@@ -551,7 +568,7 @@ if(state=='race'||state=='done'){t+=dt;cars.forEach(c=>{if(!c.remote&&c.vt===und
 if(rm){cars.forEach(c=>{if(c.remote&&c.tg){const g=c.tg;g.x+=g.vx*dt;g.z+=g.vz*dt;const k=1-Math.exp(-14*dt);c.x+=(g.x-c.x)*k;c.z+=(g.z-c.z)*k;c.h+=Math.atan2(Math.sin(g.h-c.h),Math.cos(g.h-c.h))*k;c.vx=g.vx;c.vz=g.vz;c.s=g.s;c.st=g.st}});cars.forEach(c=>{if(c.remote&&c.dnf){c.dnfT=(c.dnfT||0)+dt;if(c.dnfT>8&&!c.gone){c.gone=true;c.mesh.visible=false}}});
 if(state!='ready'&&now-lastSend>50){lastSend=now;const q=cars[0],r=v=>Math.round(v*100)/100;rm.presence({ph:PH,x:r(q.x),z:r(q.z),h:r(q.h),vx:r(q.vx),vz:r(q.vz),s:r(q.s),st:r(q.st),lap:q.lap,idx:q.idx,fin:r(q.fin),best:r(q.best),tr:q.tire.k,dn:q.dnf?1:0})}}
 for(let i=0;i<cars.length;i++)for(let k=i+1;k<cars.length;k++){const q=collide(cars[i],cars[k]);if(q)impact(cars[i],cars[k],q,(cars[i].x+cars[k].x)/2,(cars[i].z+cars[k].z)/2)}
-cars.forEach(c=>{c.mesh.position.set(c.x,0,c.z);c.mesh.rotation.y=c.h;c.mesh.userData.rl.color.setHex(c.brk?0xff4040:0x7a0d0d);c.mesh.userData.w.forEach(w=>{w.sp.rotation.x+=c.s*dt/.38;if(w.f)w.pv.rotation.y=-c.st*.45})});cars.forEach(c=>{if(c.vt!==undefined)return;if(c.hit>1.5)impact(c,null,c.hit,c.x,c.z);if(c.scr>3&&Math.hypot(c.x-cars[0].x,c.z-cars[0].z)<60&&Math.random()<.6)spark(c.x,c.z,2,5);
+cars.forEach(c=>{c.mesh.position.set(c.x,0,c.z);c.mesh.rotation.y=c.h;c.mesh.userData.rl.color.setHex(c.brk?0xff4040:0x7a0d0d);c.mesh.userData.w.forEach(w=>{w.sp.rotation.x+=c.s*dt/(w.r||.38);if(w.f)w.pv.rotation.y=-c.st*.45})});cars.forEach(c=>{if(c.vt!==undefined)return;if(c.hit>1.5)impact(c,null,c.hit,c.x,c.z);if(c.scr>3&&Math.hypot(c.x-cars[0].x,c.z-cars[0].z)<60&&Math.random()<.6)spark(c.x,c.z,2,5);
 c.rv+=(-60*c.rl-5*c.rv)*dt;c.rl+=c.rv*dt;c.pv+=(-60*c.pt-5*c.pv)*dt;c.pt+=c.pv*dt;c.mesh.rotation.x=Math.max(-.3,Math.min(.3,c.pt));c.mesh.rotation.z=Math.max(-.3,Math.min(.3,c.rl))-c.st*c.s*.0012});sparkStep(dt);
 const p=cars[0],fx=Math.sin(p.h),fz=Math.cos(p.h);updateCam(p,dt,fx,fz);
 if(egain){const g=Math.min(8,1+Math.floor(p.s/11)),fr=Math.min(1,(p.s-(g-1)*11)/11);eng.frequency.value=80+fr*170+g*8;egain.gain.value=state=='ready'||paused?0:.04+.05*inp.th;sgain.gain.value=!paused&&p.scr>2?Math.min(.35,p.scr*.012):0}{const t=p.tire,nx=p.nxt||t.k;$('tir').innerHTML='<i class="dot" style="background:#'+TC[t.k].toString(16).padStart(6,'0')+'"></i><b>'+TN[t.k]+'</b> · agarre '+Math.round(tireG(p)*100)+'% · desgaste '+Math.round(t.w*100)+'%<span class="tb"><i style="width:'+Math.round(t.w*100)+'%"></i></span><small>'+(QUAL?'Clasificación · vale tu mejor vuelta':p.pitT>0?'En boxes…':p.pitReq?(PIT?'Parada pedida · entrá a boxes por la '+(PIT.sg>0?'derecha':'izquierda'):'Parada pedida · se hace al cruzar la meta')+' · próximo: '+TN[nx]:(mand()&&!p.pits?'⚠ Parada obligatoria · ':'')+'P parada · T próximo: '+TN[nx])+'</small>';
