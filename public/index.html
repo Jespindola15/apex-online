@@ -81,9 +81,10 @@ const GLB_URL='models/car.glb',GLB_FLIP=false;
 fetch(GLB_URL,{method:'HEAD'}).then(r=>{if(!r.ok){console.warn('Auto 3D: no se encontró '+GLB_URL+' (estado '+r.status+'); uso el auto base');return}if(!THREE.GLTFLoader){console.warn('Auto 3D: no cargó GLTFLoader; uso el auto base');return}new THREE.GLTFLoader().load(GLB_URL,gl=>{
 const b=new THREE.Box3().setFromObject(gl.scene),z=b.getSize(new THREE.Vector3()),k=6.4/Math.max(z.x,z.z),ct=b.getCenter(new THREE.Vector3()),seen=new Set();
 all.forEach(c=>{try{
-const U=c.mesh.userData,m=gl.scene.clone(true),w=new THREE.Group(),W=[],wn=[];
+const U=c.mesh.userData,m=gl.scene.clone(true),w=new THREE.Group(),W=[],wn=[];U.air=[]; // U.air: toma de aire/motor, se oculta en la cámara Cockpit
+
 m.scale.setScalar(k);m.position.set(-ct.x*k,-b.min.y*k,-ct.z*k);w.add(m);w.rotation.y=(z.x>z.z?Math.PI/2:0)+(GLB_FLIP?Math.PI:0);
-m.traverse(o=>{if(o.name&&o.name.indexOf('wheel_')==0&&o.children[0])wn.push(o);if(!o.isMesh)return;o.castShadow=o.receiveShadow=true;const n=o.material&&o.material.name;
+m.traverse(o=>{if(o.name=='Plane_031_Plane_026')U.air.push(o);if(o.name&&o.name.indexOf('wheel_')==0&&o.children[0])wn.push(o);if(!o.isMesh)return;o.castShadow=o.receiveShadow=true;const n=o.material&&o.material.name;
 if(/body|paint|livery|carros/i.test(n))o.material=U.m;else if(n=='light')o.material=U.rl;else if(o.material&&!seen.has(o.material)){seen.add(o.material);CARM.push(o.material);o.material.envMapIntensity=CARM[0].envMapIntensity}});
 // ruedas: dirección (pv) y giro (sp), más un aro del color del compuesto de neumático en el flanco exterior
 wn.forEach(pv=>{const e=pv.userData,sp=pv.children[0],rg=new THREE.Mesh(new THREE.RingGeometry(e.rim+(e.r-e.rim)*.35,e.rim+(e.r-e.rim)*.6,32),U.tm);rg.rotation.y=e.side*Math.PI/2;rg.position.x=e.side*(e.hw+.002);sp.add(rg);W.push({pv,sp,f:!!e.front,r:e.r*k})});
@@ -92,7 +93,7 @@ if(W.length!=4){console.warn('Auto 3D: no se encontraron las 4 ruedas en el mode
 const h=U.helm;if(h){h.parent&&h.parent.remove(h);h.position.set(0,1,.1);w.add(h)}
 (U.cp||[]).forEach(p=>p.parent&&p.parent.remove(p));U.cp=[];
 [...c.mesh.children].forEach(o=>{if(o!==U.lb)o.visible=false});
-U.w=W;c.mesh.add(w)}catch(e){console.warn('Auto 3D:',e)}});if(all.every(c=>c.mesh.userData.w[0].r))CAMO=[[1.25,1.02],[.6,1.12],[3.6,.5]]; // cámaras ajustadas al cockpit del modelo 3D
+U.w=W;c.mesh.add(w)}catch(e){console.warn('Auto 3D:',e)}});if(all.every(c=>c.mesh.userData.w[0].r))CAMO=[[1.25,1.02],[-.35,1.3],[3.6,.5]]; // cámaras ajustadas al cockpit del modelo 3D
 console.log('Auto 3D: modelo cargado')},undefined,e=>console.warn('Auto 3D: no se pudo leer el modelo',e))}).catch(e=>console.warn('Auto 3D:',e));
 // Pistas: para sumar una, agregá {n:'Nombre',pts:[[x,z],...]} (metros, cerrada; el primer punto es la meta)
 const TRACKS=[
@@ -408,11 +409,11 @@ const CN=['Persecución','Cercana','Capó','Cockpit','Alerón','TV','Aérea'];le
 function setCam(i){cm=(i+7)%7;$('cam').textContent=CN[cm]+' · '+(cm+1)+'/7';$('cam').style.opacity=1;camT=2}
 let LB=false,kbB=false,gpB=false;
 function updateCam(p,dt,fx,fz){if(!LB)return updateCam0(p,dt,fx,fz);
-cam.near=.5;p.mesh.userData.helm.visible=true;p.mesh.userData.cp.forEach(m=>m.visible=true);
+cam.near=.5;p.mesh.userData.helm.visible=true;p.mesh.userData.cp.forEach(m=>m.visible=true);(p.mesh.userData.air||[]).forEach(a=>a.visible=true);
 cam.position.set(p.x-fx*3.6,1.7,p.z-fz*3.6);cam.lookAt(p.x-fx*40,1.1,p.z-fz*40);
 cam.position.x+=(Math.random()-.5)*shake*1.2;cam.position.y+=(Math.random()-.5)*shake*.7;shake*=.88;
 cam.fov+=(78-cam.fov)*.15;cam.updateProjectionMatrix();$('cam').textContent='◀ Mirando atrás';$('cam').style.opacity=1;camT=.4}
-function updateCam0(p,dt,fx,fz){let tf=66+p.s*.35;cam.near=cm>1&&cm<5?.12:.5;const fp=cm==2||cm==3;p.mesh.userData.helm.visible=!fp;p.mesh.userData.cp.forEach(m=>m.visible=!fp);
+function updateCam0(p,dt,fx,fz){let tf=66+p.s*.35;cam.near=cm>1&&cm<5?.12:.5;const fp=cm==2||cm==3;p.mesh.userData.helm.visible=!fp;p.mesh.userData.cp.forEach(m=>m.visible=!fp);(p.mesh.userData.air||[]).forEach(a=>a.visible=cm!=3);
 if(cm<2){const b=cm?6.5:10,h=cm?2.2:4.2;cam.position.lerp(new THREE.Vector3(p.x-fx*b,h,p.z-fz*b),1-Math.exp(-7*dt));cam.lookAt(p.x+fx*9,1.2,p.z+fz*9)}
 else if(cm<5){const o=CAMO[cm-2];cam.position.set(p.x+fx*o[0],o[1],p.z+fz*o[0]);cam.lookAt(p.x+fx*30,o[1]-.2,p.z+fz*30);cam.rotateZ(-p.rl*2);tf=[80,85,95][cm-2]+p.s*.15}
 else if(cm==5){const d=(tv-p.idx+N)%N;if(d>95||d<8)tv=(p.idx+60)%N;const q=P[tv],n=Nm[tv],cx=q.x+n.x*24,cz=q.z+n.z*24;cam.position.set(cx,7,cz);cam.lookAt(p.x,1,p.z);tf=Math.max(20,Math.min(60,2400/Math.hypot(cx-p.x,cz-p.z)))}
