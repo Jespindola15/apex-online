@@ -58,6 +58,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 <p id="phint">Elegí una acción y mové ese control en tu mando.</p><pre id="pdbg"></pre><div class="seg"><button id="prs">Restablecer</button><button id="pcl">Cerrar</button></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
 <script>
 const $=id=>document.getElementById(id);let LAPS=3;
 const R=new THREE.WebGLRenderer({antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;document.body.prepend(R.domElement);
@@ -119,6 +120,19 @@ const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisot
 for(let i=0;i<46;i++){x.fillStyle=i%2?'rgba(255,255,255,.09)':'rgba(60,60,60,.12)';x.beginPath();x.arc(rn()*S,rn()*S,8+rn()*26,0,7);x.fill()}
 for(let i=0;i<9000;i++){const g=120+rn()*135|0;x.fillStyle='rgba('+g+','+g+','+g+',.55)';x.fillRect(rn()*S,rn()*S,1,1.5+rn()*4)}
 const tx=new THREE.CanvasTexture(c);tx.wrapS=tx.wrapT=THREE.RepeatWrapping;tx.repeat.set(190,190);tx.anisotropy=R.capabilities.getMaxAnisotropy();gm.map=tx}
+// Texturas reales (public/textures): asfalto y pasto PBR (ambientCG, CC0) y cielo HDRI (Poly Haven, CC0). Si falta algo, se queda lo procedural.
+const ENVP=sc.environment;let ENVH=null;
+function setEnvMap(){const E=ENVS[TRACKS[trkIdx].env||'campo'];sc.environment=(ENVH&&!E.night&&WX==0)?ENVH:ENVP}
+{const TL=THREE.TextureLoader?new THREE.TextureLoader():null,an=R.capabilities.getMaxAnisotropy(),warn=n=>console.warn('Entorno: no se pudo cargar '+n+'; se usa la versión procedural');
+const tex=(u,rep,srgb,cb)=>{if(!TL)return;TL.load(u,t=>{t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=an;if(rep)t.repeat.set(rep,rep);if(srgb)t.encoding=THREE.sRGBEncoding;cb(t)},undefined,()=>warn(u))};
+fetch('textures/asphalt_c.jpg',{method:'HEAD'}).then(r=>{if(!r.ok)return;
+tex('textures/asphalt_c.jpg',0,true,t=>{lm.map=t;lm.bumpMap=null;lm.needsUpdate=true});
+tex('textures/asphalt_n.jpg',0,false,t=>{lm.normalMap=t;lm.normalScale.set(.9,.9);lm.needsUpdate=true});
+tex('textures/asphalt_r.jpg',0,false,t=>{lm.roughnessMap=t;lm.needsUpdate=true});
+tex('textures/grass_c.jpg',300,true,t=>{gm.map=t;gm.needsUpdate=true});
+tex('textures/grass_n.jpg',300,false,t=>{gm.normalMap=t;gm.normalScale.set(.8,.8);gm.needsUpdate=true});
+tex('textures/grass_r.jpg',300,false,t=>{gm.roughnessMap=t;gm.needsUpdate=true})}).catch(()=>{});
+fetch('textures/sky.hdr',{method:'HEAD'}).then(r=>{if(!r.ok||!THREE.RGBELoader)return;new THREE.RGBELoader().setDataType(THREE.UnsignedByteType).load('textures/sky.hdr',t=>{const p=new THREE.PMREMGenerator(R);ENVH=p.fromEquirectangular(t).texture;p.dispose();t.dispose();setEnvMap()},undefined,()=>warn('sky.hdr'))}).catch(()=>{})}
 // Entornos: cada pista tiene env:'nombre'. Para sumar uno nuevo: colores del cielo (top/hor), niebla, suelo, horizonte (hz) y objetos (sc)
 const ENVS={
 campo:{top:0x4f8fd6,hor:0xcfe3f3,fog:0xb9cfe2,far:700,gr:0x2f5f36,hi:.95,si:.8,sun:0xfff2dd,hz:'hills',hc:'#58795f',sc:[['tree',5],['pine',3],['rock',1]]},
@@ -237,7 +251,7 @@ document.querySelectorAll('#wxs button').forEach(b=>{const on=+b.dataset.v==cfg.
 const k=cfg.tire;$('tdesc').textContent=TD[k]+' Agarre con este clima: '+Math.round(GR[k][cfg.wx]*100)+'%. Dura ≈'+Math.round(Math.min(150,LF[k]/WM[k][cfg.wx]/1.25*100))+'% de la carrera.'}
 const RN=700,rP=new Float32Array(RN*6),rg=new THREE.BufferGeometry();rg.setAttribute('position',new THREE.BufferAttribute(rP,3));
 const rain=new THREE.LineSegments(rg,new THREE.LineBasicMaterial({color:0xaec4d8,transparent:true,opacity:.55,fog:false}));rain.frustumCulled=false;rain.visible=false;sc.add(rain);
-function applyWx(w){WX=w;const E=ENVS[TRACKS[trkIdx].env||'campo'],k=[0,.45,.8][w],gy=new THREE.Color(0x56616d),mc=h=>new THREE.Color(h).lerp(gy,k),f=mc(E.fog);
+function applyWx(w){WX=w;setEnvMap();const E=ENVS[TRACKS[trkIdx].env||'campo'],k=[0,.45,.8][w],gy=new THREE.Color(0x56616d),mc=h=>new THREE.Color(h).lerp(gy,k),f=mc(E.fog);
 sc.background.copy(f);sc.fog.color.copy(f);sc.fog.far=E.far*[1,.8,.5][w];setSky(mc(E.top),mc(E.hor));HL.intensity=E.hi*[1,.85,.65][w];sun.intensity=E.si*[1,.7,.45][w];sun.color.set(E.sun);{const ei=[1,.65,.4][w]*(E.night?.3:1);CARM.forEach(x=>x.envMapIntensity=ei*1.5);R.toneMappingExposure=E.night?1.4:1.25}
 lm.color.setScalar([1,.8,.62][w]*.88);lm.roughness=[.92,.5,.3][w];lm.envMapIntensity=[.3,.9,1.4][w];gm.color.copy(mc(E.gr)).multiplyScalar(.92);hzM.color.setScalar([1,.8,.55][w]);stars.visible=!!E.night&&w==0;rain.visible=w>0;rg.setDrawRange(0,w==1?520:RN*2);for(let i=0;i<RN;i++)rP[i*6+1]=-999}
 function rainStep(dt){if(!rain.visible)return;const cx=cam.position.x,cz=cam.position.z;for(let i=0;i<RN;i++){const o=i*6;let y=rP[o+1];if(y<0||Math.abs(rP[o]-cx)>70||Math.abs(rP[o+2]-cz)>70){rP[o]=cx+Math.random()*140-70;rP[o+2]=cz+Math.random()*140-70;y=Math.random()*40}else y-=75*dt;rP[o+1]=y;rP[o+3]=rP[o]+.3;rP[o+4]=y+1.6;rP[o+5]=rP[o+2]}rg.attributes.position.needsUpdate=true}
