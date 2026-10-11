@@ -432,12 +432,12 @@ if(post.length){const pst=new THREE.InstancedMesh(new THREE.CylinderGeometry(.07
 add(new THREE.BoxGeometry(.9,9,.9),sm,h,4.5,0);add(new THREE.BoxGeometry(.9,9,.9),sm,-h,4.5,0);add(new THREE.BoxGeometry(2*h+.9,1.1,1),sm,0,9,0);
 const bn=add(new THREE.PlaneGeometry(2*h-1,2.3),new THREE.MeshBasicMaterial({map:D.ban,side:ptr,color:night?0xc8c8d0:0xffffff}),0,7.6,0);
 const lm2=new THREE.MeshBasicMaterial({color:0xff2a1a});for(let k=-2;k<=2;k++)add(new THREE.SphereGeometry(.28,8,6),lm2,k*1.1,6.0,.55);
-g.position.set(P[0].x,0,P[0].z);g.rotation.y=ry;TG.add(g)}
+g.position.set(P[0].x,0,P[0].z);g.rotation.y=ry;g.userData.keep=1;TG.add(g)}
 // grilla: marca blanca delante de cada auto
 {const nn=Math.max(2,nb||12),gm2=new THREE.MeshBasicMaterial({color:0xf2f2f2}),bar=new THREE.BoxGeometry(2.6,.02,.28),tick=new THREE.BoxGeometry(.28,.02,2.4);
 for(let sl=0;sl<nn;sl++){const k=((N-6-sl*(nn>12?5:7))%N+N)%N,ln=sl%2?-3.2:3.2,ry=Math.atan2(T[k].x,T[k].z),f=(P[k].x+Nm[k].x*ln)+T[k].x*3.2,f2=(P[k].z+Nm[k].z*ln)+T[k].z*3.2;
-const b=new THREE.Mesh(bar,gm2);b.position.set(f,.075,f2);b.rotation.y=ry;TG.add(b);
-for(const sd of[-1.3,1.3]){const t=new THREE.Mesh(tick,gm2);t.position.set(f+Nm[k].x*sd-T[k].x*1.1,.075,f2+Nm[k].z*sd-T[k].z*1.1);t.rotation.y=ry;TG.add(t)}}}
+const b=new THREE.Mesh(bar,gm2);b.position.set(f,.075,f2);b.rotation.y=ry;b.userData.keep=1;TG.add(b);
+for(const sd of[-1.3,1.3]){const t=new THREE.Mesh(tick,gm2);t.position.set(f+Nm[k].x*sd-T[k].x*1.1,.075,f2+Nm[k].z*sd-T[k].z*1.1);t.rotation.y=ry;t.userData.keep=1;TG.add(t)}}}
 }
 function standDress(e,st){ribbon(i=>st(i)?e*16:null,i=>st(i)?e*33:null,15,()=>[.5,.52,.57]);ribbon(i=>st(i)?e*33:null,i=>st(i)?e*33:null,0,()=>[.32,.34,.38],15)}
 // Une los objetos estáticos del escenario (árboles, edificios, farolas) en pocas mallas por material: de ~1900 llamadas de dibujo a ~15
@@ -479,7 +479,7 @@ if(cm.instanceMatrix)cm.instanceMatrix.needsUpdate=true;if(tm.instanceMatrix)tm.
 const SCN={};
 // Escenario 3D recortado de un modelo (árboles, tribunas, paddock, vallas), ya en coordenadas del juego. Si falla la carga, queda el entorno OSM.
 function scnApply(i,go0){const T0=TRACKS[i],g=TG,el=document.getElementById('scr');if(el)el.style.display='none';
-const add=sc0=>{if(TG!==g||trkIdx!==i)return;const o=sc0.clone(true);o.traverse(m=>{if(m.isMesh){m.castShadow=m.receiveShadow=false;m.frustumCulled=true}});o.position.y=.02;TG.add(o);if(el)el.style.display='block'};
+const add=sc0=>{if(TG!==g||trkIdx!==i)return;const o=sc0.clone(true);o.traverse(m=>{if(m.isMesh){m.castShadow=false;m.receiveShadow=true;m.frustumCulled=true}});TG.children.filter(c=>!c.userData.keep).forEach(c=>TG.remove(c));TG.children.forEach(c=>{if(c.userData.gr)c.position.y=-.6});TG.add(o);if(el)el.style.display='block'};
 if(SCN[T0.scn]){SCN[T0.scn].then(add).catch(()=>go0());return true}
 if(!THREE.GLTFLoader)return false;
 SCN[T0.scn]=new Promise((ok,no)=>new THREE.GLTFLoader().load(T0.scn,gl=>{gl.scene.traverse(m=>{if(m.isMesh&&m.material){m.material.envMapIntensity=.15;m.material.roughness=.95}});ok(gl.scene)},undefined,no));
@@ -513,7 +513,7 @@ for(const e of[1,-1]){{const o=ribbon(OO(e,k=>HA[k]-.5),OO(e,k=>HA[k]-.1),.06,wl
 {const g=ribbon(OO(e,k=>wo(e,k)-HA[k]>=1?ko(e,k):null),OO(e,k=>wo(e,k)>ko(e,k)+.7?wo(e,k):null),.02,()=>[.64,.57,.4]);onTx('grv',()=>{g.material=grvM})}
 ribbon(OO(e,k=>wo(e,k)-HA[k]>=1?HA[k]:null),OO(e,k=>wo(e,k)-HA[k]>=1?ko(e,k):null),.05,kerb);
 {const w=ribbon(OO(e,k=>wo(e,k)),OO(e,k=>wo(e,k)),0,wc,1.1);fixUV(w,(i,t)=>[i*TLEN/N/3,t*.37]);onTx('conc',()=>{w.material=conM})}}
-if(PIT){const sg=PIT.sg,sm=t=>t*t*(3-2*t),zone=i=>{const s=sOf(i%N);return s>=PIT.sEnt&&s<=45},gar=i=>{const s=sOf(i%N);return s>=PIT.sLane&&s<-25},
+if(PIT){const pn0=TG.children.length,sg=PIT.sg,sm=t=>t*t*(3-2*t),zone=i=>{const s=sOf(i%N);return s>=PIT.sEnt&&s<=45},gar=i=>{const s=sOf(i%N);return s>=PIT.sLane&&s<-25},
 inn=i=>{if(!zone(i))return null;const s=sOf(i%N);return sg*(s<PIT.sLane?HA[i%N]:s<-25?14.5:14.5-(14.5-HA[i%N])*sm((s+25)/70))},
 out=i=>{if(!zone(i))return null;const s=sOf(i%N);return sg*(s<PIT.sLane?HA[i%N]+(30-HA[i%N])*sm((s-PIT.sEnt)/70):s<-25?30:30-(30-HA[i%N])*sm((s+25)/70))},
 inBox=i=>{const s=sOf(i%N)-(PIT.sLane+30);if(s<0||s>9*PIT.nb)return false;return Math.abs(((s%9)+9)%9-4.5)<3.4};
@@ -525,14 +525,14 @@ ribbon(i=>gar(i)?sg*22:null,i=>gar(i)?sg*28.8:null,.05,()=>[.27,.23,.23]);ribbon
 const dash=i=>gar(i)&&(((sOf(i%N)%6)+6)%6)<3;ribbon(i=>dash(i)?sg*18.9:null,i=>dash(i)?sg*19.2:null,.07,()=>[.95,.78,.1]);
 {const n=PIT.nb*3,bm=new THREE.InstancedMesh(new THREE.BoxGeometry(.5,1,.35),new THREE.MeshLambertMaterial(),n),hm=new THREE.InstancedMesh(new THREE.SphereGeometry(.22,8,6),new THREE.MeshLambertMaterial({color:0xf2f2f2}),n),M=new THREE.Matrix4(),col=new THREE.Color();
 for(let k=0;k<PIT.nb;k++)for(let m=0;m<3;m++){const s=PIT.sLane+30+9*k+2.2+m*2.3,i=(Math.round(s*N/TLEN)%N+N)%N,o=sg*30.5,x=P[i].x+Nm[i].x*o,z=P[i].z+Nm[i].z*o,id=k*3+m;M.makeTranslation(x,.9,z);bm.setMatrixAt(id,M);bm.setColorAt(id,col.copy(cc(k+1)));M.makeTranslation(x,1.65,z);hm.setMatrixAt(id,M)}
-TG.add(bm,hm);const pl=(s,o,t,bg)=>{const i=(Math.round(s*N/TLEN)%N+N)%N,sp=sign(t,bg);sp.position.set(P[i].x+Nm[i].x*sg*o,3.2,P[i].z+Nm[i].z*sg*o);TG.add(sp)};pl(PIT.sLane-8,15,'80','#d62828');pl(PIT.sEnt-12,12,'PIT','#1d5fd1')}}
+TG.add(bm,hm);const pl=(s,o,t,bg)=>{const i=(Math.round(s*N/TLEN)%N+N)%N,sp=sign(t,bg);sp.position.set(P[i].x+Nm[i].x*sg*o,3.2,P[i].z+Nm[i].z*sg*o);TG.add(sp)};pl(PIT.sLane-8,15,'80','#d62828');pl(PIT.sEnt-12,12,'PIT','#1d5fd1')}for(let q=pn0;q<TG.children.length;q++)TG.children[q].userData.keep=1}
 if(!TRACKS[i].scn){const e=PIT?-PIT.sg:1,st=i=>{const s=sOf(i%N);return s>=-130&&s<=60},cr=i=>{const r=hs(i*3+1),q=hs(i*7+2);return E.crowd=='red'?(r>.3?[.85+.15*q,.12+.12*q,.1]:[.95,.95,.95]):(r>.5?[.8+.2*q,.25+.5*q,.2]:[.2+.3*q,.4+.4*r,.85])};
 ribbon(i=>st(i)?e*17:null,i=>st(i)?e*30:null,.3,cr,7);ribbon(i=>st(i)?e*17:null,i=>st(i)?e*30:null,8.5,()=>[.35,.37,.42]);standDress(e,st)}
 
 dress(E,wo,X,OO,nbIn);
 let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;P.forEach(p=>{x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);z0=Math.min(z0,p.z);z1=Math.max(z1,p.z)});
-const gr=new THREE.Mesh(new THREE.PlaneGeometry(6000,6000),gm);gr.rotation.x=-Math.PI/2;gr.position.set((x0+x1)/2,-.05,(z0+z1)/2);gr.receiveShadow=true;TG.add(gr);
-const sl=new THREE.Mesh(new THREE.BoxGeometry(2*HA[0],.06,1.6),slm);sl.position.set(P[0].x,.07,P[0].z);sl.rotation.y=Math.atan2(T[0].x,T[0].z);TG.add(sl);
+const gr=new THREE.Mesh(new THREE.PlaneGeometry(6000,6000),gm);gr.rotation.x=-Math.PI/2;gr.position.set((x0+x1)/2,-.05,(z0+z1)/2);gr.receiveShadow=true;gr.userData.keep=gr.userData.gr=1;TG.add(gr);
+const sl=new THREE.Mesh(new THREE.BoxGeometry(2*HA[0],.06,1.6),slm);sl.position.set(P[0].x,.07,P[0].z);sl.rotation.y=Math.atan2(T[0].x,T[0].z);sl.userData.keep=1;TG.add(sl);
 let LM=TRACKS[i].lm,E2=E;if(TRACKS[i].osm){LM=(LM||[]).filter(o=>o.k!='bld'&&o.k!='forest'&&(o.k!='water'||o.boats));const sc2=E.sc.filter(a=>a[0]!='bld');E2=Object.assign({},E,{sc:sc2.length?sc2:[['rock',1]],nmax:sc2.length?(E.nmax||480):30})}
 {const n0=TG.children.length;scatter(E2,x0,x1,z0,z1,LM);mergeStatic(n0)}landmarks(LM,E);osmApply(i,E,(TRACKS[i].lm||[]).some(o=>o.k=='water'&&o.boats));buildMM()}
 // Neumáticos y clima
@@ -761,7 +761,7 @@ cam.position.set(p.x-fx*3.6,1.7,p.z-fz*3.6);cam.lookAt(p.x-fx*40,1.1,p.z-fz*40);
 cam.position.x+=(Math.random()-.5)*shake*1.2;cam.position.y+=(Math.random()-.5)*shake*.7;shake*=.88;
 cam.fov+=(78-cam.fov)*.15;cam.updateProjectionMatrix();$('cam').textContent='◀ Mirando atrás';$('cam').style.opacity=1;camT=.4}
 function updateCam0(p,dt,fx,fz){let tf=66+p.s*.35;cam.near=cm>1&&cm<5?.12:.5;const fp=cm==2||cm==3;p.mesh.userData.helm.visible=!fp;p.mesh.userData.cp.forEach(m=>m.visible=!fp);(p.mesh.userData.air||[]).forEach(a=>a.visible=cm!=3);
-if(cm<2){const b=cm?6.5:10,h=cm?2.2:4.2;cam.position.lerp(new THREE.Vector3(p.x-fx*b,h,p.z-fz*b),1-Math.exp(-7*dt));cam.lookAt(p.x+fx*9,1.2,p.z+fz*9)}
+if(cm<2){const b=cm?6.5:10,h=cm?2.2:4.2;if(cm){cam.position.set(p.x-fx*b,h,p.z-fz*b);tf=66}else cam.position.lerp(new THREE.Vector3(p.x-fx*b,h,p.z-fz*b),1-Math.exp(-7*dt));cam.lookAt(p.x+fx*9,1.2,p.z+fz*9)}
 else if(cm<5){const o=CAMO[cm-2];cam.position.set(p.x+fx*o[0],o[1],p.z+fz*o[0]);cam.lookAt(p.x+fx*30,o[1]-.2,p.z+fz*30);cam.rotateZ(-p.rl*2);tf=[80,85,95][cm-2]+p.s*.15}
 else if(cm==5){const d=(tv-p.idx+N)%N;if(d>95||d<8)tv=(p.idx+60)%N;const q=P[tv],n=Nm[tv],cx=q.x+n.x*24,cz=q.z+n.z*24;cam.position.set(cx,7,cz);cam.lookAt(p.x,1,p.z);tf=Math.max(20,Math.min(60,2400/Math.hypot(cx-p.x,cz-p.z)))}
 else{cam.position.set(p.x-fx*12,48,p.z-fz*12);cam.lookAt(p.x+fx*6,0,p.z+fz*6);tf=55}
