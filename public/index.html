@@ -435,6 +435,7 @@ const mg=new THREE.BufferGeometry();mg.setAttribute('position',new THREE.BufferA
 
 const OSMD={},OSMQ={};
 function osmLoad(k,cb){if(OSMD[k]){cb(OSMD[k]);return}if(OSMQ[k]){OSMQ[k].push(cb);return}OSMQ[k]=[cb];fetch('data/osm_'+k+'.json').then(r=>r.ok?r.json():null).then(d=>{OSMD[k]=d||false;(OSMQ[k]||[]).forEach(f=>d&&f(d));OSMQ[k]=null}).catch(()=>{OSMD[k]=false})}
+function nearTrk(x,z){for(let i=0;i<N;i+=3){const d=Math.hypot(P[i].x-x,P[i].z-z);if(d<HA[i]+9)return true}return false}
 function osmBuild(D,E,grp,nw){
 const hs=i=>{const x=Math.sin(i*12.9898)*43758.5453;return x-Math.floor(x)},bms=bmFor(E),nm=bms.length,buf=bms.map(()=>({p:[],n:[],u:[]}));
 let k=0;
@@ -454,7 +455,7 @@ if(!nw)for(const w of D.w){const sh=new THREE.Shape();for(let j=0;j<w.length;j+=
 // bosques (puntos extra dentro de polígonos de bosque)
 const tr=D.t.slice();
 for(const f of D.f){const n=f.length>>1;let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9,pl=[];for(let j=0;j<n;j++){pl.push([f[2*j],f[2*j+1]]);x0=Math.min(x0,f[2*j]);x1=Math.max(x1,f[2*j]);z0=Math.min(z0,f[2*j+1]);z1=Math.max(z1,f[2*j+1])}
-const cnt=Math.min(260,Math.round((x1-x0)*(z1-z0)/260));let got=0;for(let q=0;q<cnt*4&&got<cnt&&tr.length<4000;q++){const x=x0+Math.random()*(x1-x0),z=z0+Math.random()*(z1-z0);if(pip(pl,x,z)){tr.push([x,z]);got++}}}
+const cnt=Math.min(260,Math.round((x1-x0)*(z1-z0)/260));let got=0;for(let q=0;q<cnt*4&&got<cnt&&tr.length<4000;q++){const x=x0+Math.random()*(x1-x0),z=z0+Math.random()*(z1-z0);if(pip(pl,x,z)&&!nearTrk(x,z)){tr.push([x,z]);got++}}}
 if(tr.length&&THREE.InstancedMesh){const des=E.sky=='desierto'||E.gr==0xcaa66a,n=tr.length,cm=new THREE.InstancedMesh(fol(1),new THREE.MeshLambertMaterial({color:0xffffff}),n),tm=new THREE.InstancedMesh(new THREE.CylinderGeometry(.35,.55,1,6),new THREE.MeshLambertMaterial({color:0x5a4030}),n);
 const MT=new THREE.Matrix4(),QQ=new THREE.Quaternion(),VV=new THREE.Vector3(),SS=new THREE.Vector3(),YY=new THREE.Vector3(0,1,0),cc=new THREE.Color();
 tr.forEach((p,j)=>{const r=hs(j+.5),q=des?.8:1,H=(5+r*5)*q,B=(2.2+r*1.8)*q,ry=r*6.28;QQ.setFromAxisAngle(YY,ry);
