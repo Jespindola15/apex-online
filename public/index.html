@@ -733,7 +733,7 @@ function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);
 let wA=0;
 function drawWheel(p,dt){const cv=$('wh'),on=cm==3&&!LB;cv.style.display=on?'block':'none';cv.style.transformOrigin='50% 45.6%';cv.style.transform='translateX(-50%)';document.body.classList.toggle('wv',on);if(!on)return;
 const g=cv.getContext('2d'),W=900,H=1000;g.clearRect(0,0,W,H);wA+=((p.st||0)*1.6-wA)*Math.min(1,(dt||.016)*14);
-const gr=Math.min(8,1+Math.floor(p.s/11)),fr=Math.min(1,Math.max(0,(p.s-(gr-1)*11)/11)),lit=Math.round(fr*15),flash=fr>.96&&(performance.now()%240)<120;
+const gr=p.gi||1,fr=Math.min(1,Math.max(0,((p.rpm||5000)-9400)/2100)),lit=Math.round(fr*15),flash=fr>.96&&(performance.now()%240)<120;
 const cy=456,tc='#'+p.mesh.userData.m.color.getHexString(),ca=Math.cos(wA),sa=Math.sin(wA);
 g.save();g.translate(W/2,cy);g.rotate(wA);g.translate(0,70);g.fillStyle='#1b1f26';g.strokeStyle='#323944';g.lineWidth=8;rr(g,-330,-210,95,300,42);g.fill();g.stroke();rr(g,235,-210,95,300,42);g.fill();g.stroke();
 g.fillStyle='#0f1217';rr(g,-290,-190,580,230,60);g.fill();g.stroke();
@@ -882,6 +882,11 @@ RM=WSRM;$('tabO').style.display='';$('nick').value='Piloto'+(10+Math.floor(Math.
 const fmt=x=>x?(x/60|0)+':'+(x%60).toFixed(3).padStart(6,'0'):'--';
 function rank(){return [...cars].sort((a,b)=>a.fin&&b.fin?a.fin-b.fin:a.fin?-1:b.fin?1:a.dnf!=b.dnf?(a.dnf?1:-1):(b.lap*N+b.idx)-(a.lap*N+a.idx))}
 let last=performance.now();
+// Caja de cambios real (8 marchas, relaciones del Ferrari SF-25 del mod F1 2025: 4.78 ... 1.37, final 3.35, rueda 0.336 m)
+const GBR=[4.77778,3.86363,3.16666,2.7037,2.25,1.89189,1.54762,1.36995],GBF=3.35,GBW=.336,GBK=60/(2*Math.PI)/GBW*GBF;
+function gbxStep(p,dt){let g=p.gi||1;const rp=q=>Math.abs(p.s)*GBR[q-1]*GBK;if(p.shT>0)p.shT-=dt;const r=rp(g);
+if(r>11400&&g<8){g++;p.shT=.09}else if(g>1&&r<6900){g--;p.shT=.09}
+p.gi=g;p.rpm=Math.max(5000,Math.min(12000,rp(g)));return g}
 function loop(now){requestAnimationFrame(loop);const dt=paused?0:Math.min(.05,(now-last)/1000);last=now;const inp=input(dt);
 if(state=='count'){cd-=dt;$('msg').textContent=cd>1?Math.floor(cd):cd>0?'¡Listos!':'¡YA!';if(cd<=0){state='race';t=0;setTimeout(()=>{if(state=='race')$('msg').textContent=''},800)}}
 if(state=='race'||state=='done'){t+=dt;if(!QUAL)draftAll(dt);cars.forEach(c=>{if(!c.remote&&c.vt===undefined)step(c,dt,c.ai||c.fin||(QUAL&&QEND)?ai(c):inp)})}
@@ -890,12 +895,12 @@ if(state!='ready'&&now-lastSend>50){lastSend=now;const q=cars[0],r=v=>Math.round
 for(let i=0;i<cars.length;i++)for(let k=i+1;k<cars.length;k++){const q=collide(cars[i],cars[k]);if(q)impact(cars[i],cars[k],q,(cars[i].x+cars[k].x)/2,(cars[i].z+cars[k].z)/2)}
 cars.forEach(c=>{c.mesh.position.set(c.x,0,c.z);c.mesh.rotation.y=c.h;c.mesh.userData.rl.color.setHex(c.brk?0xff4040:0x7a0d0d);c.mesh.userData.w.forEach(w=>{w.sp.rotation.x+=c.s*dt/(w.r||.38);if(w.f)w.pv.rotation.y=-c.st*.45})});cars.forEach(c=>{if(c.vt!==undefined)return;if(c.hit>1.5)impact(c,null,c.hit,c.x,c.z);if(c.scr>3&&Math.hypot(c.x-cars[0].x,c.z-cars[0].z)<60&&Math.random()<.6)spark(c.x,c.z,2,5);
 c.rv+=(-60*c.rl-5*c.rv)*dt;c.rl+=c.rv*dt;c.pv+=(-60*c.pt-5*c.pv)*dt;c.pt+=c.pv*dt;c.mesh.rotation.x=Math.max(-.3,Math.min(.3,c.pt));c.mesh.rotation.z=Math.max(-.3,Math.min(.3,c.rl))-c.st*c.s*.0012});sparkStep(dt);
-const p=cars[0],fx=Math.sin(p.h),fz=Math.cos(p.h);updateCam(p,dt,fx,fz);
-if(egain){const g=Math.min(8,1+Math.floor(p.s/11)),fr=Math.min(1,(p.s-(g-1)*11)/11);eng.frequency.value=80+fr*170+g*8;egain.gain.value=state=='ready'||paused?0:.04+.05*inp.th;sgain.gain.value=!paused&&p.scr>2?Math.min(.35,p.scr*.012):0}{const t=p.tire,nx=p.nxt||t.k;$('tir').innerHTML='<i class="dot" style="background:#'+TC[t.k].toString(16).padStart(6,'0')+'"></i><b>'+TN[t.k]+'</b> · agarre '+Math.round(tireG(p)*100)+'% · desgaste '+Math.round(t.w*100)+'%<span class="tb"><i style="width:'+Math.round(t.w*100)+'%"></i></span><small>'+(QUAL?'Clasificación · vale tu mejor vuelta':p.pitT>0?'En boxes…':p.pitReq?(PIT?'Parada pedida · entrá a boxes por la '+(PIT.sg>0?'derecha':'izquierda'):'Parada pedida · se hace al cruzar la meta')+' · próximo: '+TN[nx]:(mand()&&!p.pits?'⚠ Parada obligatoria · ':'')+'P parada · T próximo: '+TN[nx])+'</small>';
+const p=cars[0],fx=Math.sin(p.h),fz=Math.cos(p.h);updateCam(p,dt,fx,fz);gbxStep(p,dt);
+if(egain){const rs=p.rpmS=(p.rpmS||5000)+((p.rpm-(p.shT>0?1400:0))-(p.rpmS||5000))*Math.min(1,dt*16);eng.frequency.value=55+rs*.021;egain.gain.value=state=='ready'||paused?0:(.035+.05*inp.th)*(p.shT>0?.45:1);sgain.gain.value=!paused&&p.scr>2?Math.min(.35,p.scr*.012):0}{const t=p.tire,nx=p.nxt||t.k;$('tir').innerHTML='<i class="dot" style="background:#'+TC[t.k].toString(16).padStart(6,'0')+'"></i><b>'+TN[t.k]+'</b> · agarre '+Math.round(tireG(p)*100)+'% · desgaste '+Math.round(t.w*100)+'%<span class="tb"><i style="width:'+Math.round(t.w*100)+'%"></i></span><small>'+(QUAL?'Clasificación · vale tu mejor vuelta':p.pitT>0?'En boxes…':p.pitReq?(PIT?'Parada pedida · entrá a boxes por la '+(PIT.sg>0?'derecha':'izquierda'):'Parada pedida · se hace al cruzar la meta')+' · próximo: '+TN[nx]:(mand()&&!p.pits?'⚠ Parada obligatoria · ':'')+'P parada · T próximo: '+TN[nx])+'</small>';
 if(state=='race'){if(p.pitT>0){$('msg').textContent='BOX '+p.pitT.toFixed(1);pm=1}else if(pm){$('msg').textContent='';pm=0}}}
 rainStep(dt);{const h=Math.min(5,p.hits||0),cs=['#3ddc84','#8bdc3d','#ffd21a','#ff8c1a','#ff3b2f'];let s='<small>DAÑO · '+(p.dnf?'DNF':h+'/5')+'</small>';for(let i=0;i<5;i++)s+='<i class="dm"'+(i<h?' style="background:'+cs[i]+'"':'')+'></i>';if(window._dm!==s){window._dm=s;$('dmg').innerHTML=s}
 if(p.rep){p.rep=0;$('cam').textContent='Auto reparado en boxes';$('cam').style.opacity=1;camT=2}}{let st=SEA&&!SEA.over?'Temporada · Carrera '+(SEA.i+1)+'/'+SEA.tracks.length+' · '+TRACKS[SEA.tracks[SEA.i]].n:'';if(QUAL)st='CLASIFICACIÓN'+(st?' · '+st:'');if(window._st!==st){window._st=st;$('sea').textContent=st}}if(state=='done'&&SEA&&!SEA.scored)seaTick(dt);sky.position.copy(cam.position);stars.position.copy(cam.position);hz.position.set(cam.position.x,60,cam.position.z);drawMM();drawWheel(p,dt);const rk=QUAL?qrank():rank();$('pos').innerHTML='P'+(rk.indexOf(p)+1)+'/'+cars.length+'<small>'+(QUAL?'clasificación':'posición')+'</small>';
-$('spd').innerHTML=Math.round(p.s*3.6)+'<span>km/h · M'+Math.min(8,1+Math.floor(p.s/11))+'</span>';
+$('spd').innerHTML=Math.round(p.s*3.6)+'<span>km/h · M'+(p.gi||1)+' · '+(Math.round((p.rpm||0)/100)*100)+' rpm</span>';
 $('lap').innerHTML=(QUAL?'Clasif. · ':'')+'Vuelta '+Math.min(lt(),Math.max(1,p.lap+1))+'/'+lt()+'<small>última '+fmt(p.last)+' · mejor '+fmt(p.best)+'</small>';
 if(state=='race'&&!QUAL&&p.dnf){state='done';menu=false;paused=false;if(SEA&&!SEA.over){SEA.pos=rank().indexOf(p)+1;SEA.pen=0;SEA.dnf=1;SEA.w=0;SEA.rt=0;showRes()}else{$('ovt').innerHTML='<b>DNF</b>: tu auto no resistió 5 choques.<br>Mejor vuelta: '+fmt(p.best);$('go').textContent='Correr otra vez';$('ov').style.display='flex';renderLobby()}}
 if(state=='race'&&QUAL)qualTick(dt,p);
