@@ -245,18 +245,35 @@ const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisot
 for(let i=0;i<46;i++){x.fillStyle=i%2?'rgba(255,255,255,.09)':'rgba(60,60,60,.12)';x.beginPath();x.arc(rn()*S,rn()*S,8+rn()*26,0,7);x.fill()}
 for(let i=0;i<9000;i++){const g=120+rn()*135|0;x.fillStyle='rgba('+g+','+g+','+g+',.55)';x.fillRect(rn()*S,rn()*S,1,1.5+rn()*4)}
 const tx=new THREE.CanvasTexture(c);tx.wrapS=tx.wrapT=THREE.RepeatWrapping;tx.repeat.set(190,190);tx.anisotropy=R.capabilities.getMaxAnisotropy();gm.map=tx}
+// Registro de texturas opcionales: onTx(clave,fn) ejecuta fn cuando esa textura terminó de cargar (o ya cargó)
+const TXR={},TXQ=[];const onTx=(k,f)=>{TXR[k]?f():TXQ.push([k,f])};
+function txOk(k){TXR[k]=1;const rest=[];for(const q of TXQ){if(q[0]==k){try{q[1]()}catch(e){}}else rest.push(q)}TXQ.length=0;TXQ.push(...rest)}
+const PO={polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2,transparent:true,depthWrite:false,side:THREE.DoubleSide,metalness:0,envMapIntensity:.3},
+lineM=new THREE.MeshStandardMaterial(Object.assign({color:0xe8e8e8,roughness:.85},PO)),patchM=new THREE.MeshStandardMaterial(Object.assign({color:0xdddddd,roughness:.95},PO)),
+grvM=new THREE.MeshStandardMaterial({color:0xbcbcbc,roughness:.97,metalness:0,envMapIntensity:.2,side:THREE.DoubleSide}),conM=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9,metalness:0,envMapIntensity:.3,side:THREE.DoubleSide});
 // Texturas reales (public/textures): asfalto y pasto PBR (ambientCG, CC0) y cielo HDRI (Poly Haven, CC0). Si falta algo, se queda lo procedural.
 const ENVP=sc.environment;let ENVH=null;
 function setEnvMap(){const E=ENVS[TRACKS[trkIdx].env||'campo'];sc.environment=(ENVH&&!E.night&&WX==0)?ENVH:ENVP}
 {const TL=THREE.TextureLoader?new THREE.TextureLoader():null,an=R.capabilities.getMaxAnisotropy(),warn=n=>console.warn('Entorno: no se pudo cargar '+n+'; se usa la versión procedural');
 const tex=(u,rep,srgb,cb)=>{if(!TL)return;TL.load(u,t=>{t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=an;if(rep)t.repeat.set(rep,rep);if(srgb)t.encoding=THREE.sRGBEncoding;cb(t)},undefined,()=>warn(u))};
-fetch('textures/asphalt_c.jpg',{method:'HEAD'}).then(r=>{if(!r.ok)return;
-tex('textures/asphalt_c.jpg',0,true,t=>{lm.map=t;lm.bumpMap=null;lm.needsUpdate=true});
-tex('textures/asphalt_n.jpg',0,false,t=>{lm.normalMap=t;lm.normalScale.set(.9,.9);lm.needsUpdate=true});
-tex('textures/asphalt_r.jpg',0,false,t=>{lm.roughnessMap=t;lm.needsUpdate=true});
-tex('textures/grass_c.jpg',300,true,t=>{gm.map=t;gm.needsUpdate=true});
-tex('textures/grass_n.jpg',300,false,t=>{gm.normalMap=t;gm.normalScale.set(.8,.8);gm.needsUpdate=true});
-tex('textures/grass_r.jpg',300,false,t=>{gm.roughnessMap=t;gm.needsUpdate=true})}).catch(()=>{});
+const has=u=>fetch(u,{method:'HEAD'}).then(r=>!!r.ok).catch(()=>false);
+// Asfalto: versión nueva (asphalt2_*) si existe; si no, la anterior
+has('textures/asphalt2_c.jpg').then(ok=>{const a=ok?'asphalt2':'asphalt',rp=ok?.5:0;has('textures/'+a+'_c.jpg').then(y=>{if(!y)return;
+tex('textures/'+a+'_c.jpg',rp,true,t=>{lm.map=t;lm.bumpMap=null;lm.needsUpdate=true});
+tex('textures/'+a+'_n.jpg',rp,false,t=>{lm.normalMap=t;lm.normalScale.set(.9,.9);lm.needsUpdate=true});
+tex('textures/'+a+'_r.jpg',rp,false,t=>{lm.roughnessMap=t;lm.needsUpdate=true})})});
+has('textures/grass_c.jpg').then(y=>{if(!y)return;
+tex('textures/grass_c.jpg',1000,true,t=>{gm.map=t;gm.needsUpdate=true});
+tex('textures/grass_n.jpg',1000,false,t=>{gm.normalMap=t;gm.normalScale.set(.8,.8);gm.needsUpdate=true});
+tex('textures/grass_r.jpg',1000,false,t=>{gm.roughnessMap=t;gm.needsUpdate=true})});
+// Variación de color de gran escala en el pasto (rompe la repetición). Si falla, el pasto queda igual que antes.
+has('textures/grass2_c.jpg').then(y=>{if(!y)return;tex('textures/grass2_c.jpg',0,true,t=>{gm.onBeforeCompile=sh=>{sh.uniforms.map2={value:t};sh.fragmentShader='uniform sampler2D map2;\n'+sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n#ifdef USE_MAP\n{vec3 g2=(mapTexelToLinear(texture2D(map2,vUv/7.)).rgb+mapTexelToLinear(texture2D(map2,vUv/31.+.37)).rgb)*.5;float l2=dot(g2,vec3(.3,.59,.11));diffuseColor.rgb*=mix(vec3(1.),vec3(l2/.27),.5)*mix(vec3(1.),g2/(l2+.001),.22);}\n#endif')};gm.needsUpdate=true})});
+// Decals y superficies extra: se activan solo cuando su textura cargó (onTx), si no queda lo de siempre
+const pair=(k,uc,ua,mat)=>{let n=0;const d=()=>{if(++n==2)txOk(k)};tex(uc,0,true,t=>{t.wrapS=THREE.ClampToEdgeWrapping;mat.map=t;mat.needsUpdate=true;d()});tex(ua,0,false,t=>{t.wrapS=THREE.ClampToEdgeWrapping;mat.alphaMap=t;mat.needsUpdate=true;d()})};
+has('textures/line_c.jpg').then(y=>{if(y)pair('line','textures/line_c.jpg','textures/line_a.jpg',lineM)});
+has('textures/patch_c.jpg').then(y=>{if(y)pair('patch','textures/patch_c.jpg','textures/patch_a.jpg',patchM)});
+has('textures/gravel_c.jpg').then(y=>{if(!y)return;let n=0;const d=()=>{if(++n==2)txOk('grv')};tex('textures/gravel_c.jpg',3,true,t=>{grvM.map=t;grvM.needsUpdate=true;d()});tex('textures/gravel_n.jpg',3,false,t=>{grvM.normalMap=t;grvM.normalScale.set(.8,.8);grvM.needsUpdate=true;d()})});
+has('textures/conc_c.jpg').then(y=>{if(!y)return;let n=0;const d=()=>{if(++n==2)txOk('conc')};tex('textures/conc_c.jpg',0,true,t=>{conM.map=t;conM.needsUpdate=true;d()});tex('textures/conc_n.jpg',0,false,t=>{conM.normalMap=t;conM.normalScale.set(.7,.7);conM.needsUpdate=true;d()})});
 fetch('textures/sky.hdr',{method:'HEAD'}).then(r=>{if(!r.ok||!THREE.RGBELoader)return;new THREE.RGBELoader().setDataType(THREE.UnsignedByteType).load('textures/sky.hdr',t=>{const p=new THREE.PMREMGenerator(R);ENVH=p.fromEquirectangular(t).texture;p.dispose();t.dispose();setEnvMap()},undefined,()=>warn('sky.hdr'))}).catch(()=>{})}
 // Entornos: cada pista tiene env:'nombre'. Para sumar uno nuevo: colores del cielo (top/hor), niebla, suelo, horizonte (hz) y objetos (sc)
 const ENVS={
@@ -353,6 +370,11 @@ ribbon(i=>st(i)?e*17:null,i=>st(i)?e*30:null,.3,cr,7);ribbon(i=>st(i)?e*17:null,
 else if(o.k=='sakhir'&&PIT){const i=((Math.round(-110*N/TLEN)%N)+N)%N,ry=Math.atan2(T[i].x,T[i].z),px=P[i].x+Nm[i].x*PIT.sg*74,pz=P[i].z+Nm[i].z*PIT.sg*74;g.position.set(px,0,pz);
 add(g,new THREE.BoxGeometry(18,26,18),whiteM,0,13,0,ry);add(g,new THREE.BoxGeometry(9,64,9),whiteM,0,26+32,0,ry);add(g,new THREE.BoxGeometry(26,9,26),glassM,0,90+4.5,0,ry);add(g,new THREE.BoxGeometry(30,1.5,30),M(0x4a4e57),0,100.2,0,ry);add(g,new THREE.SphereGeometry(1.6,8,6),new THREE.MeshBasicMaterial({color:0xff2a2a}),0,103,0)}
 TG.add(g)}}
+function fixUV(me,fn){const u=me.geometry.attributes.uv,a=u.array;for(let j=0;j<a.length/2;j++){const r=fn(j>>1,j&1);a[2*j]=r[0];a[2*j+1]=r[1]}u.needsUpdate=true}
+function roadPatches(){const hs=i=>{const x=Math.sin(i*12.9898)*43758.5453;return x-Math.floor(x)},ds=TLEN/N,pos=[],uv=[],nm=[],ix=[];let q=0;for(let k=Math.round(90/ds),n=0;k<N-Math.round(40/ds);k+=Math.max(2,Math.round((130+hs(n*5+1)*170)/ds)),n++){const lat=(hs(n*11+2)*2-1)*Math.max(0,HA[k]-2.4),sz=1.3+hs(n*13+3)*2.2,th=hs(n*17+4)*6.28,c=Math.cos(th)*sz,sn=Math.sin(th)*sz,p=P[k],t=T[k],m=Nm[k],cx=p.x+m.x*lat,cz=p.z+m.z*lat;
+const ax=t.x*c+m.x*sn,az=t.z*c+m.z*sn,bx=-t.x*sn+m.x*c,bz=-t.z*sn+m.z*c;for(const[u,v]of[[-1,-1],[1,-1],[-1,1],[1,1]]){pos.push(cx+ax*u+bx*v,.037,cz+az*u+bz*v);uv.push(u*.5+.5,v*.5+.5);nm.push(0,1,0)}ix.push(q,q+1,q+2,q+1,q+3,q+2);q+=4}
+if(!q)return;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nm,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(ix);
+const me=new THREE.Mesh(g,patchM);me.receiveShadow=true;me.visible=false;TG.add(me);onTx('patch',()=>{me.visible=true})}
 function ribbon(a,b,y,col,h=0,mat=lm){const pos=[],c=[],ix=[],uv=[];const fa=typeof a=='function'?a:()=>a,fb=typeof b=='function'?b:()=>b;for(let i=0;i<=N;i++){const k=i%N,p=P[k],n=Nm[k],cc=col(i),A=fa(i),B=fb(i);pos.push(p.x+n.x*(A||0),y,p.z+n.z*(A||0),p.x+n.x*(B||0),y+h,p.z+n.z*(B||0));c.push(...cc,...cc);uv.push((A||0)/7,i*TLEN/N/7,(B||0)/7,i*TLEN/N/7);if(i<N&&A!=null&&B!=null&&fa(i+1)!=null&&fb(i+1)!=null){const j=i*2;ix.push(j,j+1,j+2,j+1,j+3,j+2)}}
 const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(c,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(ix);g.computeVertexNormals();
 const me=new THREE.Mesh(g,mat);me.receiveShadow=true;TG.add(me);return me}
@@ -431,11 +453,11 @@ const O=(e,v)=>i=>PIT&&PIT.sg===e&&inRamp(i%N)?null:e*v;
 const hs=i=>{const x=Math.sin(i*12.9898)*43758.5453;return x-Math.floor(x)},wl=()=>[.9,.9,.9];
 const X=(e,k)=>EX[e>0?1:0][k%N],wo=(e,k)=>Math.max(HA[k%N]+.6,Math.min(HA[k%N]+4.4,X(e,k))),ko=(e,k)=>Math.min(HA[k%N]+2.5,wo(e,k)-.1);
 const OO=(e,f)=>i=>{if(PIT&&PIT.sg===e&&inRamp(i%N))return null;const v=f(i%N);return v==null?null:e*v};
-ribbon(i=>-HA[i%N],i=>HA[i%N],.03,i=>{const v=.168+.016*(Math.sin(i*.061)+Math.sin(i*.0173+1.9)+Math.sin(i*.2+.4)*.4)/2.4+.006*hs(i>>2);return[v,v+.01,v+.04]});ribbon(-3,3,.035,i=>{const v=.135+.01*(Math.sin(i*.043+.8)+Math.sin(i*.0117))/2;return[v,v+.005,v+.025]});
-for(const e of[1,-1]){ribbon(OO(e,k=>HA[k]-.5),OO(e,k=>HA[k]-.1),.06,wl);
-ribbon(OO(e,k=>wo(e,k)-HA[k]>=1?ko(e,k):null),OO(e,k=>wo(e,k)>ko(e,k)+.7?wo(e,k):null),.02,()=>[.64,.57,.4]);
+ribbon(i=>-HA[i%N],i=>HA[i%N],.03,i=>{const v=.168+.016*(Math.sin(i*.061)+Math.sin(i*.0173+1.9)+Math.sin(i*.2+.4)*.4)/2.4+.006*hs(i>>2);return[v+.004,v+.007,v+.017]});roadPatches();ribbon(-3,3,.035,i=>{const v=.135+.01*(Math.sin(i*.043+.8)+Math.sin(i*.0117))/2;return[v,v+.005,v+.025]});
+for(const e of[1,-1]){{const o=ribbon(OO(e,k=>HA[k]-.5),OO(e,k=>HA[k]-.1),.06,wl),w=ribbon(OO(e,k=>HA[k]-.78),OO(e,k=>HA[k]+.12),.062,()=>[1,1,1],0,lineM),L=TLEN/Math.round(TLEN/3.4);fixUV(w,(i,t)=>[t,i*TLEN/N/L]);w.visible=false;onTx('line',()=>{o.visible=false;w.visible=true})}
+{const g=ribbon(OO(e,k=>wo(e,k)-HA[k]>=1?ko(e,k):null),OO(e,k=>wo(e,k)>ko(e,k)+.7?wo(e,k):null),.02,()=>[.64,.57,.4]);onTx('grv',()=>{g.material=grvM})}
 ribbon(OO(e,k=>wo(e,k)-HA[k]>=1?HA[k]:null),OO(e,k=>wo(e,k)-HA[k]>=1?ko(e,k):null),.05,kerb);
-ribbon(OO(e,k=>wo(e,k)),OO(e,k=>wo(e,k)),0,wc,1.1)}
+{const w=ribbon(OO(e,k=>wo(e,k)),OO(e,k=>wo(e,k)),0,wc,1.1);fixUV(w,(i,t)=>[i*TLEN/N/3,t*.37]);onTx('conc',()=>{w.material=conM})}}
 if(PIT){const sg=PIT.sg,sm=t=>t*t*(3-2*t),zone=i=>{const s=sOf(i%N);return s>=PIT.sEnt&&s<=45},gar=i=>{const s=sOf(i%N);return s>=PIT.sLane&&s<-25},
 inn=i=>{if(!zone(i))return null;const s=sOf(i%N);return sg*(s<PIT.sLane?HA[i%N]:s<-25?14.5:14.5-(14.5-HA[i%N])*sm((s+25)/70))},
 out=i=>{if(!zone(i))return null;const s=sOf(i%N);return sg*(s<PIT.sLane?HA[i%N]+(30-HA[i%N])*sm((s-PIT.sEnt)/70):s<-25?30:30-(30-HA[i%N])*sm((s+25)/70))},
