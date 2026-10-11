@@ -208,7 +208,7 @@ function fit(){R.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeig
 function skinMat(src,U){U.sk=U.sk||{};const k=src.name;if(U.sk[k])return U.sk[k];const m=src.clone();m.name=k;U.sk[k]=m;CARM.push(m);m.envMapIntensity=CARM[0].envMapIntensity;
 m.onBeforeCompile=sh=>{sh.uniforms.tc={value:U.m.color};sh.fragmentShader='uniform vec3 tc;\n#define RC '+(m.userData&&m.userData.rc?'true':'false')+'\n'+sh.fragmentShader.replace('#include <map_fragment>','#ifdef USE_MAP\nvec4 tx=texture2D(map,vUv);tx=mapTexelToLinear(tx);float gr=RC?tx.r-max(tx.g,tx.b):tx.g-max(tx.r,tx.b);float mk=smoothstep(.05,.3,gr);diffuseColor.rgb*=mix(tx.rgb,tc*clamp((RC?tx.r:tx.g)/.7,0.,1.5),mk);\n#endif')};
 m.customProgramCacheKey=()=>m.userData&&m.userData.rc?'skinR':'skin';return m}
-const GLBS=['models/fbmw.glb','models/lowpoly.glb'],GLB_FLIP=false; // único modelo de auto: Low Poly-F1 (liviano)
+const GLBS=['models/fw27.glb','models/fbmw.glb','models/lowpoly.glb'],GLB_FLIP=false; // único modelo de auto: Low Poly-F1 (liviano)
 // Modelo 3D opcional (public/models/car.glb). Si falta o falla, se usa el auto procedural.
 // Convenciones del GLB: material 'paint' = carrocería (se repinta por piloto), 'light' = luz trasera (sigue al freno),
 // nodos 'wheel_*' (dirección) > 'spin_*' (giro) con extras {r, hw, rim, side, front}.
@@ -217,7 +217,7 @@ const XD=gl.scene.userData||{},b=new THREE.Box3().setFromObject(gl.scene),z=b.ge
 all.forEach(c=>{try{
 const U=c.mesh.userData,m=gl.scene.clone(true),w=new THREE.Group(),W=[],wn=[];U.air=[];U.m2=U.m.clone();CARM.push(U.m2); // U.air: toma de aire/motor, se oculta en la cámara Cockpit
 
-m.scale.setScalar(k);m.position.set(-ct.x*k,-b.min.y*k,-ct.z*k);w.add(m);w.rotation.y=(z.x>z.z?Math.PI/2:0)+(GLB_FLIP?Math.PI:0);
+m.scale.setScalar(k);m.position.set(-ct.x*k,-b.min.y*k-(XD.sink||0),-ct.z*k);w.add(m);w.rotation.y=(z.x>z.z?Math.PI/2:0)+(GLB_FLIP?Math.PI:0);
 m.traverse(o=>{if(o.name=='Plane_031_Plane_026')U.air.push(o);if(o.name&&o.name.indexOf('wheel_')==0&&o.children[0])wn.push(o);if(!o.isMesh)return;o.castShadow=o.receiveShadow=true;o.userData.cs=1;const n=o.material&&o.material.name;
 if(/body|paint|livery|carros/i.test(n))o.material=isSec(o)||/sec$/.test(n)?U.m2:U.m;else if(n=='light')o.material=U.rl;else if(/^(skin|misc)/.test(n))o.material=skinMat(o.material,U);else if(o.material&&!seen.has(o.material)){seen.add(o.material);CARM.push(o.material);o.material.envMapIntensity=CARM[0].envMapIntensity}});
 // ruedas: dirección (pv) y giro (sp), más un aro del color del compuesto de neumático en el flanco exterior
