@@ -217,7 +217,7 @@ all.forEach(c=>{try{
 const U=c.mesh.userData,m=gl.scene.clone(true),w=new THREE.Group(),W=[],wn=[];U.air=[];U.m2=U.m.clone();CARM.push(U.m2); // U.air: toma de aire/motor, se oculta en la cámara Cockpit
 
 m.scale.setScalar(k);m.position.set(-ct.x*k,-b.min.y*k,-ct.z*k);w.add(m);w.rotation.y=(z.x>z.z?Math.PI/2:0)+(GLB_FLIP?Math.PI:0);
-m.traverse(o=>{if(o.name=='Plane_031_Plane_026')U.air.push(o);if(o.name&&o.name.indexOf('wheel_')==0&&o.children[0])wn.push(o);if(!o.isMesh)return;o.castShadow=o.receiveShadow=true;const n=o.material&&o.material.name;
+m.traverse(o=>{if(o.name=='Plane_031_Plane_026')U.air.push(o);if(o.name&&o.name.indexOf('wheel_')==0&&o.children[0])wn.push(o);if(!o.isMesh)return;o.castShadow=o.receiveShadow=true;o.userData.cs=1;const n=o.material&&o.material.name;
 if(/body|paint|livery|carros/i.test(n))o.material=isSec(o)?U.m2:U.m;else if(n=='light')o.material=U.rl;else if(/^(skin|misc)/.test(n))o.material=skinMat(o.material,U);else if(o.material&&!seen.has(o.material)){seen.add(o.material);CARM.push(o.material);o.material.envMapIntensity=CARM[0].envMapIntensity}});
 // ruedas: dirección (pv) y giro (sp), más un aro del color del compuesto de neumático en el flanco exterior
 wn.forEach(pv=>{const e=pv.userData,sp=pv.children[0],rg=new THREE.Mesh(new THREE.RingGeometry(e.rim+(e.r-e.rim)*.35,e.rim+(e.r-e.rim)*.6,32),U.tm);rg.rotation.y=e.side*Math.PI/2;rg.position.x=e.side*(e.hw+.002);sp.add(rg);W.push({pv,sp,f:!!e.front,r:e.r*k})});
@@ -634,7 +634,7 @@ let PL=null,AIL=GRID.slice();
 const LVN=['fer01_rwing_normal','fer01_fwing_early','fer_mid_wing','fer_sdwing_bl','fer_sdwing_br'],isSec=o=>{for(let q=o;q;q=q.parent)if(LVN.indexOf(q.name)>=0)return true;return false};
 function drawNum(cv,no){const x=cv.getContext('2d');if(!x)return;x.clearRect(0,0,128,96);if(no==null||no==='')return;x.font='900 78px sans-serif';x.textAlign='center';x.textBaseline='middle';x.lineWidth=12;x.lineJoin='round';x.strokeStyle='rgba(0,0,0,.9)';x.strokeText(String(no),64,52);x.fillStyle='#fff';x.fillText(String(no),64,52)}
 function applyLivery(c,i){const U=c.mesh.userData;if(!U.m2)return;const e=i?AIL[i-1]:PL;U.m2.color.set(e?e.s:0xffffff);if(U.nc){drawNum(U.nc,e?e.no:7);U.nt.needsUpdate=true}}
-function lblVis(p){for(const c of cars){const lb=c.mesh.userData.lb;if(!lb)continue;const d=Math.hypot(c.x-p.x,c.z-p.z);lb.visible=c!==p&&!c.gone&&d<120;lb.material.opacity=Math.max(0,Math.min(1,(120-d)/45))}}
+function lblVis(p){for(const c of cars){const lb=c.mesh.userData.lb;if(!lb)continue;const d=Math.hypot(c.x-p.x,c.z-p.z);{const U=c.mesh.userData,nr=d<55;if(U.shn!==nr){U.shn=nr;c.mesh.traverse(o=>{if(o.userData&&o.userData.cs)o.castShadow=nr})}}lb.visible=c!==p&&!c.gone&&d<120;lb.material.opacity=Math.max(0,Math.min(1,(120-d)/45))}}
 const all=Array.from({length:21},(_,i)=>({mesh:mk(cc(i)),ai:i>0,skill:i?.9+Math.random()*.1:1}));
 let cars=all.slice(0,6);
 function applyCfg(){PL=cfg.drv>=0?GRID[cfg.drv]:null;AIL=GRID.filter(g=>g!==PL);if(cfg.riv>AIL.length)cfg.riv=AIL.length;buildTrack(cfg.trk,cfg.riv+1);applyWx(cfg.wx);cars=all.slice(0,cfg.riv+1);all.forEach((c,i)=>{c.mesh.visible=i<cars.length;c.ai=i>0;c.remote=0;c.peer=null;c.slot=undefined;c.gp=undefined;c.mesh.userData.m.color.copy(cc(i));label(c,i&&AIL[i-1]?AIL[i-1].n:'');applyLivery(c,i)});reset()}
