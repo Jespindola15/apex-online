@@ -192,7 +192,7 @@ body.touch #tc.on{display:block}
 body.touch #pad{display:none}
 #tcRot{display:none;position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);background:var(--pan);padding:10px 16px;border-radius:12px;font-size:20px;font-weight:700;text-align:center;pointer-events:none}
 @media (orientation:portrait){#tcRot{display:block}}
-</style></head><body>
+#dbg{display:none;position:fixed;left:240px;top:96px;z-index:40;background:rgba(0,0,0,.72);color:#9f9;font:13px/1.35 monospace;padding:8px 10px;border-radius:8px;pointer-events:none;white-space:pre}</style></head><body>
 <button id="qend" type="button">Terminar clasificación<small>Tecla F · quedás con tu mejor vuelta</small></button>
 <div id="scr">Trazado de Monza basado en «Monza Circuit 1998 layout» de Dave Bored (Sketchfab), CC-BY 4.0</div>
 <div id="pos" class="h">P1<small>posición</small></div><div id="lap" class="h">Vuelta 1/3<small>--</small></div>
@@ -220,7 +220,7 @@ body.touch #pad{display:none}
 <button id="tcCam" class="sm">CÁMARA</button><button id="tcPit" class="sm">BOXES</button><button id="tcTyre" class="sm">GOMAS</button><button id="tcRst" class="sm">REINICIAR</button>
 <button id="tcFs" class="sm">⛶</button>
 <button id="tcMode">VOLANTE: BOTONES</button><button id="tcCal" class="sm">CENTRAR</button><button id="tcInv" class="sm">INVERTIR</button></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<div id="dbg"></div><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
 <script>
@@ -764,7 +764,9 @@ const tap=(id,f)=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();au
 tap('tcCam',()=>setCam(cm+1));tap('tcPit',()=>togglePit());tap('tcTyre',()=>nextTire());tap('tcRst',()=>start(1));tap('tcMode',()=>tcGyro(!TCH.gy));tap('tcCal',()=>{TCH.off=TCH.phi||0});tap('tcInv',()=>{TCH.inv=TCH.inv?0:1;tcSave();tcUI()});
 tap('tcFs',()=>{const d=document.documentElement;try{if(document.fullscreenElement){document.exitFullscreen()}else{(d.requestFullscreen||d.webkitRequestFullscreen).call(d).then(()=>{try{screen.orientation.lock('landscape')}catch(e){}}).catch(()=>{})}}catch(e){}});
 if(TCH.gy){window.addEventListener('devicemotion',tcMotion)}tcUI();addEventListener('contextmenu',e=>e.preventDefault())}
-function input(dt){if(TOUCH){$('tc').classList.toggle('on',!menu&&!$('pcfg').style.display.includes('flex')&&!qov)}const g=pad();gpB=false;let st=0,th=0,br=0;
+let DBG=false,DBL=null;addEventListener('keydown',e=>{if(e.code=='F3'||e.code=='KeyJ'){if(e.code=='F3')e.preventDefault();DBG=!DBG;$('dbg').style.display=DBG?'block':'none'}});
+function dbgUpd(){const c=cars[0];if(!c)return;if(c.hit>1)DBL={s:sOf(c.idx),d:c.d,v:c.s,f:c.hit};const sq=['asfalto','piano','pasto','grava','otro'][surfAt(c)];$('dbg').textContent='DEBUG (J para ocultar)\n'+TRACKS[trkIdx].n+'\ns = '+sOf(c.idx).toFixed(1)+' m   idx '+c.idx+'\nlat = '+c.d.toFixed(1)+' m   vel '+(c.s*3.6).toFixed(0)+' km/h\nsuperficie: '+sq+'\n'+(WL?'distancia a pared: '+wsd(c.x,c.z).toFixed(1)+' m\n':'')+'pos x,z = '+c.x.toFixed(1)+', '+c.z.toFixed(1)+'\n'+(DBL?'ultimo golpe: s '+DBL.s.toFixed(0)+' lat '+DBL.d.toFixed(1)+' vel '+(DBL.v*3.6).toFixed(0)+' fuerza '+DBL.f.toFixed(1):'sin golpes')}
+function input(dt){if(DBG)dbgUpd();if(TOUCH){$('tc').classList.toggle('on',!menu&&!$('pcfg').style.display.includes('flex')&&!qov)}const g=pad();gpB=false;let st=0,th=0,br=0;
 const kt=(K.ArrowRight||K.KeyD?1:0)-(K.ArrowLeft||K.KeyA?1:0);ks+=(kt-ks)*Math.min(1,dt*8);
 if(g){st=steerOf(g);th=mx(g,MAP.th);br=mx(g,MAP.br);
 const co=$('pcfg').style.display=='flex',x=mx(g,MAP.cam)>.5?1:0;if(x&&!pX&&!co)setCam(cm+1);pX=x;const y=mx(g,MAP.rs)>.5?1:0;if(y&&!pY&&!co)start(1);pY=y;const a1=mx(g,MAP.pt)>.5?1:0;if(a1&&!pPt&&!co)togglePit();pPt=a1;const a2=mx(g,MAP.nt)>.5?1:0;if(a2&&!pNt&&!co)nextTire();pNt=a2;gpB=!co&&mx(g,MAP.bk)>.5;
