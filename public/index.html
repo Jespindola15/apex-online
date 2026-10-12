@@ -163,7 +163,36 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 @media (max-width:1100px){#mnu .cfg{grid-template-columns:repeat(2,minmax(0,1fr))}#p-race .cfg>#rivbox{grid-column:1/-1}}
 @media (max-width:720px){#mnu .cfg,#p-tire .cfg{grid-template-columns:1fr}#p-race .cfg>#rivbox{grid-column:auto}#rivbox{grid-template-columns:1fr}#rivbox>.lb:nth-child(3),#rivbox>#diff{grid-column:1;grid-row:auto}#mnu h1{font-size:46px}#mnu .top{flex-direction:column;align-items:flex-start}}
 @media (max-height:640px){#mnu .hlp,#mnu h1::after,.bk{display:none}}
-#mnu #tmsel button{padding:6px 14px;font-size:19px}#mnu #drsel button{padding:7px 16px;font-size:19px}#tmsel .dot{width:16px;height:16px;margin-right:8px;vertical-align:-3px;background:linear-gradient(135deg,var(--c) 52%,var(--s,var(--c)) 52%);border:2px solid #fffa}#qend{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:6;display:none;padding:12px 26px;font-family:inherit;font-weight:800;font-size:20px;line-height:1.1;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:linear-gradient(#ff3b2f,#c4180d);border:1px solid #ff8f86;border-radius:3px;box-shadow:0 10px 26px -8px #000;cursor:pointer}#qend small{display:block;font-size:13px;font-weight:600;letter-spacing:.08em;opacity:.8;margin-top:3px}#qend:hover{filter:brightness(1.12)}#scr{position:fixed;left:50%;bottom:3px;transform:translateX(-50%);z-index:2;display:none;font:500 10px/1.2 sans-serif;color:rgba(255,255,255,.62);text-shadow:0 1px 2px #000;pointer-events:none;white-space:nowrap}</style></head><body>
+#mnu #tmsel button{padding:6px 14px;font-size:19px}#mnu #drsel button{padding:7px 16px;font-size:19px}#tmsel .dot{width:16px;height:16px;margin-right:8px;vertical-align:-3px;background:linear-gradient(135deg,var(--c) 52%,var(--s,var(--c)) 52%);border:2px solid #fffa}#qend{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:6;display:none;padding:12px 26px;font-family:inherit;font-weight:800;font-size:20px;line-height:1.1;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:linear-gradient(#ff3b2f,#c4180d);border:1px solid #ff8f86;border-radius:3px;box-shadow:0 10px 26px -8px #000;cursor:pointer}#qend small{display:block;font-size:13px;font-weight:600;letter-spacing:.08em;opacity:.8;margin-top:3px}#qend:hover{filter:brightness(1.12)}#scr{position:fixed;left:50%;bottom:3px;transform:translateX(-50%);z-index:2;display:none;font:500 10px/1.2 sans-serif;color:rgba(255,255,255,.62);text-shadow:0 1px 2px #000;pointer-events:none;white-space:nowrap}
+/* Controles tactiles (solo celular/tablet: pantalla tactil sin mouse) */
+#tc{display:none;position:fixed;inset:0;z-index:30;pointer-events:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none;font-family:'Saira Condensed',sans-serif}
+body.touch #tc.on{display:block}
+#tc button{pointer-events:auto;touch-action:none;-webkit-tap-highlight-color:transparent;font:inherit;color:var(--ink);background:rgba(13,18,24,.55);border:2px solid rgba(255,255,255,.3);border-radius:14px;position:absolute;display:flex;align-items:center;justify-content:center;font-weight:800;letter-spacing:.04em;padding:0;opacity:.88}
+#tc button.dn{background:var(--acc);border-color:#fff;opacity:1}
+#tc .big{width:min(15vw,104px);height:min(21vh,84px);font-size:min(5vw,30px)}
+#tc #tcL{left:max(12px,env(safe-area-inset-left));bottom:calc(80px + env(safe-area-inset-bottom,0px))}
+#tc #tcR{left:calc(max(12px,env(safe-area-inset-left)) + min(15vw,104px) + 10px);bottom:calc(80px + env(safe-area-inset-bottom,0px))}
+#tc #tcG{right:max(12px,env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(18vw,130px);height:min(34vh,135px);font-size:min(3.8vw,22px);border-color:#5ee27a}
+#tc #tcB{right:calc(max(12px,env(safe-area-inset-right)) + min(18vw,130px) + 10px);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(15vw,104px);height:min(24vh,95px);font-size:min(3.6vw,20px)}
+#tc .sm{width:min(12vw,84px);height:min(10vh,40px);font-size:min(3vw,15px)}
+#tc #tcCam{right:max(12px,env(safe-area-inset-right));top:calc(62px + env(safe-area-inset-top,0px))}
+#tc #tcPit{right:calc(max(12px,env(safe-area-inset-right)) + min(12vw,84px) + 8px);top:calc(62px + env(safe-area-inset-top,0px))}
+#tc #tcTyre{right:max(12px,env(safe-area-inset-right));top:calc(62px + min(10vh,40px) + 8px + env(safe-area-inset-top,0px))}
+#tc #tcRst{right:calc(max(12px,env(safe-area-inset-right)) + min(12vw,84px) + 8px);top:calc(62px + min(10vh,40px) + 8px + env(safe-area-inset-top,0px))}
+#tc #tcFs{display:flex;left:50%;transform:translateX(-190px);top:8px;width:46px;height:34px}
+#tc #tcMode{left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));width:min(26vw,170px);height:min(9vh,36px);font-size:min(3vw,14px)}
+#tc #tcCal,#tc #tcInv{display:none;bottom:calc(84px + env(safe-area-inset-bottom,0px));height:min(9vh,36px);width:min(13vw,92px);font-size:min(3vw,14px)}
+#tc.gy #tcCal,#tc.gy #tcInv{display:flex}
+#tc #tcCal{left:calc(50% - min(26vw,170px)/2 - min(13vw,92px) - 8px)}
+#tc #tcInv{left:calc(50% + min(26vw,170px)/2 + 8px)}
+#tc.gy #tcL,#tc.gy #tcR{display:none}
+#tcInd{display:none;position:absolute;left:max(12px,env(safe-area-inset-left));bottom:calc(100px + env(safe-area-inset-bottom,0px));width:min(34vw,240px);height:14px;border-radius:7px;background:rgba(13,18,24,.55);border:2px solid rgba(255,255,255,.3)}
+#tc.gy #tcInd{display:block}
+#tcInd i{position:absolute;top:1px;bottom:1px;width:10px;margin-left:-5px;left:50%;border-radius:5px;background:var(--acc)}
+body.touch #pad{display:none}
+#tcRot{display:none;position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);background:var(--pan);padding:10px 16px;border-radius:12px;font-size:20px;font-weight:700;text-align:center;pointer-events:none}
+@media (orientation:portrait){#tcRot{display:block}}
+</style></head><body>
 <button id="qend" type="button">Terminar clasificación<small>Tecla F · quedás con tu mejor vuelta</small></button>
 <div id="scr">Trazado de Monza basado en «Monza Circuit 1998 layout» de Dave Bored (Sketchfab), CC-BY 4.0</div>
 <div id="pos" class="h">P1<small>posición</small></div><div id="lap" class="h">Vuelta 1/3<small>--</small></div>
@@ -185,6 +214,12 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 <div id="pcfg"><div class="pbox"><h2>Configurar mando</h2><p id="pst"></p><select id="psel" aria-label="Dispositivo"></select>
 <div class="seg" id="pbtns"><button data-k="st">Dirección</button><button data-k="th">Acelerar</button><button data-k="br">Frenar</button><button data-k="cam">Cámara</button><button data-k="rs">Reiniciar</button><button data-k="mn">Menú</button><button data-k="pt">Pedir parada</button><button data-k="nt">Próximo neumático</button><button data-k="bk">Mirar atrás</button></div>
 <p id="phint">Elegí una acción y mové ese control en tu mando.</p><pre id="pdbg"></pre><div class="seg"><button id="prs">Restablecer</button><button id="pcl">Cerrar</button></div></div></div>
+<div id="tc" aria-label="Controles tactiles"><div id="tcRot">Girá el celular a horizontal</div><div id="tcInd"><i></i></div>
+<button id="tcL" class="big" aria-label="Izquierda">◀</button><button id="tcR" class="big" aria-label="Derecha">▶</button>
+<button id="tcG" aria-label="Acelerar">ACELERAR</button><button id="tcB" aria-label="Frenar">FRENO</button>
+<button id="tcCam" class="sm">CÁMARA</button><button id="tcPit" class="sm">BOXES</button><button id="tcTyre" class="sm">GOMAS</button><button id="tcRst" class="sm">REINICIAR</button>
+<button id="tcFs" class="sm">⛶</button>
+<button id="tcMode">VOLANTE: BOTONES</button><button id="tcCal" class="sm">CENTRAR</button><button id="tcInv" class="sm">INVERTIR</button></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
@@ -711,19 +746,37 @@ const mx=(g,l)=>Math.max(0,...l.map(b=>bv(g,b)));
 function steerOf(g){const b=MAP.st[0];let a=b&&b.t=='a'?((g.axes[b.i]||0)-(b.c||0))*(b.v||1):0;
 a=Math.abs(a)<.08?0:Math.sign(a)*Math.pow((Math.min(1,Math.abs(a))-.08)/.92,1.4);
 if(!a&&g.buttons[14]&&g.buttons[15])a=(g.buttons[15].pressed?1:0)-(g.buttons[14].pressed?1:0);return a}
-function input(dt){const g=pad();gpB=false;let st=0,th=0,br=0;
+
+// ---- Controles tactiles: botones o giroscopio (solo en dispositivos tactiles sin mouse)
+const TOUCH=(()=>{try{return matchMedia('(hover:none) and (pointer:coarse)').matches&&(navigator.maxTouchPoints||0)>0}catch(e){return false}})();
+const TCH={l:0,r:0,th:0,br:0,gy:0,off:0,inv:0,phi:null,ks:0};
+function tcPhi(r){const a=((screen.orientation&&screen.orientation.angle!=null?screen.orientation.angle:window.orientation)||0)%360,x=r.x||0,y=r.y||0;let p;if(a==90||a==-270)p=Math.atan2(y,x);else if(a==270||a==-90)p=Math.atan2(-y,-x);else if(a==180)p=Math.atan2(x,-y);else p=Math.atan2(-x,y);return p*57.2958}
+function tcMotion(e){const g=e.accelerationIncludingGravity;if(!g||g.x==null)return;const k=/iP(hone|ad|od)/.test(navigator.userAgent)?-1:1;TCH.phi=tcPhi({x:g.x*k,y:g.y*k})}
+function tcSave(){try{localStorage.setItem('apex.gyro',TCH.gy?'1':'0');localStorage.setItem('apex.inv',TCH.inv?'1':'0')}catch(e){}}
+function tcUI(){$('tc').classList.toggle('gy',!!TCH.gy);$('tcMode').textContent='VOLANTE: '+(TCH.gy?'GIRO':'BOTONES');$('tcInv').classList.toggle('dn',!!TCH.inv)}
+async function tcGyro(on){if(on){try{if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){const r=await DeviceMotionEvent.requestPermission();if(r!=='granted'){alert('Sin permiso para el giroscopio');return}}}catch(e){}
+window.removeEventListener('devicemotion',tcMotion);window.addEventListener('devicemotion',tcMotion);TCH.gy=1;TCH.off=TCH.phi||0}else{TCH.gy=0;window.removeEventListener('devicemotion',tcMotion)}tcSave();tcUI()}
+function tcSteer(dt){let v=0;if(TCH.gy&&TCH.phi!=null){let d=TCH.phi-TCH.off;d=((d+540)%360)-180;const dz=2.5;d=Math.abs(d)<dz?0:d-Math.sign(d)*dz;v=Math.max(-1,Math.min(1,d/30));if(TCH.inv)v=-v;v=Math.sign(v)*Math.pow(Math.abs(v),1.15)}else{const kt=TCH.r-TCH.l;TCH.ks+=(kt-TCH.ks)*Math.min(1,dt*9);v=TCH.ks}const bar=$('tcInd').firstChild;if(bar)bar.style.left=(50+v*48)+'%';return v}
+if(TOUCH){document.body.classList.add('touch');try{TCH.gy=localStorage.getItem('apex.gyro')=='1'?1:0;TCH.inv=localStorage.getItem('apex.inv')=='1'?1:0}catch(e){}
+const hold=(id,k)=>{const b=$(id),on=e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}TCH[k]=1;b.classList.add('dn');audio()},off=e=>{TCH[k]=0;b.classList.remove('dn')};b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off);b.addEventListener('contextmenu',e=>e.preventDefault())};
+hold('tcL','l');hold('tcR','r');hold('tcG','th');hold('tcB','br');
+const tap=(id,f)=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();audio();f()});
+tap('tcCam',()=>setCam(cm+1));tap('tcPit',()=>togglePit());tap('tcTyre',()=>nextTire());tap('tcRst',()=>start(1));tap('tcMode',()=>tcGyro(!TCH.gy));tap('tcCal',()=>{TCH.off=TCH.phi||0});tap('tcInv',()=>{TCH.inv=TCH.inv?0:1;tcSave();tcUI()});
+tap('tcFs',()=>{const d=document.documentElement;try{if(document.fullscreenElement){document.exitFullscreen()}else{(d.requestFullscreen||d.webkitRequestFullscreen).call(d).then(()=>{try{screen.orientation.lock('landscape')}catch(e){}}).catch(()=>{})}}catch(e){}});
+if(TCH.gy){window.addEventListener('devicemotion',tcMotion)}tcUI();addEventListener('contextmenu',e=>e.preventDefault())}
+function input(dt){if(TOUCH){$('tc').classList.toggle('on',!menu&&!$('pcfg').style.display.includes('flex')&&!qov)}const g=pad();gpB=false;let st=0,th=0,br=0;
 const kt=(K.ArrowRight||K.KeyD?1:0)-(K.ArrowLeft||K.KeyA?1:0);ks+=(kt-ks)*Math.min(1,dt*8);
 if(g){st=steerOf(g);th=mx(g,MAP.th);br=mx(g,MAP.br);
 const co=$('pcfg').style.display=='flex',x=mx(g,MAP.cam)>.5?1:0;if(x&&!pX&&!co)setCam(cm+1);pX=x;const y=mx(g,MAP.rs)>.5?1:0;if(y&&!pY&&!co)start(1);pY=y;const a1=mx(g,MAP.pt)>.5?1:0;if(a1&&!pPt&&!co)togglePit();pPt=a1;const a2=mx(g,MAP.nt)>.5?1:0;if(a2&&!pNt&&!co)nextTire();pNt=a2;gpB=!co&&mx(g,MAP.bk)>.5;
 const s9=mx(g,MAP.mn)>.5?1:0;if(s9&&!pS&&!co){if(qov&&!rm)goRace();else if(state=='ready'||state=='done')start();else toggleMenu()}pS=s9;
 if(g.id!==padName){padName=g.id;$('pad').textContent='Mando: '+g.id.slice(0,40)}}
 else if(padName){padName='';$('pad').textContent='Mando desconectado'}
-LB=kbB||gpB;return{st:Math.abs(st)>0?st:ks,th:Math.max(th,K.ArrowUp||K.KeyW?1:0),br:Math.max(br,K.ArrowDown||K.KeyS?1:0)}}
+LB=kbB||gpB;const ts=TOUCH?tcSteer(dt):0;return{st:Math.abs(st)>0?st:(Math.abs(ts)>0?ts:ks),th:Math.max(th,TCH.th,K.ArrowUp||K.KeyW?1:0),br:Math.max(br,TCH.br,K.ArrowDown||K.KeyS?1:0)}}
 // Física
 // Rebufo: detrás de otro auto (5-32 m, casi en su línea) la resistencia baja hasta un 10 %.
 // Ataque: un rival de IA pegado (<1 s) a otro durante 2.5 s en recta recibe un empujón extra (tipo DRS) para poder pasar.
 function draftAll(dt){for(const c of cars){let b=0,att=0;if(!c.gone&&!c.dnf&&!c.pl&&c.s>30&&!c.remote){const fx=Math.sin(c.h),fz=Math.cos(c.h),wa=Math.min(85,c.s);for(const o of cars){if(o===c||o.gone||o.dnf||o.pl)continue;const dx=o.x-c.x,dz=o.z-c.z,f=dx*fx+dz*fz;if(f<5||f>wa)continue;const l=Math.abs(dx*fz-dz*fx);if(f<=32&&l<=2.6){const v=(1-(f-5)/27)*(1-l/2.6);if(v>b)b=v}if(l<4)att=1}}
-if(c.ai&&!QUAL){c.att=att?(c.att||0)+dt:Math.max(0,(c.att||0)-2*dt);if(c.att>2.5&&c.s>55){let st=1;for(let k=0;k<10;k+=3)if(CV[(c.idx+k)%N]<62)st=0;if(st)b=Math.max(b,.85)}}c.dr=b}}
+if(c.ai&&!QUAL){c.att=att?(c.att||0)+dt:Math.max(0,(c.att||0)-2*dt);if(c.att>1.2&&c.s>50){let st=1;for(let k=0;k<10;k+=3)if(CV[(c.idx+k)%N]<62)st=0;if(st)b=Math.max(b,1.05)}}c.dr=b}}
 // Superficies segun terrain.ini del mod: 0 asfalto, 1 piano, 2 cesped, 3 grava/arena, 4 fuera de pista generico
 const SFX=[{dr:.0035,g:1,w:1,sd:0,bp:0,rb:0},{dr:.0045,g:.85,w:1.1,sd:0,bp:0,rb:1},{dr:.006,g:.6,w:1.5,sd:2.5,bp:.05,rb:0},{dr:.006,g:.65,w:1.8,sd:11.5,bp:.07,rb:0},{dr:.01,g:.8,w:1.5,sd:.4,bp:.1,rb:0}],SFTH=[.5,1.5,3,5,8,12,18,26];
 function surfAt(c){const lat=Math.abs(c.d)-HA[c.idx];if(PIT&&(roadPit(c)||(PIT.sg*c.d>0&&sOf(c.idx)>=PIT.sEnt-20&&sOf(c.idx)<=PIT.sExit+20)))return 0;if(SM){const v=smAt(c.x,c.z);if(v<255)return v}if(lat<.5)return 0;const sf=TRACKS[trkIdx].sf;if(!sf)return 4;const k=Math.min(sf.n-1,Math.floor(c.idx/N*sf.n));let j=7;while(j>0&&lat<SFTH[j])j--;const v=(c.d>0?sf.b:sf.a).charCodeAt(k*8+j)-48;return v>=0&&v<=3?v:4}
@@ -768,11 +821,11 @@ function ai(c){const ds=TLEN/N,Ld=N*ds,G=c.G||1,gk=.55+.45*G;let sk=c.skill||1,r
 if(!QUAL&&state=='race'){if(c.ph===undefined)c.ph=Math.random()*6.28;const q=cars[0];rb=.016*Math.sin(t*.09+c.ph);if(q&&!q.remote&&q!==c&&!q.dnf&&!c.pl&&!c.pitReq){const dq=(((q.lap-c.lap)*N+(q.idx-c.idx))*ds);if(dq>150)rb+=Math.min(.035,(dq-150)/4000);else if(dq<-220)rb-=Math.min(.02,(-dq-220)/6000)}sk*=1+rb}
 if(PIT){const q=sOf(c.idx);if(c.pitReq&&!c.pa&&q>=PIT.sEnt-60&&q<=PIT.sLane+20)assignBox(c);else if(c.pa&&q>PIT.sExit+15)c.pa=0}
 const pm=PIT&&(c.pitReq||c.pl);
-let tg=(c.top||85)*(1+rb*.6+.045*(c.dr||0));const K=Math.min(N-1,Math.ceil((40+c.s*2.8)/ds)),bd=26*(.7+.3*G)*(.8+.2*sk),mg=(LMN?.84:.93)*sk;
+let tg=(c.top||85)*1.025*(1+rb*.6+.045*(c.dr||0));const K=Math.min(N-1,Math.ceil((40+c.s*2.8)/ds)),bd=31*(.7+.3*G)*(.8+.2*sk),mg=(LMN?.9:.97)*sk;
 for(let k=0;k<K;k+=2){const vc=CV[(c.idx+k)%N]*gk*mg,va=Math.sqrt(vc*vc+2*bd*k*ds);if(va<tg)tg=va}
 if(!pm){let ahead=1e9,near=0,lt=c.base||0,cm=1e9;for(let k=0;k<30;k+=3)cm=Math.min(cm,CV[(c.idx+k)%N]);const tight=cm<48;
 for(const o of cars){if(o===c||o.gone)continue;let dp=((o.lap-c.lap)*N+(o.idx-c.idx))*ds;dp=((dp+Ld/2)%Ld+Ld)%Ld-Ld/2;const dl=o.d-c.d;
-const lmx=Math.max(2.5,Math.min(HA[c.idx]-.8,Math.min(LIM[c.idx][0],LIM[c.idx][1])-2.4)),wd=o.pl&&sOf(o.idx)>PIT.sEnd,cl=Math.max(0,c.s*c.s-o.s*o.s)/52,dpM=Math.max(wd?75:34,cl+16),dlM=wd?6:3.4;if(dp>0&&dp<dpM&&Math.abs(dl)<dlM){let side=c.d>=o.d?1:-1;const rm=q=>lmx-q*o.d;let of=Math.min(4.2,rm(side));if(of<2.6){side=-side;of=Math.min(4.2,rm(side))}let g=Math.max(-lmx,Math.min(lmx,o.d+side*Math.max(2.6,of)));lt=tight&&!wd?(c.base||0):(!wd&&c.dr>.15&&dp>cl+20&&Math.abs(dl)<2.2?o.d:g);if(dp<Math.max(wd?48:tight?26:16,cl+(tight?16:10))&&Math.abs(dl)<(wd?5:2.6))ahead=Math.min(ahead,o.s)}
+const lmx=Math.max(2.5,Math.min(HA[c.idx]-.8,Math.min(LIM[c.idx][0],LIM[c.idx][1])-2.4)),wd=o.pl&&sOf(o.idx)>PIT.sEnd,cl=Math.max(0,c.s*c.s-o.s*o.s)/52,dpM=Math.max(wd?75:46,cl+24),dlM=wd?6:3.4;if(dp>0&&dp<dpM&&Math.abs(dl)<dlM){let side=c.d>=o.d?1:-1;const rm=q=>lmx-q*o.d;let of=Math.min(4.2,rm(side));if(of<2.6){side=-side;of=Math.min(4.2,rm(side))}let g=Math.max(-lmx,Math.min(lmx,o.d+side*Math.max(2.6,of)));lt=tight&&!wd&&dp>13?(c.base||0):(!wd&&c.dr>.15&&dp>cl+20&&Math.abs(dl)<2.2?o.d:g);if(dp<Math.max(wd?48:tight?19:11,cl+(tight?10:6))&&Math.abs(dl)<(wd?5:2.2))ahead=Math.min(ahead,o.s)}
 else if(Math.abs(dp)<5&&Math.abs(dl)<3.6)near=dl>0?1:-1}
 if(near&&(lt-c.d)*near>0)lt=c.d;c.lane+=(lt-c.lane)*.06;if(ahead<1e9)tg=Math.min(tg,ahead*.99)}
 let L=Math.max(4,Math.min(10+Math.floor(c.s/7),3+Math.floor(c.s*.35)));{const a0=T[c.idx];while(L>3){const b0=T[(c.idx+L)%N];if(Math.abs(Math.atan2(a0.x*b0.z-a0.z*b0.x,a0.x*b0.x+a0.z*b0.z))<LAK)break;L--}}const j=(c.idx+L)%N,p=P[j],n=Nm[j],ln0=pm?pitLn(c,j):c.lane,ln=LMN&&!pm?Math.max(-(LMN[j][0]-2.1),Math.min(LMN[j][1]-2.1,ln0)):ln0;
