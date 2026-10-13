@@ -23,6 +23,21 @@ const srv = http.createServer((q, r) => {
 const wss = new WebSocketServer({ server: srv, path: '/ws', maxPayload: 4096 });
 const send = (ws, o) => ws.readyState === 1 && ws.send(JSON.stringify(o));
 const others = (R, id, o) => R.forEach((v, k) => k !== id && send(v.ws, o));
+// Lotes: los clientes v2 reciben las actualizaciones de posición agrupadas cada 16 ms (menos mensajes, mismo retardo máximo +16 ms)
+const dirty = new Set();
+function queue(R, id, d) { // d: cambios de este jugador
+  const me = R.get(id); if (!me) return;
+  me.q = Object.assign(me.q || {}, d); dirty.add(R);
+  R.forEach((v, k) => { if (k !== id && !v.v2) send(v.ws, { t: 'u', id, d }); });
+}
+setInterval(() => {
+  dirty.forEach(R => {
+    const a = []; R.forEach((v, k) => { if (v.q) { a.push([k, v.q]); v.q = null; } });
+    if (!a.length) return;
+    R.forEach((v, k) => { if (!v.v2) return; const m = a.filter(x => x[0] !== k); if (m.length) send(v.ws, { t: 'b', a: m }); });
+  });
+  dirty.clear();
+}, 16);
 // Solo valores simples con claves tipo identificador (el cliente manda x, z, h, lap, etc.)
 function clean(d) {
   const o = {}; let n = 0;
@@ -42,20 +57,21 @@ wss.on('connection', ws => {
   ws.alive = true; ws.on('pong', () => ws.alive = true);
 
   ws.on('message', buf => {
-    const now = Date.now(); if (now - win > 1000) { win = now; count = 0; } if (++count > 80) return; // límite de mensajes
+    const now = Date.now(); if (now - win > 1000) { win = now; count = 0; } if (++count > 160) return; // límite de mensajes
     let m; try { m = JSON.parse(buf); } catch { return; }
     if (m.t === 'j' && !room) {
       const name = String(m.r || '').toLowerCase().replace(/[^a-z0-9_.-]/g, '').slice(0, 48);
       if (!name) return;
       R = rooms.get(name) || rooms.set(name, new Map()).get(name);
       if (R.size >= MAX) { send(ws, { t: 'f' }); return ws.close(); }
-      room = name; R.set(id, { ws, pres });
+      room = name; R.set(id, { ws, pres, v2: m.v === 2, q: null });
       send(ws, { t: 's', me: id, ps: [...R].filter(([k]) => k !== id).map(([k, v]) => ({ id: k, p: v.pres })) });
       others(R, id, { t: 'u', id, d: {} });
-    } else if (m.t === 'p' && room && m.d && typeof m.d === 'object') {
+    } else if (m.t === 'i') { send(ws, { t: 'o', ts: m.ts }); }
+    else if (m.t === 'p' && room && m.d && typeof m.d === 'object') {
       const d = clean(m.d);
       for (const k in d) d[k] === null ? delete pres[k] : (pres[k] = d[k]);
-      others(R, id, { t: 'u', id, d });
+      queue(R, id, d);
     }
   });
 
