@@ -192,7 +192,81 @@ body.touch #tc.on{display:block}
 body.touch #pad{display:none}
 #tcRot{display:none;position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);background:var(--pan);padding:10px 16px;border-radius:12px;font-size:20px;font-weight:700;text-align:center;pointer-events:none}
 @media (orientation:portrait){#tcRot{display:block}}
-#dbg{display:none;position:fixed;left:240px;top:96px;z-index:40;background:rgba(0,0,0,.72);color:#9f9;font:13px/1.35 monospace;padding:8px 10px;border-radius:8px;pointer-events:none;white-space:pre}</style></head><body>
+#dbg{display:none;position:fixed;left:240px;top:96px;z-index:40;background:rgba(0,0,0,.72);color:#9f9;font:13px/1.35 monospace;padding:8px 10px;border-radius:8px;pointer-events:none;white-space:pre}
+/* ===== v38: celular ===== */
+body.touch #tc button{flex-direction:column;gap:1px;background:rgba(10,14,20,.5);border:1.5px solid rgba(255,255,255,.28);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:.92;transition:transform .08s,background .08s}
+body.touch #tc button.dn{transform:scale(.94)}
+body.touch #tc button b{font-size:9px;font-weight:700;letter-spacing:.08em;line-height:1;opacity:.85}
+body.touch #tc button svg{width:22px;height:22px;flex:none}
+body.touch #tc .big{width:clamp(54px,10vw,76px);height:clamp(54px,10vw,76px);border-radius:50%;font-size:0}
+body.touch #tc .big svg{width:30px;height:30px;stroke-width:2.6}
+body.touch #tc #tcL{left:max(14px,env(safe-area-inset-left));bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+body.touch #tc #tcR{left:calc(max(14px,env(safe-area-inset-left)) + clamp(54px,10vw,76px) + 14px);bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+body.touch #tc #tcG{right:max(14px,env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom,0px));width:clamp(64px,11vw,84px);height:clamp(90px,28vh,118px);border-radius:22px;border-color:#5ee27a;background:rgba(40,140,70,.35);font-size:0}
+body.touch #tc #tcG svg{width:30px;height:30px;color:#8dffa6}
+body.touch #tc #tcB{right:calc(max(14px,env(safe-area-inset-right)) + clamp(64px,11vw,84px) + 12px);bottom:calc(16px + env(safe-area-inset-bottom,0px));width:clamp(54px,9.5vw,70px);height:clamp(64px,18vh,84px);border-radius:20px;border-color:#ff7a70;background:rgba(170,40,30,.3);font-size:0}
+body.touch #tc .sm{width:44px;height:44px;border-radius:50%;font-size:0}
+body.touch #tc .sm svg{width:19px;height:19px}
+body.touch #tc .sm b{font-size:8px}
+/* utilidades: grilla a la derecha, debajo del minimapa */
+body.touch #tc .sm,body.touch #tc #tcFs{left:auto;transform:none;bottom:auto}
+body.touch #tc #tcCam{right:max(8px,env(safe-area-inset-right));top:calc(150px + env(safe-area-inset-top,0px))}
+body.touch #tc #tcTyre{right:calc(max(8px,env(safe-area-inset-right)) + 50px);top:calc(150px + env(safe-area-inset-top,0px))}
+body.touch #tc #tcFs{right:calc(max(8px,env(safe-area-inset-right)) + 100px);top:calc(150px + env(safe-area-inset-top,0px));width:44px;height:44px}
+body.touch #tc #tcPit{right:max(8px,env(safe-area-inset-right));top:calc(200px + env(safe-area-inset-top,0px))}
+body.touch #tc #tcRst{right:calc(max(8px,env(safe-area-inset-right)) + 50px);top:calc(200px + env(safe-area-inset-top,0px))}
+body.touch #tc #tcMode{left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));width:58px;height:44px;border-radius:14px;font-size:0}
+body.touch #tc #tcCal,body.touch #tc #tcInv{width:58px;height:44px;border-radius:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));font-size:0}
+body.touch #tc #tcCal{left:calc(50% - 29px - 64px)}body.touch #tc #tcInv{left:calc(50% + 29px + 6px)}
+body.touch #tcInd{bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+/* HUD compacto */
+body.touch #mm{width:120px!important;height:86px!important;top:calc(56px + env(safe-area-inset-top,0px))!important;left:auto!important;right:max(8px,env(safe-area-inset-right))!important}
+body.touch #pos{top:6px;left:10px;transform:scale(.7);transform-origin:top left}
+body.touch #lap{top:6px;right:8px;transform:scale(.72);transform-origin:top right}
+body.touch #dmg{top:auto;bottom:calc(138px + env(safe-area-inset-bottom,0px));left:14px;transform:scale(.7);transform-origin:top left}
+body.touch #spd{bottom:calc(92px + env(safe-area-inset-bottom,0px));left:14px;font-size:30px;transform:none}
+body.touch #tir{top:auto;bottom:calc(66px + env(safe-area-inset-bottom,0px));right:auto;left:50%;transform:translateX(-50%) scale(.7);transform-origin:bottom center;max-width:60vw;white-space:nowrap}
+body.touch #cam{top:50px;font-size:13px}body.touch #sea{top:72px;font-size:11px}
+/* menu */
+@media (hover:none) and (pointer:coarse){
+ #ov{padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch}
+ #mnu{gap:8px}
+ #mnu h1{font-size:34px!important;margin:0}#mnu h1::after,#mnu .hlp,#ovt{display:none}
+ #mnu .top{flex-direction:row;align-items:center;gap:8px}
+ #mnu .tabs{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;position:sticky;top:0;z-index:5;background:rgba(6,9,13,.9);padding:2px 0;gap:6px}
+ #mnu .tabs::-webkit-scrollbar{display:none}
+ #mnu .tabs button{flex:0 0 auto;padding:10px 16px!important;font-size:16px!important;min-height:44px;border-radius:10px}
+ #mnu .cfg,#p-tire .cfg{grid-template-columns:1fr!important;gap:8px}
+ #p-race .cfg>#rivbox{grid-column:auto}
+ #rivbox{grid-template-columns:1fr}#rivbox>.lb:nth-child(3),#rivbox>#diff{grid-column:1;grid-row:auto}
+ #mnu .cfg>div{padding:10px 12px}
+ #mnu .seg button,#mnu #laps button,#mnu #wxs button,#mnu #mode button,#mnu #tmsel button,#mnu #drsel button{min-height:44px;padding:8px 12px!important;font-size:17px!important}
+ #mnu select,#mnu input[type=text],#mnu input:not([type=range]){min-height:44px;font-size:17px}
+ #mnu input[type=range]{height:34px}
+ #tires,#ptires{grid-template-columns:repeat(3,1fr)!important}
+ #mnu #tires button,#mnu #ptires button{min-height:64px}
+ #tires .dot,#ptires .dot{width:30px;height:30px}
+ #mnu>.pn.on{padding-bottom:84px}
+ #mnu .bar{position:sticky;bottom:0;z-index:6;margin:0 -10px;padding:8px 10px;background:linear-gradient(180deg,rgba(6,9,13,0),rgba(6,9,13,.97) 22%)}
+ #mnu .bar>*{max-width:100%}
+ #pcb{display:none!important}
+ #mnu,#mnu>.pn,#mnu .cfg>div{min-width:0;max-width:100%}
+ #mnu select{max-width:100%;width:100%}
+ #mnu .seg,#mnu .rv{flex-wrap:wrap}
+ #mnu .seg button{flex:1 1 auto}
+ #go{width:100%;font-size:24px!important;padding:12px 16px!important;min-height:52px}
+ #onl .acc{grid-template-columns:1fr!important}
+ #lobby{max-height:none}
+}
+@media (hover:none) and (pointer:coarse) and (orientation:landscape){
+ #mnu .cfg{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #mnu h1{font-size:28px!important}
+ #mnu .tabs button{padding:6px 12px!important;font-size:14px!important;min-height:38px}
+ #go{min-height:44px;font-size:20px!important;padding:6px 16px!important}
+ #mnu .cfg>div{padding:8px 10px}
+}
+body.touch.inmenu #tc{display:none!important}
+</style></head><body>
 <button id="qend" type="button">Terminar clasificación<small>Tecla F · quedás con tu mejor vuelta</small></button>
 <div id="scr">Trazado de Monza basado en «Monza Circuit 1998 layout» de Dave Bored (Sketchfab), CC-BY 4.0</div>
 <div id="pos" class="h">P1<small>posición</small></div><div id="lap" class="h">Vuelta 1/3<small>--</small></div>
@@ -215,11 +289,11 @@ body.touch #pad{display:none}
 <div class="seg" id="pbtns"><button data-k="st">Dirección</button><button data-k="th">Acelerar</button><button data-k="br">Frenar</button><button data-k="cam">Cámara</button><button data-k="rs">Reiniciar</button><button data-k="mn">Menú</button><button data-k="pt">Pedir parada</button><button data-k="nt">Próximo neumático</button><button data-k="bk">Mirar atrás</button></div>
 <p id="phint">Elegí una acción y mové ese control en tu mando.</p><pre id="pdbg"></pre><div class="seg"><button id="prs">Restablecer</button><button id="pcl">Cerrar</button></div></div></div>
 <div id="tc" aria-label="Controles tactiles"><div id="tcRot">Girá el celular a horizontal</div><div id="tcInd"><i></i></div>
-<button id="tcL" class="big" aria-label="Izquierda">◀</button><button id="tcR" class="big" aria-label="Derecha">▶</button>
-<button id="tcG" aria-label="Acelerar">ACELERAR</button><button id="tcB" aria-label="Frenar">FRENO</button>
-<button id="tcCam" class="sm">CÁMARA</button><button id="tcPit" class="sm">BOXES</button><button id="tcTyre" class="sm">GOMAS</button><button id="tcRst" class="sm">REINICIAR</button>
-<button id="tcFs" class="sm">⛶</button>
-<button id="tcMode">VOLANTE: BOTONES</button><button id="tcCal" class="sm">CENTRAR</button><button id="tcInv" class="sm">INVERTIR</button></div>
+<button id="tcL" class="big" aria-label="Izquierda"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><button id="tcR" class="big" aria-label="Derecha"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+<button id="tcG" aria-label="Acelerar"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15l7-8 7 8"/><path d="M5 21l7-8 7 8"/></svg><b>ACEL</b></button><button id="tcB" aria-label="Frenar"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/></svg><b>FRENO</b></button>
+<button id="tcCam" class="sm"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg><b>CÁM</b></button><button id="tcPit" class="sm"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4h8a4 4 0 010 8H5"/></svg><b>BOX</b></button><button id="tcTyre" class="sm"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg><b>GOMA</b></button><button id="tcRst" class="sm"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 108-8H7"/><path d="M10 1L7 4l3 3"/></svg><b>REIN</b></button>
+<button id="tcFs" class="sm"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+<button id="tcMode"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v6M3.5 14l5.5-2M20.5 14l-5.5-2"/></svg><b id="tcMt">BOTONES</b></button><button id="tcCal" class="sm"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><b>CENTRAR</b></button><button id="tcInv" class="sm"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v14M3 14l4 4 4-4M17 20V6M13 10l4-4 4 4"/></svg><b>INVERT</b></button></div>
 <div id="dbg"></div><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
@@ -764,7 +838,7 @@ const TCH={l:0,r:0,th:0,br:0,gy:0,off:0,inv:0,phi:null,ks:0};
 function tcPhi(r){const a=((screen.orientation&&screen.orientation.angle!=null?screen.orientation.angle:window.orientation)||0)%360,x=r.x||0,y=r.y||0;let p;if(a==90||a==-270)p=Math.atan2(y,x);else if(a==270||a==-90)p=Math.atan2(-y,-x);else if(a==180)p=Math.atan2(x,-y);else p=Math.atan2(-x,y);return p*57.2958}
 function tcMotion(e){const g=e.accelerationIncludingGravity;if(!g||g.x==null)return;const k=/iP(hone|ad|od)/.test(navigator.userAgent)?-1:1;TCH.phi=tcPhi({x:g.x*k,y:g.y*k})}
 function tcSave(){try{localStorage.setItem('apex.gyro',TCH.gy?'1':'0');localStorage.setItem('apex.inv',TCH.inv?'1':'0')}catch(e){}}
-function tcUI(){$('tc').classList.toggle('gy',!!TCH.gy);$('tcMode').textContent='VOLANTE: '+(TCH.gy?'GIRO':'BOTONES');$('tcInv').classList.toggle('dn',!!TCH.inv)}
+function tcUI(){$('tc').classList.toggle('gy',!!TCH.gy);$('tcMt').textContent=TCH.gy?'GIRO':'BOTONES';$('tcInv').classList.toggle('dn',!!TCH.inv)}
 async function tcGyro(on){if(on){try{if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){const r=await DeviceMotionEvent.requestPermission();if(r!=='granted'){alert('Sin permiso para el giroscopio');return}}}catch(e){}
 window.removeEventListener('devicemotion',tcMotion);window.addEventListener('devicemotion',tcMotion);TCH.gy=1;TCH.off=TCH.phi||0}else{TCH.gy=0;window.removeEventListener('devicemotion',tcMotion)}tcSave();tcUI()}
 function tcSteer(dt){let v=0;if(TCH.gy&&TCH.phi!=null){let d=TCH.phi-TCH.off;d=((d+540)%360)-180;const dz=2.5;d=Math.abs(d)<dz?0:d-Math.sign(d)*dz;v=Math.max(-1,Math.min(1,d/30));if(TCH.inv)v=-v;v=Math.sign(v)*Math.pow(Math.abs(v),1.15)}else{const kt=TCH.r-TCH.l;TCH.ks+=(kt-TCH.ks)*Math.min(1,dt*9);v=TCH.ks}const bar=$('tcInd').firstChild;if(bar)bar.style.left=(50+v*48)+'%';return v}
@@ -774,10 +848,10 @@ hold('tcL','l');hold('tcR','r');hold('tcG','th');hold('tcB','br');
 const tap=(id,f)=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();audio();f()});
 tap('tcCam',()=>setCam(cm+1));tap('tcPit',()=>togglePit());tap('tcTyre',()=>nextTire());tap('tcRst',()=>start(1));tap('tcMode',()=>tcGyro(!TCH.gy));tap('tcCal',()=>{TCH.off=TCH.phi||0});tap('tcInv',()=>{TCH.inv=TCH.inv?0:1;tcSave();tcUI()});
 tap('tcFs',()=>{const d=document.documentElement;try{if(document.fullscreenElement){document.exitFullscreen()}else{(d.requestFullscreen||d.webkitRequestFullscreen).call(d).then(()=>{try{screen.orientation.lock('landscape')}catch(e){}}).catch(()=>{})}}catch(e){}});
-if(TCH.gy){window.addEventListener('devicemotion',tcMotion)}tcUI();addEventListener('contextmenu',e=>e.preventDefault())}
+if(TCH.gy){window.addEventListener('devicemotion',tcMotion)}tcUI();setInterval(()=>{if(TOUCH)document.body.classList.toggle('inmenu',getComputedStyle($('ov')).display!='none')},150);addEventListener('contextmenu',e=>e.preventDefault())}
 let DBG=/[?&]debug/.test(location.search),DBL=null;if(DBG)setTimeout(()=>{$('dbg').style.display='block'},0);addEventListener('keydown',e=>{if((e.code=='F3'||e.code=='KeyJ')&&!/INPUT|SELECT|TEXTAREA/.test((e.target&&e.target.tagName)||'')){if(e.code=='F3')e.preventDefault();DBG=!DBG;$('dbg').style.display=DBG?'block':'none'}});
 function dbgUpd(){const c=cars[0];if(!c)return;if(c.hit>1)DBL={s:sOf(c.idx),d:c.d,v:c.s,f:c.hit};const sq=['asfalto','piano','pasto','grava','otro'][surfAt(c)];$('dbg').textContent='DEBUG v18 (J para ocultar)\n'+TRACKS[trkIdx].n+'\ns = '+sOf(c.idx).toFixed(1)+' m   idx '+c.idx+'\nlat = '+c.d.toFixed(1)+' m   vel '+(c.s*3.6).toFixed(0)+' km/h\nsuperficie: '+sq+'\n'+(WL?'distancia a pared: '+wsd(c.x,c.z).toFixed(1)+' m\n':'')+'pos x,z = '+c.x.toFixed(1)+', '+c.z.toFixed(1)+'\n'+(DBL?'ultimo golpe: s '+DBL.s.toFixed(0)+' lat '+DBL.d.toFixed(1)+' vel '+(DBL.v*3.6).toFixed(0)+' fuerza '+DBL.f.toFixed(1):'sin golpes')}
-function input(dt){if(DBG)dbgUpd();if(TOUCH){$('tc').classList.toggle('on',!menu&&!$('pcfg').style.display.includes('flex')&&!qov)}const g=pad();gpB=false;let st=0,th=0,br=0;
+function input(dt){if(DBG)dbgUpd();if(TOUCH){document.body.classList.toggle('inmenu',getComputedStyle($('ov')).display!='none');$('tc').classList.toggle('on',!menu&&!$('pcfg').style.display.includes('flex')&&!qov)}const g=pad();gpB=false;let st=0,th=0,br=0;
 const kt=(K.ArrowRight||K.KeyD?1:0)-(K.ArrowLeft||K.KeyA?1:0);ks+=(kt-ks)*Math.min(1,dt*8);
 if(g){st=steerOf(g);th=mx(g,MAP.th);br=mx(g,MAP.br);
 const co=$('pcfg').style.display=='flex',x=mx(g,MAP.cam)>.5?1:0;if(x&&!pX&&!co)setCam(cm+1);pX=x;const y=mx(g,MAP.rs)>.5?1:0;if(y&&!pY&&!co)start(1);pY=y;const a1=mx(g,MAP.pt)>.5?1:0;if(a1&&!pPt&&!co)togglePit();pPt=a1;const a2=mx(g,MAP.nt)>.5?1:0;if(a2&&!pNt&&!co)nextTire();pNt=a2;gpB=!co&&mx(g,MAP.bk)>.5;
