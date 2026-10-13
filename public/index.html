@@ -224,6 +224,8 @@ body.touch #pad{display:none}
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
 <script>
+// Servidor de salas (WebSocket). Dejalo vacío para usar el mismo host de la página, o poné p. ej. 'apex25-sala.fly.dev'
+window.WS_URL='apex25-salas.inibag.workers.dev';
 const $=id=>document.getElementById(id);let LAPS=3;
 const R=new THREE.WebGLRenderer({antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;document.body.prepend(R.domElement);
 const sc=new THREE.Scene();sc.background=new THREE.Color(0x9fb6cf);sc.fog=new THREE.Fog(0x9fb6cf,150,650);
@@ -1073,7 +1075,7 @@ $('code').onkeydown=e=>{if(e.key=='Enter'){e.preventDefault();$('jn').click()}};
 $('cpy').onclick=async()=>{const t=rcode.toUpperCase(),b=$('cpy');let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){try{const r=document.createRange();r.selectNodeContents($('rcd'));const sl=getSelection();sl.removeAllRanges();sl.addRange(r);ok=document.execCommand('copy')}catch(_){}}b.textContent=ok?'¡Copiado!':'Seleccioná y copiá';setTimeout(()=>{b.textContent='Copiar código'},1600)};
 // Cliente WebSocket que imita la interfaz de sala usada por el juego
 const WSRM={join(name){return new Promise((res,rej)=>{
-const WU=(location.protocol=='https:'?'wss://':'ws://')+location.host+'/ws';let ws=new WebSocket(WU);const M=new Map();let me=null,snap=[],hs=[],ok=false,lv=false,rt=0,ka=0;
+const WU=(()=>{let u=''; try{u=new URLSearchParams(location.search).get('ws')||''}catch(e){}u=u||window.WS_URL||'';if(u&&!/^wss?:\/\//.test(u))u='wss://'+u;return (u||((location.protocol=='https:'?'wss://':'ws://')+location.host)).replace(/\/+$/,'')+'/ws'})();let ws=new WebSocket(WU+'?r='+encodeURIComponent(name));const M=new Map();let me=null,snap=[],hs=[],ok=false,lv=false,rt=0,ka=0;
 const rebuild=()=>{snap=[...M].map(([id,p])=>({peer:id,by:null,isMe:id==me,sameTab:id==me,kind:'viewer',guest:false,presence:p,updatedAt:0}))};
 const fire=(up,left)=>{rebuild();const u=snap.filter(x=>up.includes(x.peer));hs.forEach(h=>h({peers:snap,joined:u,left:left.map(id=>({peer:id,presence:{}})),updated:u}))};
 let srt=80;const api={name,owd:id=>{const p=M.get(id);return (srt+(p&&p.pr!=null?+p.pr:srt))/2000},peers:()=>snap,presence(d){const p=M.get(me);if(p){Object.assign(p,d);ws.readyState==1&&ws.send(JSON.stringify({t:'p',d}))}return Promise.resolve()},
@@ -1081,7 +1083,7 @@ onPeers(h){hs.push(h);setTimeout(()=>h({peers:snap,joined:snap,left:[],updated:[
 const setSt=(t,c)=>{try{$('rstat').textContent=t;$('rstat').className=c;const e=$('rinfo');if(c=='off'){e.className='er';e.textContent=t=='Reconectando…'?'Reconectando…':'Se perdió la conexión con el servidor.'}else{e.className='';e.textContent=''}}catch(_){}};
 const attach=w=>{w.onopen=()=>{w.send(JSON.stringify({t:'j',r:name,v:2}));clearInterval(ka);ka=setInterval(()=>{try{w.readyState==1&&w.send(JSON.stringify({t:'i',ts:performance.now()}))}catch(_){}},2000)};
 w.onerror=()=>{if(!ok)rej(new Error('ws'))};
-w.onclose=()=>{clearInterval(ka);if(!ok){rej(new Error('ws'));return}if(lv||rm!==api)return;if(++rt>12){setSt('Desconectado','off');return}setSt('Reconectando…','off');setTimeout(()=>{if(lv||rm!==api)return;ws=new WebSocket(WU);attach(ws)},Math.min(4000,400*rt))};
+w.onclose=()=>{clearInterval(ka);if(!ok){rej(new Error('ws'));return}if(lv||rm!==api)return;if(++rt>12){setSt('Desconectado','off');return}setSt('Reconectando…','off');setTimeout(()=>{if(lv||rm!==api)return;ws=new WebSocket(WU+'?r='+encodeURIComponent(name));attach(ws)},Math.min(4000,400*rt))};
 w.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(_){return}
 if(m.t=='s'){const old=[...M.keys()].filter(k=>k!=me),mine=M.get(me)||{};me=m.me;M.clear();m.ps.forEach(x=>M.set(x.id,x.p));M.set(me,mine);rt=0;if(!ok){ok=true;rebuild();res(api)}else{rebuild();setSt('Conectado','');if(Object.keys(mine).length)try{w.send(JSON.stringify({t:'p',d:mine}))}catch(_){}const ids=[...M.keys()],gone=old.filter(k=>!M.has(k));fire(ids,gone)}}
 else if(m.t=='u'){const p=M.get(m.id);if(p)Object.assign(p,m.d);else M.set(m.id,Object.assign({},m.d));fire([m.id],[])}
