@@ -981,7 +981,7 @@ const e=.5,gx=wsd(mx+e,mz)-wsd(mx-e,mz),gz=wsd(mx,mz+e)-wsd(mx,mz-e),gl=Math.hyp
 if(vn>0){const rx=mx+nx*R-c.x,rz=mz+nz*R-c.z,rn=rz*nx-rx*nz,J=1.04*vn/(1+rn*rn/2);c.vx-=nx*J;c.vz-=nz*J;if(vn>hit)hit=vn}LX=nx;LZ=nz;ct=1;c.scr=c.s}
 if(ct){const tx=-LZ,tz=LX,sg=(tx*Math.sin(c.h)+tz*Math.cos(c.h))>=0?1:-1;let df=Math.atan2(sg*tx,sg*tz)-c.h;df=Math.atan2(Math.sin(df),Math.cos(df));if(Math.abs(df)<1.5)c.w=Math.max(-1.5,Math.min(1.5,df*2))}
 if(hit){c.hit=hit;const kd=Math.exp(-.7*dt);c.vx*=kd;c.vz*=kd}}
-{const W0=limits(c,bi),W=WL?[W0[0]-6,W0[1]+6]:W0,out=c.d>W[1]?1:c.d<W[0]?-1:0;c.scr=out?c.s:0;if(out){const sg=out,lim=out>0?W[1]:W[0],nx=Nm[bi].x*sg,nz=Nm[bi].z*sg,ov=Math.abs(c.d-lim);c.x-=nx*ov;c.z-=nz*ov;const vn=c.vx*nx+c.vz*nz;
+{const W0=limits(c,bi),W=WL?[W0[0]-45,W0[1]+45]:W0,out=c.d>W[1]?1:c.d<W[0]?-1:0;c.scr=out?c.s:0;if(out){const sg=out,lim=out>0?W[1]:W[0],nx=Nm[bi].x*sg,nz=Nm[bi].z*sg,ov=Math.abs(c.d-lim);c.x-=nx*ov;c.z-=nz*ov;const vn=c.vx*nx+c.vz*nz;
 if(vn>0){c.vx-=nx*vn*1.5;c.vz-=nz*vn*1.5;c.vx*=.88;c.vz*=.88;let df=Math.atan2(T[bi].x,T[bi].z)-c.h;df=Math.atan2(Math.sin(df),Math.cos(df));c.h+=df*.12;c.hit=vn}c.d=lim}}}
 // Colisión entre autos: cajas orientadas (SAT) con impulso y giro
 function pitLane(c){if(!PIT||!P[c.idx])return false;const s=sOf(c.idx);if(s<PIT.sEnt-10||s>PIT.sExit+25)return false;const p=P[c.idx],n=Nm[c.idx];return PIT.sg*((c.x-p.x)*n.x+(c.z-p.z)*n.z)>12.5}
@@ -1004,15 +1004,16 @@ const occ=o.ai?(o.pa===1&&(o.pitReq||o.pitT>0||(o.pl&&so<boxS(o)+14))):((o.pitRe
 const at=k=>PIT.bs(k),ok=k=>k>=0&&k<nb&&at(k)>=s+10;if(PIT.real){const tk={};for(const o of cars){if(o===c||o.dnf||o.gone)continue;if(o.ai?(o.pa===1&&(o.pitReq||o.pitT>0)):(o.pitReq||o.pitT>0))tk[o.box%nb]=1}let bk=-1,bd=99;for(let j=0;j<nb;j++)if(!tk[j]&&ok(j)&&Math.abs(j-own)<bd){bd=Math.abs(j-own);bk=j}if(bk>=0){c.box=bk;c.pa=1}else c.pa=2;return}let k=own<=mo-2&&ok(own)?own:Math.min(nb-1,mo-2);if(!ok(k))k=Math.min(nb-1,mo-1);
 if(ok(k)){c.box=k;c.pa=1}else c.pa=2}
 let FFK=0,GK=2.6,LAK=.6;
+function lmxF(i){const cr=CRR?CRR[i]:0,hw=HWR&&HWR[i]>3?HWR[i]:HA[i];return Math.max(2.5,Math.min(hw-.8,Math.min(LIM[i][1]-cr,LIM[i][0]+cr)-2.4))}
 function ai(c){const ds=TLEN/N,Ld=N*ds,G=c.G||1,gk=.55+.45*G;let sk=c.skill||1,rb=0;const pe=c.per||(c.per=persona(c));sk*=1+(pe.ag-.5)*.01;
 if(!QUAL&&state=='race'){if(c.ph===undefined)c.ph=Math.random()*6.28;const q=cars[0];rb=.016*Math.sin(t*.09+c.ph);if(q&&!q.remote&&q!==c&&!q.dnf&&!c.pl&&!c.pitReq){const dq=(((q.lap-c.lap)*N+(q.idx-c.idx))*ds);if(dq>150)rb+=Math.min(.035,(dq-150)/4000);else if(dq<-220)rb-=Math.min(.02,(-dq-220)/6000)}sk*=1+rb}
 if(PIT){const q=sOf(c.idx);if(c.pitReq&&!c.pa&&q>=PIT.sEnt-60&&q<=PIT.sLane+20)assignBox(c);else if(c.pa&&q>PIT.sExit+15)c.pa=0}
 const pm=PIT&&(c.pitReq||c.pl);
 let tg=(c.top||85)*1.025*(1+rb*.6+.045*(c.dr||0));const K=Math.min(N-1,Math.ceil((40+c.s*2.8)/ds)),bd=31*(.7+.3*G)*(.8+.2*sk),mg=(LMN?.9:.97)*sk;
 for(let k=0;k<K;k+=2){const vc=CV[(c.idx+k)%N]*gk*mg*(AIF?AIF[(c.idx+k)%N]:1),va=Math.sqrt(vc*vc+2*bd*k*ds);if(va<tg)tg=va}
-if(!pm){let ahead=1e9,near=0,lt=c.base||0,cm=1e9;const wdAny=false,lmxA=Math.max(2.5,Math.min(HA[c.idx]-.8,Math.min(LIM[c.idx][0],LIM[c.idx][1])-2.4));for(let k=0;k<30;k+=3)cm=Math.min(cm,CV[(c.idx+k)%N]);const tight=cm<48;
+if(!pm){let ahead=1e9,near=0,lt=c.base||0,cm=1e9;const wdAny=false,lmxA=lmxF(c.idx);for(let k=0;k<30;k+=3)cm=Math.min(cm,CV[(c.idx+k)%N]);const tight=cm<48;
 for(const o of cars){if(o===c||o.gone)continue;let dp=((o.lap-c.lap)*N+(o.idx-c.idx))*ds;dp=((dp+Ld/2)%Ld+Ld)%Ld-Ld/2;const dl=o.d-c.d;
-const lmx=Math.max(2.5,Math.min(HA[c.idx]-.8,Math.min(LIM[c.idx][0],LIM[c.idx][1])-2.4)),wd=o.pl&&sOf(o.idx)>PIT.sEnd,cl=Math.max(0,c.s*c.s-o.s*o.s)/52,dpM=Math.max(wd?75:46,cl+24),dlM=wd?6:3.4;if(dp>0&&dp<dpM&&Math.abs(dl)<dlM){let side=c.d>=o.d?1:-1;const rm=q=>lmx-q*o.d;let of=Math.min(4.2,rm(side));if(of<2.6){side=-side;of=Math.min(4.2,rm(side))}let g=Math.max(-lmx,Math.min(lmx,o.d+side*Math.max(2.6,of)));lt=tight&&!wd&&dp>13?(c.base||0):(!wd&&c.dr>.15&&dp>cl+20&&Math.abs(dl)<2.2?o.d:g);if(dp<Math.max(wd?48:tight?19:11,cl+(tight?10:6))*(1.3-.55*pe.ag)&&Math.abs(dl)<(wd?5:2.2))ahead=Math.min(ahead,o.s)}
+const lmx=lmxF(c.idx),wd=o.pl&&sOf(o.idx)>PIT.sEnd,cl=Math.max(0,c.s*c.s-o.s*o.s)/52,dpM=Math.max(wd?75:46,cl+24),dlM=wd?6:3.4;if(dp>0&&dp<dpM&&Math.abs(dl)<dlM){let side=c.d>=o.d?1:-1;const rm=q=>lmx-q*o.d;let of=Math.min(4.2,rm(side));if(of<2.6){side=-side;of=Math.min(4.2,rm(side))}let g=Math.max(-lmx,Math.min(lmx,o.d+side*Math.max(2.6,of)));lt=tight&&!wd&&dp>13?(c.base||0):(!wd&&c.dr>.15&&dp>cl+20&&Math.abs(dl)<2.2?o.d:g);if(dp<Math.max(wd?48:tight?19:11,cl+(tight?10:6))*(1.3-.55*pe.ag)&&Math.abs(dl)<(wd?5:2.2))ahead=Math.min(ahead,o.s)}
 else if(dp<0&&dp>-16&&Math.abs(dl)<3.4&&pe.df>.55&&!tight&&c.s>35&&state=='race'&&!QUAL&&t>(c.defT||0)){c.defU=t+1.1;c.defT=t+6;c.defO=o}else if(Math.abs(dp)<5&&Math.abs(dl)<3.6)near=dl>0?1:-1}if(t<(c.defU||0)&&c.defO&&!wdAny)lt=Math.max(-lmxA,Math.min(lmxA,c.defO.d))
 if(near&&(lt-c.d)*near>0)lt=c.d;c.lane+=(lt-c.lane)*.06;if(t<(c.errU||0))c.lane+=(c.errS||1)*.05;if(ahead<1e9)tg=Math.min(tg,ahead*.99)}
 if(!QUAL&&state=='race'&&!pm&&c.lap>=0&&c.s>40&&t>(c.errU||0)+10&&CV[(c.idx+8)%N]<62&&Math.random()<pe.er*1.5e-4*(WX>0?2.2:1)*Math.max(.3,1.4-sk)){c.errU=t+1.6;const i2=c.idx,j2=(i2+10)%N,dv=(T[j2].x-T[i2].x)*Nm[i2].x+(T[j2].z-T[i2].z)*Nm[i2].z;c.errS=dv>0?-1:1}if(t<(c.errU||0))tg=Math.min(tg*1.07,c.s*1.04);let L=Math.max(4,Math.min(10+Math.floor(c.s/7),3+Math.floor(c.s*.35)));{const a0=T[c.idx];while(L>3){const b0=T[(c.idx+L)%N];if(Math.abs(Math.atan2(a0.x*b0.z-a0.z*b0.x,a0.x*b0.x+a0.z*b0.z))<LAK)break;L--}}const j=(c.idx+L)%N,p=P[j],n=Nm[j],ln0=pm?pitLn(c,j):c.lane,ln=pm?ln0:(()=>{let l=ln0;if(CRR){const cr=CRR[j],hw=HWR[j];l=ln0+cr;if(hw>3)l=Math.max(cr-hw+1.5,Math.min(cr+hw-1.5,l))}return LMN?Math.max(-(LMN[j][0]-2.1),Math.min(LMN[j][1]-2.1,l)):l})();
@@ -1366,7 +1367,7 @@ for(let it=0;it<3;it++){const nl=new Float32Array(N);for(let k=0;k<N;k++){let s=
 {const W2=Math.max(2,Math.round(16/ds));let qx=new Float32Array(N),qz=new Float32Array(N);for(let k=0;k<N;k++){const o=CRR?CRR[k]:0;qx[k]=P[k].x+Nm[k].x*o;qz[k]=P[k].z+Nm[k].z*o}
 for(let it=0;it<3;it++){const ax=new Float32Array(N),az=new Float32Array(N);for(let k=0;k<N;k++){let sx=0,sz=0;for(let q=-W2;q<=W2;q++){const j=(k+q+N)%N;sx+=qx[j];sz+=qz[j]}ax[k]=sx/(2*W2+1);az[k]=sz/(2*W2+1)}qx=ax;qz=az}
 const l2=new Float32Array(N);for(let k=0;k<N;k++){let l=(qx[k]-P[k].x)*Nm[k].x+(qz[k]-P[k].z)*Nm[k].z;const x=P[k].x+Nm[k].x*l,z=P[k].z+Nm[k].z*l;if(SM&&smAt(x,z)>1)l=lo[k];l2[k]=l}lo=l2}
-for(let k=0;k<N;k++){const lm=Math.max(.5,HA[k]-2);lo[k]=Math.max(-lm,Math.min(lm,lo[k]))}
+for(let k=0;k<N;k++){const c0=CRR?CRR[k]:0,lm=Math.max(.5,(HWR&&HWR[k]>3?HWR[k]:HA[k])-2);lo[k]=Math.max(c0-lm,Math.min(c0+lm,lo[k]))}
 const yy=[new Float32Array(N),new Float32Array(N)];for(let sd=0;sd<2;sd++){const r=new Float32Array(N);for(let k=0;k<N;k++){const p=P[k],n=Nm[k],l=lo[k]+(sd?.55:-.55),x=p.x+n.x*l,z=p.z+n.z*l;r[k]=HM?hxz(x,z):HT?HT[k]:0}
 for(let k=0;k<N;k++){let s=0;for(let q=-6;q<=6;q++)s+=r[(k+q+N)%N];yy[sd][k]=s/13}}
 for(let m=0;m<M;m++){const k=m%N,p=P[k],n=Nm[k];for(let sd=0;sd<2;sd++){const l=lo[k]+(sd?.55:-.55),x=p.x+n.x*l,z=p.z+n.z*l;pos.set([x,yy[sd][k]+.14,z],m*6+sd*3)}
