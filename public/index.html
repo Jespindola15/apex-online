@@ -389,6 +389,15 @@ body.touch #dmg{bottom:calc(138px + env(safe-area-inset-bottom,0px));left:14px}
 #tmsel.lst{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));max-height:none;overflow:visible;gap:6px 14px!important}
 .tmb{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:4px}.tmb button{padding:7px 8px!important;font-size:16px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:0!important;text-align:left}.tmb .dr{font-size:15px!important;text-align:center}
 #drsel.lst{max-height:none;overflow:visible}
+#tmsel.lst{grid-template-columns:repeat(5,minmax(0,1fr));gap:8px!important}
+#tmsel .tmb{display:flex;flex-direction:column;gap:3px;padding:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-top:3px solid var(--tc,#ff3b2f)}
+#tmsel .tmb.own{grid-column:1/-1;flex-direction:row;padding:4px 6px;border-top-width:1px;border-left:3px solid #ff3b2f}
+#tmsel .tmb.own button{flex:0 0 auto;min-width:160px}
+#tmsel .tmb.own{align-items:center}#tmsel .tmb.own button{width:auto!important;height:34px}
+#tmsel .tmb button{width:100%;min-height:0!important;padding:5px 6px!important;text-align:left}
+#tmsel .tmb>button:first-child{font-size:17px!important;border:0;background:transparent}
+#tmsel .tmb>button:first-child.on{background:rgba(255,59,47,.25)}
+#tmsel .tmb .dr{font-size:14px!important;text-align:left;padding-left:10px!important}
 .tcards{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 .tcards .dot{width:64px;height:64px}
 .tcards .tn{font-size:20px!important}
@@ -428,7 +437,7 @@ body.touch #dmg{bottom:calc(138px + env(safe-area-inset-bottom,0px));left:14px}
 </div>
 </div></section>
 <section class="pn" id="p-drv"><div class="gr">
-<div class="card"><h3>Escudería y piloto</h3><div id="tmsel" class="seg lst"></div></div>
+<div class="card"><h3>Escudería y piloto</h3><p class="mn" style="color:var(--dim);margin:-4px 0 8px">Tocá un piloto para correr con él, o la escudería para el primero del equipo.</p><div id="tmsel" class="seg lst"></div></div>
 <div class="card"><h3>Tu auto</h3><div id="drsel" class="seg lst"></div><p id="drinfo" class="mn" style="color:var(--dim)"></p></div>
 <div class="card"><h3>Ayudas y vibración</h3><div class="asr"><span>Línea de trazada</span><div class="seg" data-as="line"><button data-v="0">No</button><button data-v="1">Línea</button><button data-v="2">Línea + frenado</button></div></div><div class="asr"><span>Control de tracción</span><div class="seg" data-as="tc"><button data-v="0">No</button><button data-v="1">Medio</button><button data-v="2">Alto</button></div></div><div class="asr"><span>ABS</span><div class="seg" data-as="abs"><button data-v="0">No</button><button data-v="1">Sí</button></div></div><div class="asr"><span>Control de estabilidad</span><div class="seg" data-as="esc"><button data-v="0">No</button><button data-v="1">Sí</button></div></div><div class="asr"><span>Frenado asistido</span><div class="seg" data-as="ba"><button data-v="0">No</button><button data-v="1">Sí</button></div></div><div class="asr"><span>Vibración</span><div class="seg" data-as="hap"><button data-v="0">No</button><button data-v="1">Suave</button><button data-v="2">Normal</button><button data-v="3">Fuerte</button></div></div><p class="mn" style="color:var(--dim)">La vibración funciona con mando (gamepad) y celular Android. Los volantes con force feedback no son compatibles con el navegador.</p></div>
 </div></section>
@@ -989,7 +998,7 @@ applyCfg();
 const TMLIST=[...new Set(GRID.map(g=>g.t))],hex6=n=>'#'+n.toString(16).padStart(6,'0');
 function setDrv(i){cfg.drv=i;try{localStorage.setItem('apex.drv',i)}catch(e){}if(cfg.riv>(i>=0?19:20))cfg.riv=i>=0?19:20;drvUI();syncUI()}
 function drvUI(){const cur=cfg.drv>=0?GRID[cfg.drv]:null;
-$('tmsel').replaceChildren(...[null,...TMLIST].map(t=>{const b=document.createElement('button');b.type='button';const e=t&&GRID.find(g=>g.t==t),on=t?!!(cur&&cur.t==t):!cur;b.innerHTML='<i class="dot" style="--c:'+(t?hex6(e.c):'#ff3b2f')+';--s:'+(t?hex6(e.s):'#ffffff')+'"></i>'+(t||'Propia');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);b.onclick=()=>setDrv(t?GRID.findIndex(g=>g.t==t):-1);const w=document.createElement('div');w.className='tmb';w.appendChild(b);if(t)GRID.map((g,i)=>[g,i]).filter(a=>a[0].t==t).forEach(([g,i])=>{const d=document.createElement('button');d.type='button';d.className='dr';d.textContent='#'+g.no+' '+g.n;d.classList.toggle('on',i==cfg.drv);d.setAttribute('aria-pressed',i==cfg.drv);d.onclick=()=>setDrv(i);w.appendChild(d)});return w}));
+$('tmsel').replaceChildren(...[null,...TMLIST].map(t=>{const b=document.createElement('button');b.type='button';const e=t&&GRID.find(g=>g.t==t),on=t?!!(cur&&cur.t==t):!cur;b.innerHTML='<i class="dot" style="--c:'+(t?hex6(e.c):'#ff3b2f')+';--s:'+(t?hex6(e.s):'#ffffff')+'"></i>'+(t||'Propia');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);b.onclick=()=>setDrv(t?GRID.findIndex(g=>g.t==t):-1);const w=document.createElement('div');w.className='tmb'+(t?'':' own');if(t)w.style.setProperty('--tc',hex6(e.c));w.appendChild(b);if(t)GRID.map((g,i)=>[g,i]).filter(a=>a[0].t==t).forEach(([g,i])=>{const d=document.createElement('button');d.type='button';d.className='dr';d.textContent='#'+g.no+' '+g.n;d.classList.toggle('on',i==cfg.drv);d.setAttribute('aria-pressed',i==cfg.drv);d.onclick=()=>setDrv(i);w.appendChild(d)});return w}));
 $('drsel').replaceChildren(...(cur?[]:[(()=>{const l=document.createElement('label');l.style.cssText='display:flex;align-items:center;gap:10px;font-size:13px';l.textContent='Color de tu auto';const q=document.createElement('input');q.type='color';q.value=hex6(OWNC);q.style.cssText='width:56px;height:34px;border:0;background:none;cursor:pointer';q.oninput=()=>{OWNC=parseInt(q.value.slice(1),16);try{localStorage.setItem('apex.own',OWNC.toString(16))}catch(e){}if(!PL&&all[0])all[0].mesh.userData.m.color.set(OWNC)};l.appendChild(q);return l})()]),...[].map(([g,i])=>{const b=document.createElement('button');b.type='button';b.textContent='#'+g.no+' '+g.n;b.classList.toggle('on',i==cfg.drv);b.setAttribute('aria-pressed',i==cfg.drv);b.onclick=()=>setDrv(i);return b}));
 $('drinfo').textContent=cur?'Corrés como '+cur.n+' ('+cur.t+'). Los otros 19 pilotos de la parrilla son tus rivales.':'Auto propio: elegí el color. Los 20 pilotos de la parrilla son tus rivales.';
 $('riv').max=cur?19:20;$('drsel').style.display=''}
