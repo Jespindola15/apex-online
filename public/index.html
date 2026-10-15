@@ -425,6 +425,34 @@ body.touch #dmg{bottom:calc(138px + env(safe-area-inset-bottom,0px));left:14px}
 #spd .gr{fill:var(--acc,#ff3b2f);font-size:34px;font-weight:800;text-anchor:middle;font-style:italic}
 body.touch #spd{left:14px!important;transform:none!important;width:190px;bottom:calc(92px + env(safe-area-inset-bottom,0px))!important}
 @media (max-height:600px){#spd{width:220px;bottom:56px!important}}
+
+/* v58 mobile */
+body.touch .bar{position:sticky;bottom:0;z-index:5;padding:10px 0 6px;background:linear-gradient(0deg,rgba(4,6,9,.97) 70%,rgba(4,6,9,0))}
+body.touch #ov{-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+@media (orientation:landscape) and (max-height:520px){
+ body.touch #flag{top:auto;bottom:calc(14px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);font-size:12px;padding:3px 10px;max-width:34vw;white-space:nowrap}
+ body.touch #lights{top:5%}
+ body.touch #spd{width:150px!important;bottom:calc(84px + env(safe-area-inset-bottom,0px))!important}
+ body.touch #tir{bottom:calc(60px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) scale(.6)}
+ body.touch #tc #tcCam{top:calc(112px + env(safe-area-inset-top,0px))}body.touch #tc #tcTyre{top:calc(112px + env(safe-area-inset-top,0px))}body.touch #tc #tcFs{top:calc(112px + env(safe-area-inset-top,0px))}
+ body.touch #tc #tcPit{top:calc(160px + env(safe-area-inset-top,0px))}body.touch #tc #tcRst{top:calc(160px + env(safe-area-inset-top,0px))}
+ body.touch #tw{width:150px}
+}
+@media (orientation:portrait){
+ body.touch #tcRot{top:30%;background:rgba(10,14,20,.78);font-size:15px;padding:8px 12px;z-index:9}
+ body.touch #flag{top:auto;bottom:calc(210px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);max-width:90vw}
+ body.touch #lights{top:16%}
+}
+/* v58b */
+@media (orientation:landscape) and (max-height:520px){
+ body.touch #lights{top:36px}
+ body.touch #cam{top:98px!important;font-size:12px}body.touch #sea{top:120px!important}
+ body.touch #spd{bottom:calc(104px + env(safe-area-inset-bottom,0px))!important;width:128px!important}
+ body.touch #dmg{bottom:calc(176px + env(safe-area-inset-bottom,0px))}
+ body.touch #tc #tcCam,body.touch #tc #tcTyre,body.touch #tc #tcFs{top:calc(150px + env(safe-area-inset-top,0px))}
+ body.touch #tc #tcPit,body.touch #tc #tcRst{top:calc(198px + env(safe-area-inset-top,0px))}
+}
+@media (orientation:portrait){body.touch #cam,body.touch #sea{top:auto!important;bottom:calc(250px + env(safe-area-inset-bottom,0px))!important}body.touch #lights{top:34%}}
 </style></head><body>
 <button id="qend" type="button">Terminar clasificación<small>Tecla F · quedás con tu mejor vuelta</small></button>
 <div id="scr">Trazado de Monza basado en «Monza Circuit 1998 layout» de Dave Bored (Sketchfab), CC-BY 4.0</div>
@@ -867,7 +895,7 @@ let WX=0,TLEN=1000;
 const newTire=k=>({k,w:0}),wearSev=w=>cfg.mode=='a'?0:Math.pow(Math.max(0,(w-.4)/.6),1.6),tireG=c=>{const w=cfg.mode=='a'?0:c.tire.w;return GR[c.tire.k][WX]*(1-.08*w-.5*wearSev(w))};
 function aiTire(){const r=Math.random();return WX==0?['S','M','H'][r*3|0]:WX==1?(r<.7?'I':'M'):(r<.65?'W':'I')}
 function setTireColor(c){if(c.tire)c.mesh.userData.tm.color.set(TC[c.tire.k])}
-function fitMenu(){const m=$('mnu'),o=$('ov');if(!m||!o||getComputedStyle(o).display=='none')return;if(TOUCH||innerWidth<900){if(m.style.zoom){m.style.zoom='';}return}
+function fitMenu(){const m=$('mnu'),o=$('ov');if(!m||!o||getComputedStyle(o).display=='none')return;if(TOUCH||innerWidth<900){const k=innerHeight<520?.6:innerWidth<520?.8:.9;if(+m.style.zoom!==k)m.style.zoom=k;return}
 const z=+m.style.zoom||1,r=m.getBoundingClientRect(),nh=r.height/z,nw=r.width/z,ph=parseFloat(getComputedStyle(o).paddingTop)+parseFloat(getComputedStyle(o).paddingBottom),av=innerHeight-ph-4,aw=innerWidth-20;
 let k=Math.min(1,av/nh,aw/nw);k=Math.max(.5,Math.round(k*100)/100);if(Math.abs(k-z)>.01)m.style.zoom=k}
 setInterval(fitMenu,350);addEventListener('resize',fitMenu);
@@ -1073,7 +1101,7 @@ const runs=[];let st=null,gap=0,last=null;for(let o=-M;o<=M+.01;o+=.5){if(R(o)){
 let best=null,bs=-1e9;for(const r of runs){const w=r[1]-r[0];if(w<5)continue;const dist=r[0]>0?r[0]:r[1]<0?-r[1]:0,sc=w-.35*dist;if(sc>bs){bs=sc;best=r}}
 if(!best)continue;raw[a]=(best[0]+best[1])/2;hw[a]=(best[1]-best[0])/2;ok[a]=1}
 CRR=new Float32Array(N);HWR=new Float32Array(N);const K=8;
-for(let a=0;a<N;a++){let s=0,sh=0,c=0;for(let q=-K;q<=K;q++){const i=(a+q+N)%N;if(ok[i]){s+=raw[i];sh+=hw[i];c++}}if(c>=K){const v=s/c;CRR[a]=Math.max(-12,Math.min(12,Math.abs(v)<.5?0:v));HWR[a]=sh/c}else{CRR[a]=0;HWR[a]=0}}}
+for(let a=0;a<N;a++){let s=0,sh=0,c=0;for(let q=-K;q<=K;q++){const i=(a+q+N)%N;if(ok[i]){s+=raw[i];sh+=hw[i];c++}}if(c>=K){const v=s/c;CRR[a]=Math.max(-12,Math.min(12,Math.abs(v)<.5?0:v));HWR[a]=HA&&HA[a]>3?Math.min(sh/c,HA[a]+1.2):sh/c}else{CRR[a]=0;HWR[a]=0}}}
 function surfAt(c){const lat=Math.abs(c.d)-HA[c.idx];if(PIT&&(roadPit(c)||(PIT.sg*c.d>0&&sOf(c.idx)>=PIT.sEnt-20&&sOf(c.idx)<=PIT.sExit+20)))return 0;if(SM){const v=smAt(c.x,c.z);if(v<255)return v}if(lat<.5)return 0;const sf=TRACKS[trkIdx].sf;if(!sf)return 4;const k=Math.min(sf.n-1,Math.floor(c.idx/N*sf.n));let j=7;while(j>0&&lat<SFTH[j])j--;const v=(c.d>0?sf.b:sf.a).charCodeAt(k*8+j)-48;return v>=0&&v<=3?v:4}
 
 // Modelo dinámico (bicicleta con ángulo de deriva de neumáticos, transferencia de carga y círculo de fricción)
@@ -1153,7 +1181,7 @@ function lmxF(i){const cr=CRR?CRR[i]:0,hw=HWR&&HWR[i]>3?HWR[i]:HA[i];return Math
 function ai(c){const ds=TLEN/N,Ld=N*ds,G=c.G||1,gk=.55+.45*G;let sk=c.skill||1,rb=0;const pe=c.per||(c.per=persona(c));sk*=1+(pe.ag-.5)*.01;
 if(!QUAL&&state=='race'){if(c.ph===undefined)c.ph=Math.random()*6.28;const q=cars[0];rb=.016*Math.sin(t*.09+c.ph);if(q&&!q.remote&&q!==c&&!q.dnf&&!c.pl&&!c.pitReq){const dq=(((q.lap-c.lap)*N+(q.idx-c.idx))*ds);if(dq>150)rb+=Math.min(.035,(dq-150)/4000);else if(dq<-220)rb-=Math.min(.02,(-dq-220)/6000)}sk*=1+rb}
 if(PIT){const q=sOf(c.idx);if(c.pitReq&&!c.pa&&q>=PIT.sEnt-60&&q<=PIT.sLane+20)assignBox(c);else if(c.pa&&q>PIT.sExit+15)c.pa=0;if(c.pitReq&&!c.pl&&!(c.pitT>0)&&q>boxS(c)+15&&q<PIT.sExit&&c.lap>=0){c.pitReq=0;c.pa=0;c.pskip=c.lap;c.lane=0}}
-const pm=PIT&&(c.pitReq||c.pl||(c.pa===1&&c.pits>0&&sOf(c.idx)<PIT.sExit));const pxz=pm&&PIT&&!(c.pitT>0)?sOf(c.idx):0,PX=pm&&PIT&&pxz>PIT.sEnd-4;
+const pm=PIT&&((c.pitReq&&(c.pa||c.pl||!(sOf(c.idx)>PIT.sLane+20&&sOf(c.idx)<PIT.sExit+15)))||c.pl||(c.pa===1&&c.pits>0&&sOf(c.idx)<PIT.sExit));const pxz=pm&&PIT&&!(c.pitT>0)?sOf(c.idx):0,PX=pm&&PIT&&pxz>PIT.sEnd-4;
 let tg=(c.top||85)*1.025*(1+rb*.6+.045*(c.dr||0));const K=Math.min(N-1,Math.ceil((40+c.s*2.8)/ds)),bd=31*(.7+.3*G)*(.8+.2*sk),mg=(LMN?.9:.97)*sk;
 for(let k=0;k<K;k+=2){const vc=CV[(c.idx+k)%N]*gk*mg*(AIF?AIF[(c.idx+k)%N]:1),va=Math.sqrt(vc*vc+2*bd*k*ds);if(va<tg)tg=va}
 if(!pm){let ahead=1e9,near=0,lt=c.base||0,cm=1e9;const wdAny=false,lmxA=lmxF(c.idx);for(let k=0;k<30;k+=3)cm=Math.min(cm,CV[(c.idx+k)%N]);const tight=cm<48;
@@ -1523,7 +1551,7 @@ for(let it=0;it<3;it++){const nl=new Float32Array(N);for(let k=0;k<N;k++){let s=
 {const W2=Math.max(2,Math.round(16/ds));let qx=new Float32Array(N),qz=new Float32Array(N);for(let k=0;k<N;k++){const o=CRR?CRR[k]:0;qx[k]=P[k].x+Nm[k].x*o;qz[k]=P[k].z+Nm[k].z*o}
 for(let it=0;it<3;it++){const ax=new Float32Array(N),az=new Float32Array(N);for(let k=0;k<N;k++){let sx=0,sz=0;for(let q=-W2;q<=W2;q++){const j=(k+q+N)%N;sx+=qx[j];sz+=qz[j]}ax[k]=sx/(2*W2+1);az[k]=sz/(2*W2+1)}qx=ax;qz=az}
 const l2=new Float32Array(N);for(let k=0;k<N;k++){let l=(qx[k]-P[k].x)*Nm[k].x+(qz[k]-P[k].z)*Nm[k].z;const x=P[k].x+Nm[k].x*l,z=P[k].z+Nm[k].z*l;if(SM&&smAt(x,z)>1)l=lo[k];l2[k]=l}lo=l2}
-for(let k=0;k<N;k++){const c0=CRR?CRR[k]:0,lm=Math.max(.5,(HWR&&HWR[k]>3?HWR[k]:HA[k])-2);lo[k]=Math.max(c0-lm,Math.min(c0+lm,lo[k]))}
+for(let k=0;k<N;k++){const c0=CRR?CRR[k]:0,lm=Math.max(.5,(HWR&&HWR[k]>3?HWR[k]:HA[k])-2.6);lo[k]=Math.max(c0-lm,Math.min(c0+lm,lo[k]))}
 const yy=[new Float32Array(N),new Float32Array(N)];for(let sd=0;sd<2;sd++){const r=new Float32Array(N);for(let k=0;k<N;k++){const p=P[k],n=Nm[k],l=lo[k]+(sd?.55:-.55),x=p.x+n.x*l,z=p.z+n.z*l;r[k]=HM?hxz(x,z):HT?HT[k]:0}
 for(let k=0;k<N;k++){let s=0;for(let q=-6;q<=6;q++)s+=r[(k+q+N)%N];yy[sd][k]=s/13}}
 for(let m=0;m<M;m++){const k=m%N,p=P[k],n=Nm[k];for(let sd=0;sd<2;sd++){const l=lo[k]+(sd?.55:-.55),x=p.x+n.x*l,z=p.z+n.z*l;pos.set([x,yy[sd][k]+.14,z],m*6+sd*3)}
