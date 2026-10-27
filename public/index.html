@@ -1037,8 +1037,8 @@ function scnApply(i,go0){const T0=TRACKS[i],g=TG,el=document.getElementById('scr
 const add=sc0=>{if(TG!==g||trkIdx!==i)return;const o=sc0.clone(true);if(T0.k)o.scale.setScalar(T0.k);o.traverse(m=>{if(m.isMesh){m.castShadow=false;m.receiveShadow=true;m.frustumCulled=true}});if(T0.full){TG.children.slice().forEach(c=>TG.remove(c));TG.visible=true}else TG.children.filter(c=>!c.userData.keep||c.userData.pv).forEach(c=>TG.remove(c));TG.children.forEach(c=>{if(c.userData.gr){c.position.y=-2;if(T0.gc){c.material=c.material.clone();c.material.color.set(T0.gc)}}});TG.add(o);};
 if(SCN[T0.scn]){SCN[T0.scn].then(add).catch(()=>go0());return true}
 if(!THREE.GLTFLoader)return false;
-SCN[T0.scn]=new Promise((ok,no)=>new THREE.GLTFLoader().load(T0.scn,gl=>{gl.scene.traverse(m=>{if(m.isMesh&&m.material){m.material.envMapIntensity=.15;m.material.roughness=.95;const t=m.material.map;if(t&&THREE.LinearEncoding!==undefined){t.encoding=THREE.LinearEncoding;t.needsUpdate=true}if(m.material.transparent){m.material.depthWrite=false;m.material.polygonOffset=true;m.material.polygonOffsetFactor=-1;m.renderOrder=2}}});ok(gl.scene)},undefined,no));
-SCN[T0.scn].then(add).catch(e=>{console.warn('Escenario 3D: no se pudo cargar '+T0.scn+'; uso el entorno OSM',e);go0()});return true}
+SCN[T0.scn]=new Promise((ok,no)=>new THREE.GLTFLoader().load(T0.scn,gl=>{gl.scene.traverse(m=>{if(m.isMesh&&m.material){m.material.envMapIntensity=.15;m.material.roughness=.95;const t=m.material.map;if(t&&THREE.LinearEncoding!==undefined){t.encoding=THREE.LinearEncoding;t.needsUpdate=true}if(m.material.transparent){m.material.depthWrite=false;m.material.polygonOffset=true;m.material.polygonOffsetFactor=-1;m.renderOrder=2}}});ok(gl.scene)},x=>{if(x&&x.total)LDP=Math.round(100*x.loaded/x.total)+'% · '+(x.loaded/1048576).toFixed(0)+' de '+(x.total/1048576).toFixed(0)+' MB'},e=>{LDERR='No se pudo cargar el escenario de la pista ('+T0.scn+'): '+((e&&e.message)||e||'error de red');no(e)}));
+SCN[T0.scn].then(add).catch(e=>{console.warn('Escenario 3D: no se pudo cargar '+T0.scn+'; uso el entorno OSM',e);if(!LDERR)LDERR='Error al armar el escenario: '+((e&&e.message)||e);go0()});return true}
 function osmApply(i,E,nw){const T0=TRACKS[i];{const el=document.getElementById('scr');if(el)el.style.display=T0.n=='Monza'?'block':'none'}if(!T0.osm)return;const g=TG,go=D=>{if(TG!==g||trkIdx!==i)return;const gr=new THREE.Group();try{osmBuild(D,E,gr,nw)}catch(e){console.warn('osm',e);return}TG.add(gr)};if(T0.scn&&scnApply(i,()=>osmLoad(T0.osm,go)))return;osmLoad(T0.osm,go)}
 function buildTrack(i,nbIn){trkIdx=i;const E=ENVS[TRACKS[i].env||'campo'];hzTex(E);if(TG){sc.remove(TG);TG.traverse(o=>{o.geometry&&o.geometry.dispose()})}
 const cv=new THREE.CatmullRomCurve3(TRACKS[i].pts.map(p=>new THREE.Vector3(p[0],0,p[1])),true);
@@ -1575,7 +1575,7 @@ const ord=rk&&!QUAL&&QORD&&QORD.length==cfg.riv+1&&(state=='race'||state=='count
 QUAL=!ord&&cfg.riv>0&&cfg.grid!='r';QDONE=QEND=QSENT=qov=GRAPP=false;QFT=0;gridT=-1;PH=QUAL?1:2;QORD=ord;applyCfg();if(ord){ord.forEach((c,i)=>c.gp=i);reset(true)}else if(!QUAL&&cfg.riv>0&&cfg.grid=='r'){const o=shuf(cars.slice(),Math.random);QORD=o;o.forEach((c,i)=>c.gp=i);reset(true);$('cam').textContent='Parrilla aleatoria · salís P'+(o.indexOf(cars[0])+1);$('cam').style.opacity=1;camT=4}
 fo=[];t=0;cd=cdStart();state='count';$('ov').style.display='none';if(QUAL)qBanner()}
 // ---- pantalla de carga: la salida espera a que cargue todo (y, online, a que todos estén listos) ----
-var LDW=0,LDF=0,LDG=false,LDT=0,LDID=0,LDS=0,LDC=0,LDM=0,LDU=0,PEND=0;
+var LDP='',LDERR='',LDW=0,LDF=0,LDG=false,LDT=0,LDID=0,LDS=0,LDC=0,LDM=0,LDU=0,PEND=0;
 (function(){
 const _sc=setCar;setCar=function(){PEND++;const p=_sc.apply(this,arguments);p.then(()=>{PEND--},()=>{PEND--});return p};
 const _sa=scnApply;scnApply=function(i,go0){const r=_sa.apply(this,arguments),T0=TRACKS[i];if(r&&T0.scn&&SCN[T0.scn]){PEND++;const f=()=>setTimeout(()=>{PEND--},30);SCN[T0.scn].then(f,f)}return r};
@@ -1584,14 +1584,15 @@ const _sm=showMenu;showMenu=function(){ldgEnd();return _sm.apply(this,arguments)
 const _st=start;start=function(){const r=_st.apply(this,arguments);if(state=='count'&&!rm)ldgBegin(0);return r};
 const _so=startOnline;startOnline=function(lp,tk,wx,sea,sid){const r=_so.apply(this,arguments);ldgBegin(sid||0);return r};
 })();
-function ldgBegin(id){LDID=id;LDT=0;LDS=0;LDC=0;LDU=0;LDM=rm?4:3;LDF=0;LDW=performance.now();LDG=true;try{$('ldgN').textContent=TRACKS[trkIdx].n.replace(/\s*\((TOCA|Assetto Corsa)\)/,'')}catch(e){}$('ldg').classList.add('on')}
+function ldgBegin(id){LDID=id;LDT=0;LDS=0;LDC=0;LDU=0;LDM=rm?4:3;LDF=0;LDW=performance.now();LDP='';LDERR='';LDG=true;try{$('ldgN').textContent=TRACKS[trkIdx].n.replace(/\s*\((TOCA|Assetto Corsa)\)/,'')}catch(e){}$('ldg').classList.add('on')}
 function ldgEnd(){LDG=false;try{$('ldg').classList.remove('on')}catch(e){}}
 function ldgTick(dt){LDT+=dt;if(PEND<=0)LDF++;else LDF=0;const ready=PEND<=0&&(performance.now()-LDW)/1000>=LDM&&LDF>=6;if(ready&&!LDC){LDC=1;try{R.compile(sc,cam)}catch(e){}}
 let ok=ready,list='',n=0,nr=0;
 if(rm){if(ready&&!LDS){LDS=1;try{rm.presence({ld:LDID})}catch(e){}}
 try{vps().forEach(p=>{const me=p.sameTab,r=me?!!LDS:p.presence.ld===LDID;n++;if(r)nr++;else ok=false;list+='<span class="'+(r?'ok':'')+'">'+(esc(p.presence.nm)||'Piloto')+(r?' · listo':' · cargando…')+'</span>'})}catch(e){}}
-if(ok||LDT>90){ldgEnd();return}
-if((LDU-=dt)<=0){LDU=.2;try{$('ldgS').textContent=!ready?'Cargando pista y autos…':rm?'Esperando a los demás jugadores ('+nr+'/'+n+')':'Listo';$('ldgP').innerHTML=list}catch(e){}}}
+if(LDERR&&ready){$('ldgS').textContent=LDERR;if(LDT>12){ldgEnd()}return}if(ok||LDT>90){ldgEnd();return}
+if((LDU-=dt)<=0){LDU=.2;try{$('ldgS').textContent=!ready?'Cargando pista y autos…'+(LDP?' '+LDP:''):rm?'Esperando a los demás jugadores ('+nr+'/'+n+')':'Listo';$('ldgP').innerHTML=list}catch(e){}}}
+try{R.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();const g=$('ldg');g.classList.add('on');$('ldgS').textContent='El navegador perdió el contexto de video (poca memoria gráfica). Recargá la página o bajá la calidad.'})}catch(e){}
 $('go').onclick=()=>start();
 // ---- Clasificación: 3 vueltas, la mejor vuelta de cada piloto arma la parrilla de salida ----
 const qv=c=>c.best>0?c.best:1e9,qslot=c=>c.slot!==undefined?c.slot:all.indexOf(c);
