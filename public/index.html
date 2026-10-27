@@ -1575,7 +1575,7 @@ const ord=rk&&!QUAL&&QORD&&QORD.length==cfg.riv+1&&(state=='race'||state=='count
 QUAL=!ord&&cfg.riv>0&&cfg.grid!='r';QDONE=QEND=QSENT=qov=GRAPP=false;QFT=0;gridT=-1;PH=QUAL?1:2;QORD=ord;applyCfg();if(ord){ord.forEach((c,i)=>c.gp=i);reset(true)}else if(!QUAL&&cfg.riv>0&&cfg.grid=='r'){const o=shuf(cars.slice(),Math.random);QORD=o;o.forEach((c,i)=>c.gp=i);reset(true);$('cam').textContent='Parrilla aleatoria · salís P'+(o.indexOf(cars[0])+1);$('cam').style.opacity=1;camT=4}
 fo=[];t=0;cd=cdStart();state='count';$('ov').style.display='none';if(QUAL)qBanner()}
 // ---- pantalla de carga: la salida espera a que cargue todo (y, online, a que todos estén listos) ----
-var LDG=false,LDT=0,LDID=0,LDS=0,LDC=0,LDM=0,LDU=0,PEND=0;
+var LDW=0,LDF=0,LDG=false,LDT=0,LDID=0,LDS=0,LDC=0,LDM=0,LDU=0,PEND=0;
 (function(){
 const _sc=setCar;setCar=function(){PEND++;const p=_sc.apply(this,arguments);p.then(()=>{PEND--},()=>{PEND--});return p};
 const _sa=scnApply;scnApply=function(i,go0){const r=_sa.apply(this,arguments),T0=TRACKS[i];if(r&&T0.scn&&SCN[T0.scn]){PEND++;const f=()=>setTimeout(()=>{PEND--},30);SCN[T0.scn].then(f,f)}return r};
@@ -1584,9 +1584,9 @@ const _sm=showMenu;showMenu=function(){ldgEnd();return _sm.apply(this,arguments)
 const _st=start;start=function(){const r=_st.apply(this,arguments);if(state=='count'&&!rm)ldgBegin(0);return r};
 const _so=startOnline;startOnline=function(lp,tk,wx,sea,sid){const r=_so.apply(this,arguments);ldgBegin(sid||0);return r};
 })();
-function ldgBegin(id){LDID=id;LDT=0;LDS=0;LDC=0;LDU=0;LDM=rm?.5:.4;if(!rm&&PEND<=0){LDG=false;return}LDG=true;try{$('ldgN').textContent=TRACKS[trkIdx].n.replace(/\s*\((TOCA|Assetto Corsa)\)/,'')}catch(e){}$('ldg').classList.add('on')}
+function ldgBegin(id){LDID=id;LDT=0;LDS=0;LDC=0;LDU=0;LDM=rm?4:3;LDF=0;LDW=performance.now();LDG=true;try{$('ldgN').textContent=TRACKS[trkIdx].n.replace(/\s*\((TOCA|Assetto Corsa)\)/,'')}catch(e){}$('ldg').classList.add('on')}
 function ldgEnd(){LDG=false;try{$('ldg').classList.remove('on')}catch(e){}}
-function ldgTick(dt){LDT+=dt;const ready=PEND<=0&&LDT>=LDM;if(ready&&!LDC){LDC=1;try{R.compile(sc,cam)}catch(e){}}
+function ldgTick(dt){LDT+=dt;if(PEND<=0)LDF++;else LDF=0;const ready=PEND<=0&&(performance.now()-LDW)/1000>=LDM&&LDF>=6;if(ready&&!LDC){LDC=1;try{R.compile(sc,cam)}catch(e){}}
 let ok=ready,list='',n=0,nr=0;
 if(rm){if(ready&&!LDS){LDS=1;try{rm.presence({ld:LDID})}catch(e){}}
 try{vps().forEach(p=>{const me=p.sameTab,r=me?!!LDS:p.presence.ld===LDID;n++;if(r)nr++;else ok=false;list+='<span class="'+(r?'ok':'')+'">'+(esc(p.presence.nm)||'Piloto')+(r?' · listo':' · cargando…')+'</span>'})}catch(e){}}
