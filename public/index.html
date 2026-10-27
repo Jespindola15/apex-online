@@ -562,6 +562,52 @@ body.touch #drs{left:14px;bottom:calc(168px + env(safe-area-inset-bottom,0px));f
 body.hmon .h,body.hmon #tw,body.hmon #spd,body.hmon #mm,body.hmon #msg,body.hmon #lights,body.hmon #flag,body.hmon #drs,body.hmon #mnb,body.hmon #pad,body.hmon #tir,body.hmon #cam,body.hmon #dmg,body.hmon #sea,body.hmon #lap,body.hmon #qend,body.hmon #tc,body.hmon #wh{display:none!important}.qrw{background:rgba(6,9,14,.8)}.qrb button[disabled]{opacity:.4;cursor:not-allowed}
 @media (max-width:820px){.qsum{grid-template-columns:repeat(3,1fr)}.qsum .big{grid-column:1/-1}.qsum b{font-size:19px}.qsum .big b{font-size:32px}}
 @media (max-height:520px){.qsum b{font-size:17px}.qsum .big b{font-size:28px}.qsum div{padding:4px 8px 5px}}
+
+/* ===== v69: submenús con el mismo estilo del menú principal ===== */
+body.smn #ov{background:linear-gradient(90deg,rgba(3,5,8,.97) 0,rgba(3,5,8,.9) 46%,rgba(3,5,8,.28) 72%,rgba(3,5,8,.05) 100%),linear-gradient(0deg,rgba(3,5,8,.55),transparent 26%)}
+body.smn #mnu .top{align-items:center;gap:12px}
+body.smn #mnu .brand .bk{display:block;font:700 12px 'Saira Condensed',sans-serif;letter-spacing:.5em;color:var(--acc);text-transform:uppercase;margin-bottom:2px}
+body.smn #mnu .brand h1{margin:0;font:800 46px/.9 'Saira Condensed',sans-serif;font-style:italic;transform:skewX(-6deg);transform-origin:left bottom;letter-spacing:-.01em;text-shadow:0 4px 22px rgba(0,0,0,.6)}
+body.smn #mnu .brand h1 em{color:var(--acc);font-style:italic}
+body.smn #ovt{font:600 17px/1.3 'Saira Condensed',sans-serif;letter-spacing:.06em;color:#aebbc8;margin:2px 0 0}
+body.smn .hlp summary{font:700 13px 'Saira Condensed',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+body.smn .tabs{border:0;margin:4px 0 2px;padding:0;gap:4px 16px}
+body.smn .tabs button{background:none!important;border:0;border-bottom:3px solid transparent;border-radius:0;clip-path:none;padding:4px 2px 5px;font:800 20px/1 'Saira Condensed',sans-serif;font-style:italic;letter-spacing:.04em;text-transform:uppercase;color:#8d9aa8;transition:color .15s,border-color .15s,transform .2s var(--ax-ease,ease)}
+body.smn .tabs button svg{display:none}
+body.smn .tabs button:hover{color:#fff;transform:translateX(3px)}
+body.smn .tabs button.on{color:#fff;border-bottom-color:var(--acc);box-shadow:none;transform:none}
+body.smn .tabs button::before,body.smn .tabs button::after{display:none!important}
+body.smn #mnu .gr{grid-template-columns:minmax(0,1fr)!important;gap:10px}
+body.smn #mnu .gr>.card{grid-column:auto!important;grid-row:auto!important}
+body.smn #mnu>.pn.on{padding-right:6px}
+body.smn .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+body.smn .tabs button{white-space:nowrap;flex:none}
+body.smn .card{background:rgba(255,255,255,.04);border:0;border-left:3px solid var(--acc);clip-path:none;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;padding:14px 18px 16px}
+body.smn .card>h3{font:800 26px/1 'Saira Condensed',sans-serif;font-style:italic;letter-spacing:.05em;margin:0 0 12px;transform:skewX(-6deg);transform-origin:left}
+body.smn .card>h3::after{display:none}
+body.smn .lb{font:700 14px 'Saira Condensed',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#aebbc8;margin-bottom:8px}
+body.smn .mn,body.smn .card p{font-size:14px;line-height:1.35}
+body.smn .seg button{font:800 19px 'Saira Condensed',sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:8px 18px}
+body.smn .seg button.on{background:linear-gradient(180deg,#ff4a3d,#d3261b);border-color:#ff6a5f;color:#fff}
+body.smn .asr>span{font:700 18px 'Saira Condensed',sans-serif;letter-spacing:.06em;text-transform:uppercase}
+body.smn #vol{position:fixed;top:14px;right:clamp(14px,2vw,32px);z-index:7}
+body.smn .bar{position:sticky;bottom:0;margin-top:auto;padding:12px 0 clamp(12px,2.4vh,24px);background:linear-gradient(0deg,rgba(3,5,8,.98) 62%,rgba(3,5,8,0));z-index:3}
+body.smn #go{font-size:28px!important;letter-spacing:.12em}
+body.smn #hback{left:clamp(18px,3vw,48px);right:auto;top:14px;bottom:auto;transform:skewX(-12deg);padding:6px 14px;font-size:14px;background:rgba(10,14,20,.8)}
+body.smn #mnu .top{margin-top:42px}
+body.smn #mnu .brand .bk{display:none}
+body.smn #mnu .brand h1{font-size:40px}
+body.smn .hlp{margin-top:2px}
+body.smn #tmsel.lst{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+body.smn .bar{flex-wrap:nowrap;gap:10px}
+body.smn #go{padding:10px 36px 10px 32px!important;white-space:nowrap}
+body.smn .bar #pcb{padding:10px 14px;font-size:16px;white-space:nowrap}
+@media (min-width:900px){
+body:not(.touch).smn #ov{overflow:hidden;padding:0;align-items:stretch;justify-content:flex-start}
+body:not(.touch).smn #ov>div{margin:0;width:min(680px,100vw);height:100%;display:flex;flex-direction:column;padding:clamp(10px,2.4vh,26px) clamp(18px,3vw,48px) 0}
+body:not(.touch).smn #mnu{zoom:1!important;flex:1;min-height:0}
+}
+@media (max-width:899px),(hover:none){body.smn #hback{transform:none;font-size:12px!important;padding:4px 10px!important;top:5px;left:8px}body.smn #mnu .top{margin-top:54px}body.smn #mnu .brand .bk{display:none}body.smn #mnu .brand h1{display:none}body.smn .card>h3{font-size:22px}body.smn .tabs button{font-size:19px}body.smn #mnu .brand h1{font-size:40px}body.smn #hback{top:6px}}
 </style></head><body>
 <button id="qend" type="button">Terminar clasificación<small>Tecla F · quedás con tu mejor vuelta</small></button>
 <div id="scr">Trazado de Monza basado en «Monza Circuit 1998 layout» de Dave Bored (Sketchfab), CC-BY 4.0</div>
@@ -1799,7 +1845,7 @@ const R0=S.mode=='gar'?6.9:7.9,el=S.mode=='gar'?.2:.15,a=p.h+S.az,cy=m.y+.5;
 w.g.position.set(m.x,m.y,m.z);w.spot.target.position.set(0,0,0);
 const pa=w.pg.attributes.position.array;for(let i=0;i<w.N;i++){pa[i*3+1]+=w.pv[i]*dt;if(pa[i*3+1]>5)pa[i*3+1]=0}w.pg.attributes.position.needsUpdate=true;
 cam.position.set(m.x+Math.sin(a)*R0*Math.cos(el),cy+Math.sin(el)*R0,m.z+Math.cos(a)*R0*Math.cos(el));cam.lookAt(m.x,cy,m.z);
-const tf=S.mode=='gar'?34:36;cam.fov+=(tf-cam.fov)*Math.min(1,dt*6);const W=innerWidth,H=innerHeight;cam.setViewOffset(W,H,-W*(S.mode=='gar'?.14:.17)*(W<820?0:1),0,W,H);cam.updateProjectionMatrix()}
+const tf=S.mode=='gar'?34:36;cam.fov+=(tf-cam.fov)*Math.min(1,dt*6);const W=innerWidth,H=innerHeight;cam.setViewOffset(W,H,-W*(S.mode=='gar'?.14:S.mode=='sub'?.2:.17)*(W<900?0:1),0,W,H);cam.updateProjectionMatrix()}
 /* pantallas */
 const HOMEEL=$('home'),GAREL=$('gar');
 function fadeFlash(ms){const f=$('fade');f.style.transition='none';f.style.opacity=1;void f.offsetWidth;f.style.transition='opacity '+ms+'ms ease-out';f.style.opacity=0}
@@ -1809,7 +1855,7 @@ function showHome(){document.body.classList.add('hmon');hInfo();GAREL.classList.
 function hideHome(){panelOff(HOMEEL)}
 function openGarage(){document.body.classList.add('hmon');hideHome();gRender();panelOn(GAREL,'gar');SHOW.mode='gar';SHOW.idle=0}
 function closeGarage(){GAREL.classList.add('out');setTimeout(()=>GAREL.classList.remove('on','out'),180);showHome()}
-function openSub(tab,mode){document.body.classList.remove('hmon');hideHome();showOff();const m=mode&&document.querySelector('#mode button[data-m="'+mode+'"]');if(m&&!m.disabled)m.click();const t=document.querySelector('.tabs [data-t="'+tab+'"]');t&&t.click();$('ov').style.display='flex';$('hback').classList.add('on')}
+function openSub(tab,mode){document.body.classList.remove('hmon');hideHome();showOn('sub');const m=mode&&document.querySelector('#mode button[data-m="'+mode+'"]');if(m&&!m.disabled)m.click();const t=document.querySelector('.tabs [data-t="'+tab+'"]');t&&t.click();$('ov').style.display='flex';$('hback').classList.add('on')}
 function hInfo(){const id=cfg.car||(CARAV[0]&&CARAV[0].id),c=CARAV.find(x=>x.id==id);if(!c)return;const nm=c.n.replace(/\s*\(TOCA\)/,'');$('hct').textContent=CARTAG[id]||'Auto';$('hcn').textContent=nm.replace(/^.*? · /,'');$('hci').textContent=CARINFO[id]||'';$('gt2').textContent=CARTAG[id]||'Auto';$('gn').textContent=nm.replace(/^.*? · /,'');$('gd').textContent=CARINFO[id]||''}
 function gRender(){const cur=cfg.car;$('gcars').innerHTML=CARAV.map(c=>{const nm=c.n.replace(/\s*\(TOCA\)/,'').replace(/^.*? · /,'');return '<button type="button" class="gc'+(c.id==cur?' on':'')+'" data-c="'+c.id+'" aria-pressed="'+(c.id==cur)+'"><img src="'+(CARIMG[c.id]||'')+'" alt=""><span><em>'+hx(CARTAG[c.id]||'')+'</em><b>'+hx(nm)+'</b></span></button>'}).join('');hInfo()}
 document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('#gcars .gc');if(!g)return;const sl=$('carsel');if(sl.disabled)return;sl.value=g.dataset.c;SHOW.idle=0;sl.onchange()});
@@ -1853,5 +1899,8 @@ function gunSnd(t){const n=AC.createBufferSource();n.buffer=NB;const f=AC.create
 function sfx2(p){if(!AC||!CHA||!NB)return;const t=AC.currentTime,on=!paused&&state=='race';
 if(!CRW){const s=AC.createBufferSource();s.buffer=NB;s.loop=true;s.playbackRate.value=.6;const f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=520;f.Q.value=.7;const g=AC.createGain();g.gain.value=0;s.connect(f);f.connect(g);g.connect(CHA);s.start(0,Math.random());CRW=g}
 CRW.gain.setTargetAtTime(on?.03+.012*Math.sin(t*.35):0,t,.5);if(on&&p.pitT>0&&p.svc&&t>GUNT){GUNT=t+.22+Math.random()*.2;gunSnd(t)}}
+
+function syncSM(){const on=getComputedStyle($('ov')).display!='none'&&$('mnu').style.display!='none';document.body.classList.toggle('smn',on)}
+new MutationObserver(syncSM).observe($('ov'),{attributes:true,attributeFilter:['style']});new MutationObserver(syncSM).observe($('mnu'),{attributes:true,attributeFilter:['style']});setInterval(syncSM,400);syncSM();
 requestAnimationFrame(loop);
 </script></body></html>
