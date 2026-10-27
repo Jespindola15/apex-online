@@ -708,11 +708,11 @@ x.fillStyle='rgba(255,255,255,.5)';x.fillRect(120,170,300,16);x.fillRect(700,150
 const t=new THREE.CanvasTexture(c);t.mapping=THREE.EquirectangularReflectionMapping;const p=new THREE.PMREMGenerator(R),e=p.fromEquirectangular(t).texture;p.dispose();return e})();
 function fit(){R.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}addEventListener('resize',fit);fit();
 /* ===== v63: calidad gráfica ===== */
-var GFXT=(()=>{try{return matchMedia('(hover:none) and (pointer:coarse)').matches}catch(e){return false}})();
+var GFXT=false;
 var GFXL=[{n:'Bajo',pr:1,sh:0,pf:.35,far:900},{n:'Medio',pr:1.25,sh:1024,pf:.7,far:1200},{n:'Alto',pr:1.75,sh:2048,pf:1,far:1500},{n:'Ultra',pr:2,sh:4096,pf:1,far:1500}];
-var GFX={q:'auto',lv:GFXT?1:3,fps:0,pf:1};
+var GFX={q:3,lv:3,fps:0,pf:1};
 try{const j=JSON.parse(localStorage.getItem('apex.gfx')||'{}');if(j.q!==undefined)GFX.q=j.q;if(j.fps)GFX.fps=1}catch(e){}
-if(GFX.q!=='auto'&&GFX.q>=0&&GFX.q<=3)GFX.lv=+GFX.q;
+if(GFX.q==='auto')GFX.q=3;if(GFX.q!=='auto'&&GFX.q>=0&&GFX.q<=3)GFX.lv=+GFX.q;
 function gfxSave(){try{localStorage.setItem('apex.gfx',JSON.stringify({q:GFX.q,fps:GFX.fps}))}catch(e){}}
 function applyGfx(){const L=GFXL[GFX.lv];GFX.pf=L.pf;R.setPixelRatio(Math.min(devicePixelRatio||1,L.pr));cam.far=L.far;cam.updateProjectionMatrix();
 const sh=sun.shadow;if(L.sh){sun.castShadow=true;if(sh.mapSize.x!==L.sh){sh.mapSize.set(L.sh,L.sh);if(sh.map){sh.map.dispose();sh.map=null}}}else sun.castShadow=false;
@@ -1266,7 +1266,7 @@ a=Math.abs(a)<.08?0:Math.sign(a)*Math.pow((Math.min(1,Math.abs(a))-.08)/.92,1.4)
 if(!a&&g.buttons[14]&&g.buttons[15])a=(g.buttons[15].pressed?1:0)-(g.buttons[14].pressed?1:0);return a}
 
 // ---- Controles tactiles: botones o giroscopio (solo en dispositivos tactiles sin mouse)
-const TOUCH=(()=>{try{return matchMedia('(hover:none) and (pointer:coarse)').matches&&(navigator.maxTouchPoints||0)>0}catch(e){return false}})();
+const TOUCH=false; // solo PC: sin controles táctiles
 const TCH={l:0,r:0,th:0,br:0,gy:0,off:0,inv:0,phi:null,ks:0};
 function tcPhi(r){const a=((screen.orientation&&screen.orientation.angle!=null?screen.orientation.angle:window.orientation)||0)%360,x=r.x||0,y=r.y||0;let p;if(a==90||a==-270)p=Math.atan2(y,x);else if(a==270||a==-90)p=Math.atan2(-y,-x);else if(a==180)p=Math.atan2(x,-y);else p=Math.atan2(-x,y);return p*57.2958}
 function tcMotion(e){const g=e.accelerationIncludingGravity;if(!g||g.x==null)return;const k=/iP(hone|ad|od)/.test(navigator.userAgent)?-1:1;TCH.phi=tcPhi({x:g.x*k,y:g.y*k})}
